@@ -1,0 +1,112 @@
+.ui {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.ui .viewport {
+	position: absolute;
+	left: 0;
+	top: 0px;
+	width: 100%;
+	bottom: 0px;
+	background-color: #d9d9d9;
+}
+
+
+
+
+.dg.main {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	z-index: 2;
+}
+.dg .close-button {
+	display: none;
+}
+
+
+.view3 {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	    -ms-user-select: none;
+	     -o-user-select: none;
+	        user-select: none;
+}
+.view3.hover {
+	cursor: crosshair;
+}
+.view3.drag {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:     -ms-grab;
+	cursor:      -o-grab;
+	cursor:         grab;
+}
+.view3.down {
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:     -ms-grabbing;
+	cursor:      -o-grabbing;
+	cursor:         grabbing;
+}
+
+
+.tip {
+	position: absolute;
+	border: 1px solid #888;
+	box-shadow: 1px 1px 5px 0 rgba(0, 0, 0, 0.3);
+	z-index: 2;
+}
+.tip-content {
+	background-color: white;
+}
+.tip-arrow {
+	position: absolute;
+	margin-top: -8px;
+	margin-left: -8px;
+	width: 16px;
+	height: 16px;
+	border: 1px solid #888;
+	box-sizing: border-box;
+	background-color: white;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	     -o-transform: rotate(45deg);
+	        transform: rotate(45deg);
+
+	z-index: -1;
+}
+
+
+
+.ui-data-input {
+	position: absolute;
+	left: 20px;
+	top: 20px;
+	background-color: #bbb;
+	z-index: 1;
+}
+.ui-data-input:hover {
+	background-color: #888;
+}
+.ui-data-input input[type="file"] {
+	width: 200px;
+	height: 24px;
+	padding: 20px 12px;
+}

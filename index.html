@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<head>
+	<title>light</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script>
+		!function() {
+		"use strict";
+
+		var scripts = {}
+		var styles  = {}
+
+		scripts.html5 = [
+			'scripts/lib/f.js',
+			'scripts/lib/pf.js',
+			'scripts/lib/dom.js',
+			'scripts/lib/kbd.js',
+
+			'scripts/lib/three.min.js',
+			'scripts/lib/dat.gui.min.js',
+
+			'scripts/base/EventEmitter.js',
+			'scripts/base/Gate.js',
+			'scripts/base/Timer.js',
+			'scripts/base/Block.js',
+
+			'scripts/THREE.OrbitControls.js',
+			'scripts/THREE.FirstPersonControls.js',
+
+			'scripts/View3.js',
+			'scripts/DataBuilder.js',
+			'scripts/UI.js',
+
+			'scripts/main.js'
+		]
+		styles.html5 = [
+			'styles/main.css',
+			'styles/ui.css'
+		]
+
+		scripts.flash = [
+
+		]
+		styles.flash = [
+
+		]
+
+		var first = document.getElementsByTagName('script')[0]
+		function add_script(src, callback) {
+			var elem    = document.createElement('script')
+			elem.type   = 'text/javascript'
+			elem.src    = src
+			elem.onload = callback
+			first.parentNode.insertBefore(elem, first)
+		}
+		function add_style(href) {
+			var elem  = document.createElement('link')
+			elem.rel  = 'stylesheet'
+			elem.href = href
+			elem.type = 'text/css'
+			first.parentNode.insertBefore(elem, first)
+		}
+
+		window.loadAssets = function(variant) {
+			var _scripts = scripts[variant]
+			,   _styles  = styles [variant]
+
+			!function run_scripts() {
+				_scripts.length && add_script(_scripts.shift(), run_scripts)
+			}()
+			while(_styles.length) add_style(_styles.shift())
+		}
+
+		try { var FLASH = new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version') } catch(e) {}
+		try { var FLASH = navigator.plugins['Shockwave Flash'].description && navigator.mimeTypes['application/x-shockwave-flash'].enabledPlugin } catch(e) {}
+		try { var CANVAS = !!document.createElement('canvas').getContext('2d') } catch(e) {}
+
+		if(FLASH && CANVAS) loadAssets('html5')
+		else if(CANVAS)     loadAssets('html5')
+		else if(FLASH)      loadAssets('flash')
+		else {
+
+		}
+
+		}()
+	</script>
+</head>
+
+<body>
+	<!--
+	<div class="loading absmid slow-05">
+		<style>
+			.absmid {
+				position: absolute;
+				left: 0;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				margin: auto;
+			}
+			.loading {
+				width: 100%;
+				height: 100%;
+				background-color: white;
+				z-index: 100500;
+			}
+			.loading.hide {
+				opacity: 0;
+			}
+			.loading-center {
+				width: 200px;
+				height: 200px;
+				line-height: 32px;
+				text-align: center;
+				font-size: 16px;
+				color: #777;
+			}
+			.loading-text {
+				padding-left: 8px;
+			}
+		</style>
+		<div class="loading-center absmid">
+			<img src="images/loading.gif">
+			<div class="loading-text">
+				<script>
+					var text = { en: 'Loading...', ru: 'Загрузка...' }
+					,   lang = location.search.replace(/.*lang=(\w+).*/, '$1')
+
+					document.write(text[lang] || text.ru)
+				</script>
+			</div>
+		</div>
+	</div>
+	-->
+</body>
