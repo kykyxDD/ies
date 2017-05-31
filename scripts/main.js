@@ -1,7 +1,5 @@
 var main = {}
 
-main.subdivisions = 0
-main.heights = 6
 main.linesOnly = false
 main.linesVisible = true
 
@@ -38,8 +36,12 @@ function datinit() {
 
 	gui.add(main, 'linesOnly').name('Lines Only').onChange(onMaterial)
 	gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
-	gui.add(main, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
-	gui.add(main, 'subdivisions').min(0).max(16).step(1).name('Subdivisions').onChange(rebuild)
+
+	gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
+	gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
+	gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
+	gui.add(main.builder, 'colorK').min(0.1).max(2).name('Color magnitude').onChange(rebuild)
+	gui.add(main.builder, 'colorA').min(-1).max(1).name('Color offset').onChange(rebuild)
 
 	function v3redraw() {
 		main.view.needsRedraw = true
@@ -92,10 +94,7 @@ function onMaterial() {
 
 function rebuild() {
 	if(!main.dataSource) return
-	main.tree = main.builder.buildFromSource(main.dataSource, {
-		subdivisions: main.subdivisions,
-		heights: main.heights,
-	})
+	main.tree = main.builder.buildFromSource(main.dataSource)
 	main.view.setTree(main.tree)
 }
 

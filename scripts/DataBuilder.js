@@ -11,32 +11,55 @@ function DataBuilder() {
 }
 
 DataBuilder.prototype = {
-	buildFromSource: function(text, options) {
+
+	heights: 6,
+	verticals: 2,
+	subdivisions: 16,
+
+	colorK: 0.7,
+	colorA: 0.7,
+
+	buildFromSource: function(text) {
 		var lines = this.parseText(text)
 
 		var linesCount = lines.length
 
 		var data = []
 
-		var subs = options.subdivisions || 0
 		var planesCount = lines[0].length
-		var totalCount = planesCount * (subs +1)
+		var totalCount = planesCount * (this.subdivisions +1)
 
-		// for(var i = 0; i < linesCount; i++) {
-		// 	var row = lines[i]
-
-		// 	for(var j = 0; j < subs; j++) {
-		// 		for(var k = row.length -1; k >= 0; k--) {
-		// 			var l = (k + 1) % row.length
-
-		// 		}
-		// 	}
-		// }
 
 		for(var i = 0; i < totalCount; i++) {
 			data.push([])
 		}
 
+		var linesInterpolated = []
+		for(var i = 0; i < lines.length -1; i++) {
+			var a = i ? lines[i - 1] : lines[0]
+			,   b = lines[i]
+			,   c = i + 1 < linesCount ? lines[i+1] : b
+			,   d = i + 2 < linesCount ? lines[i+2] : c
+
+			for(var j = 0; j < this.verticals; j++) {
+				var p = j / this.verticals
+				var row = []
+
+				for(var k = 0; k < a.length; k++) {
+					row.push(this.cubicInterpolate(p, a[k], b[k], c[k], d[k]))
+				}
+
+				linesInterpolated.push(row)
+			}
+		}
+
+		linesInterpolated.push(lines[linesCount -1])
+
+		linesCount = (linesCount - 1) * this.verticals + 1
+		lines = linesInterpolated
+
+		var minY =  Infinity
+		,   maxY = -Infinity
 		for(var i = 0; i < linesCount; i++) {
 			var row = lines[i]
 
@@ -44,8 +67,8 @@ DataBuilder.prototype = {
 				var a = row[j]
 				,   b = row[(j+1)%row.length]
 
-				for(var k = subs -1; k >= 0; k--) {
-					var p = k / subs
+				for(var k = this.subdivisions -1; k >= 0; k--) {
+					var p = k / this.subdivisions
 
 					row.splice(j + 1, 0, (b - a) * p + a)
 				}
@@ -63,9 +86,14 @@ DataBuilder.prototype = {
 				,   y3 = y2
 				,   z3 = x2 * Math.sin(b)
 
+				if(minY > y3) minY = y3
+				if(maxY < y3) maxY = y3
+
 				data[j].push(new THREE.Vector3(x3, y3, z3))
 			}
 		}
+
+		var height = maxY - minY
 
 		var root     = new THREE.Object3D
 		,   lineRoot = new THREE.Object3D
@@ -76,23 +104,24 @@ DataBuilder.prototype = {
 		for(var i = 0; i < planesCount; i++) {
 			var j = (i+1) % planesCount
 
-			if(i % (subs +1) === 0) {
-				lineRoot.add(this.createPlane(data[i], options.lines))
+			if(i % (this.subdivisions +1) === 0) {
+				lineRoot.add(this.createPlane(data[i], height))
 			}
-			meshRoot.add(this.createMesh(data[i], data[j]))
+			meshRoot.add(this.createMesh(data[i], data[j], height))
 		}
 
-		var radiusCount = options.heights +1 || 1
+		var radiusCount = this.heights +1 || 1
 		for(var k = 1; k < radiusCount; k++) {
-			lradRoot.add(this.createRadius(k / radiusCount, data, options.lines))
+			lradRoot.add(this.createRadius(k / radiusCount, data, minY, maxY))
 		}
 
 		root.add(lineRoot)
 		root.add(meshRoot)
 		root.add(lradRoot)
 
-		lineRoot.scale.multiplyScalar(1.001)
-		lradRoot.scale.multiplyScalar(1.001)
+		var s = 1.002
+		lineRoot.scale.set(s, s, s)
+		lradRoot.scale.set(s, s, s)
 
 		return {
 			object: root,
@@ -101,10 +130,14 @@ DataBuilder.prototype = {
 		}
 	},
 
+	cubicInterpolate: function(x, a, b, c, d) {
+		return b + 0.5 * x*(c - a + x*(2*a - 5*b + 4*c - d + x*(3*(b - c) + d - a)))
+	},
+
 	getColor: function(t, color) {
 		if(!color) color = new THREE.Color
 
-		var c = f.softcolor(t * 0.7)
+		var c = f.softcolor(t * this.colorK + this.colorA)
 
 		color.r = c[0]
 		color.g = c[1]
@@ -113,21 +146,44 @@ DataBuilder.prototype = {
 		return color
 	},
 
-	createRadius: function(k, data, colored) {
+	createRadius: function(k, data, minY, maxY) {
 		var vertices = []
 		var colors = []
 
-		var color = this.getColor(k)
-		var j = Math.floor(k * data[0].length)
+		var h = k * (maxY - minY) + minY
+		var color = this.getColor(h / (maxY - minY))
 		for(var i = 0; i < data.length; i++) {
-			var v = data[i][j]
+			var col = data[i]
 
-			color.toArray(colors, i * 3)
-			vertices.push(v.x, v.y, v.z)
+			for(var j = 0; j < col.length -1; j++) {
+				var a = col[j]
+				var b = col[j+1]
+
+				if(b.y < h) continue
+
+				var k = (h - a.y) / (b.y - a.y)
+
+				color.toArray(colors, i * 3)
+				vertices.push(
+					(b.x - a.x) * k + a.x,
+					(b.y - a.y) * k + a.y,
+					(b.z - a.z) * k + a.z)
+
+				break
+			}
 		}
-		var v = data[0][j]
-		color.toArray(colors, i * 3)
-		vertices.push(v.x, v.y, v.z)
+		vertices.push(vertices[0], vertices[1], vertices[2])
+		colors.push(colors[0], colors[1], colors[2])
+		// var j = Math.floor(k * data[0].length)
+		// for(var i = 0; i < data.length; i++) {
+		// 	var v = data[i][j]
+
+		// 	color.toArray(colors, i * 3)
+		// 	vertices.push(v.x, v.y, v.z)
+		// }
+		// var v = data[0][j]
+		// color.toArray(colors, i * 3)
+		// vertices.push(v.x, v.y, v.z)
 
 		var geometry = new THREE.BufferGeometry
 		geometry.addAttribute('position', new THREE.Float32Attribute(vertices, 3))
@@ -136,7 +192,7 @@ DataBuilder.prototype = {
 		return new THREE.Line(geometry, this.lineMaterial)
 	},
 
-	createPlane: function(data, colored) {
+	createPlane: function(data, height) {
 		var vertices = []
 		,   colors   = []
 
@@ -147,7 +203,7 @@ DataBuilder.prototype = {
 
 			vertices.push(v.x, v.y, v.z)
 
-			this.getColor(i / lines, color)
+			this.getColor(v.y / height, color)
 			color.toArray(colors, i * 3)
 		}
 
@@ -158,7 +214,7 @@ DataBuilder.prototype = {
 		return new THREE.Line(geometry, this.lineMaterial)
 	},
 
-	createMesh: function(left, right) {
+	createMesh: function(left, right, height) {
 		var geometry = new THREE.Geometry
 
 		var lines = left.length
@@ -170,12 +226,14 @@ DataBuilder.prototype = {
 			,   c = right[i]
 			,   d = right[j]
 
-			var cA = this.getColor(i / lines)
-			,   cB = this.getColor(j / lines)
+			var cA = this.getColor(a.y / height)
+			,   cB = this.getColor(b.y / height)
+			,   cC = this.getColor(c.y / height)
+			,   cD = this.getColor(d.y / height)
 
 			var vi = geometry.vertices.length
-			var fA = new THREE.Face3(vi +2, vi +0, vi +3, null, [cB, cA, cB])
-			,   fB = new THREE.Face3(vi +0, vi +1, vi +3, null, [cA, cA, cB])
+			var fA = new THREE.Face3(vi +2, vi +0, vi +3, null, [cC, cA, cD])
+			,   fB = new THREE.Face3(vi +0, vi +1, vi +3, null, [cA, cB, cD])
 
 			geometry.vertices.push(a, b, c, d)
 			geometry.faces.push(fA, fB)
