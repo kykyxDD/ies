@@ -126,18 +126,27 @@ View3.prototype = {
 
 	setTree: function(object) {
 		if(this.tree) {
+			this.tree.object.traverse(this.destroy)
 			this.object.remove(this.tree.object)
+
 		}
 
 		this.tree = object
 
 		if(this.tree) {
 			this.object.add(this.tree.object)
-
-			this.toCenter()
 		}
 
 		this.needsRedraw = true
+	},
+
+	destroy: function(object) {
+		if(object.geometry) {
+			object.geometry.dispose()
+		}
+		if(object.material) {
+			// object.material.dispose()
+		}
 	},
 
 	toCenter: function() {
@@ -166,6 +175,7 @@ View3.prototype = {
 		} else {
 			radius = box.getSize().length()
 			box.getCenter(this.orbit.target)
+			this.orbit.target.set(0, this.orbit.target.y, 0)
 		}
 
 		this.camera.position.copy(offset).setLength(radius).add(this.orbit.target)
