@@ -2,6 +2,7 @@ var main = {}
 
 main.linesOnly = false
 main.linesVisible = true
+main.rotation = 0
 
 function init() {
 	main.bus   = new EventEmitter
@@ -42,6 +43,7 @@ function datinit() {
 	gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
 	gui.add(main.builder, 'colorK').min(0.001).max(0.3).name('Color magnitude').onChange(rebuild)
 	gui.add(main.builder, 'colorA').min(-1).max(1).name('Color offset').onChange(rebuild)
+	gui.add(main, 'rotation').min(0).max(10).name('Rotation')
 
 	function v3redraw() {
 		main.view.needsRedraw = true
@@ -59,6 +61,10 @@ function eventmap() {
 }
 
 function onTick(t, dt) {
+	if(main.rotation) {
+		main.view.orbit.rotateLeft(main.rotation * dt * 0.0001)
+		main.view.orbit.update()
+	}
 	main.view.onUpdate(dt)
 }
 
