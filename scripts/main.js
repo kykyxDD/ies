@@ -40,7 +40,7 @@ function datinit() {
 	gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
 	gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
 	gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
-	gui.add(main.builder, 'colorK').min(0.1).max(2).name('Color magnitude').onChange(rebuild)
+	gui.add(main.builder, 'colorK').min(0.001).max(0.3).name('Color magnitude').onChange(rebuild)
 	gui.add(main.builder, 'colorA').min(-1).max(1).name('Color offset').onChange(rebuild)
 
 	function v3redraw() {

@@ -16,8 +16,8 @@ DataBuilder.prototype = {
 	verticals: 2,
 	subdivisions: 16,
 
-	colorK: 0.7,
-	colorA: 0.7,
+	colorK: 0.1,
+	colorA: -0.35,
 
 	buildFromSource: function(text) {
 		var lines = this.parseText(text)
@@ -130,14 +130,27 @@ DataBuilder.prototype = {
 		}
 	},
 
+	radiusToVector: function(radius, index, height) {
+
+	},
+
+	vectorToRadius: function(vector) {
+
+	},
+
 	cubicInterpolate: function(x, a, b, c, d) {
 		return b + 0.5 * x*(c - a + x*(2*a - 5*b + 4*c - d + x*(3*(b - c) + d - a)))
 	},
 
-	getColor: function(t, color) {
+	getColor: function(v, color) {
 		if(!color) color = new THREE.Color
 
-		var c = f.softcolor(t * this.colorK + this.colorA)
+		var x = Math.sqrt(v.x * v.x + v.z * v.z)
+		,   a = Math.atan2(v.y, x)
+		,   r = x / Math.cos(a)
+
+		var k = Math.pow(this.colorK, Math.E)
+		var c = f.softcolor(-r * k + this.colorA)
 
 		color.r = c[0]
 		color.g = c[1]
@@ -151,7 +164,6 @@ DataBuilder.prototype = {
 		var colors = []
 
 		var h = k * (maxY - minY) + minY
-		var color = this.getColor(h / (maxY - minY))
 		for(var i = 0; i < data.length; i++) {
 			var col = data[i]
 
@@ -162,12 +174,13 @@ DataBuilder.prototype = {
 				if(b.y < h) continue
 
 				var k = (h - a.y) / (b.y - a.y)
-
-				color.toArray(colors, i * 3)
-				vertices.push(
+				var v = new THREE.Vector3(
 					(b.x - a.x) * k + a.x,
 					(b.y - a.y) * k + a.y,
 					(b.z - a.z) * k + a.z)
+
+				this.getColor(v).toArray(colors, i * 3)
+				vertices.push(v.x, v.y, v.z)
 
 				break
 			}
@@ -203,7 +216,7 @@ DataBuilder.prototype = {
 
 			vertices.push(v.x, v.y, v.z)
 
-			this.getColor(v.y / height, color)
+			this.getColor(v, color)
 			color.toArray(colors, i * 3)
 		}
 
@@ -226,10 +239,10 @@ DataBuilder.prototype = {
 			,   c = right[i]
 			,   d = right[j]
 
-			var cA = this.getColor(a.y / height)
-			,   cB = this.getColor(b.y / height)
-			,   cC = this.getColor(c.y / height)
-			,   cD = this.getColor(d.y / height)
+			var cA = this.getColor(a)
+			,   cB = this.getColor(b)
+			,   cC = this.getColor(c)
+			,   cD = this.getColor(d)
 
 			var vi = geometry.vertices.length
 			var fA = new THREE.Face3(vi +2, vi +0, vi +3, null, [cC, cA, cD])

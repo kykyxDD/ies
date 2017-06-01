@@ -117,7 +117,7 @@ View3.prototype = {
 		var material = new THREE.MeshBasicMaterial({
 			side: THREE.DoubleSide,
 			transparent: true,
-			opacity: 0.7,
+			opacity: 0.5,
 			color: 0x7aa1bd
 		})
 
@@ -182,7 +182,7 @@ View3.prototype = {
 
 		this.orbit.update()
 
-		this.ring = this.makeRing(radius / 2, 100)
+		this.ring = this.makeRing(radius / 2 * 0.8, 100)
 		this.object.add(this.ring)
 	},
 
