@@ -25,29 +25,35 @@ function run() {
 }
 
 function datinit() {
-	var gui = new dat.GUI({
+	main.gui = new dat.GUI({
 		autoPlace: false,
 		hideable: true
 	})
 
-	dom.append(main.ui.viewport, gui.domElement)
+	dom.append(main.ui.viewport, main.gui.domElement)
 
 
-	// gui.add(main.view, 'enableWire').name('Wireframe').onChange(v3redraw).listen()
+	// main.gui.add(main.view, 'enableWire').name('Wireframe').onChange(v3redraw).listen()
 
-	gui.add(main, 'linesOnly').name('Lines Only').onChange(onMaterial)
-	gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
+	main.gui.add(main, 'linesOnly').name('Lines Only').onChange(onMaterial)
+	main.gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
 
-	gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
-	gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
-	gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
-	gui.add(main.builder, 'colorK').min(0.001).max(0.3).name('Color magnitude').onChange(rebuild)
-	gui.add(main.builder, 'colorA').min(-1).max(1).name('Color offset').onChange(rebuild)
-	gui.add(main, 'rotation').min(0).max(10).name('Rotation')
+	main.gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
+	main.gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
+	main.gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
 
 	function v3redraw() {
 		main.view.needsRedraw = true
 	}
+}
+
+function datextra() {
+	if(main.datextra) return
+	main.datextra = true
+
+	main.gui.add(main.builder, 'colorK').min(-1).max(1).name('Color magnitude').onChange(rebuild)
+	main.gui.add(main.builder, 'colorA').min(-1).max(1).name('Color offset').onChange(rebuild)
+	main.gui.add(main, 'rotation').min(0).max(10).name('Rotation')
 }
 
 function eventmap() {
@@ -69,6 +75,8 @@ function onTick(t, dt) {
 }
 
 function onKey(e) {
+	if(kbd.key === 'v' && !main.datextra) datextra()
+
 	main.view.onKey(e)
 }
 

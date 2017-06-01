@@ -16,8 +16,8 @@ DataBuilder.prototype = {
 	verticals: 2,
 	subdivisions: 16,
 
-	colorK: 0.1,
-	colorA: -0.35,
+	colorK: -0.7,
+	colorA: -0.3,
 
 	buildFromSource: function(text) {
 		var lines = this.parseText(text)
@@ -29,6 +29,27 @@ DataBuilder.prototype = {
 		var planesCount = lines[0].length
 		var totalCount = planesCount * (this.subdivisions +1)
 
+		var minR =  Infinity
+		,   maxR = -Infinity
+		for(var i = 0; i < lines.length; i++) {
+			var row = lines[i]
+
+			for(var j = 0; j < row.length; j++) {
+				var r = row[j]
+
+				if(minR > r) minR = r
+				if(maxR < r) maxR = r
+			}
+		}
+
+		var normalR = 1 / maxR
+		for(var i = 0; i < lines.length; i++) {
+			var row = lines[i]
+
+			for(var j = 0; j < row.length; j++) {
+				row[j] *= normalR
+			}
+		}
 
 		for(var i = 0; i < totalCount; i++) {
 			data.push([])
@@ -149,8 +170,7 @@ DataBuilder.prototype = {
 		,   a = Math.atan2(v.y, x)
 		,   r = x / Math.cos(a)
 
-		var k = Math.pow(this.colorK, Math.E)
-		var c = f.softcolor(-r * k + this.colorA)
+		var c = f.softcolor(r * this.colorK + this.colorA)
 
 		color.r = c[0]
 		color.g = c[1]

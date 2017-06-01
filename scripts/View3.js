@@ -182,7 +182,7 @@ View3.prototype = {
 
 		this.orbit.update()
 
-		this.ring = this.makeRing(radius / 2 * 0.8, 100)
+		this.ring = this.makeRing(radius / 2 * 0.3, 100)
 		this.object.add(this.ring)
 	},
 
@@ -227,8 +227,8 @@ View3.prototype = {
 
 		this.camera.fov    = 45
 		this.camera.aspect = w / h
-		this.camera.near   = 1
-		this.camera.far    = 100000
+		this.camera.near   = 0.01
+		this.camera.far    = 100
 
 		this.camera.updateProjectionMatrix()
 
