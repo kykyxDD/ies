@@ -162,6 +162,8 @@ DataBuilder.prototype = {
 			meshRoot.add(this.createMesh(data[i], data[j], height))
 		}
 
+		
+
 		var radiusCount = this.heights +1 || 1
 		// for(var k = 1; k < radiusCount; k++) {
 		// 	lradRoot.add(this.createRadius(k / radiusCount, data, minY, maxY))
@@ -341,7 +343,14 @@ DataBuilder.prototype = {
 		return data
 	},
 	parseTextIES: function(text){
+		var ts = /\w/
 		var lines = text.replace(/,/g, '.').trim().split('\n');
+		for(var l = 0; l < lines.length; l++){
+			if(!ts.test(lines[l])){
+				lines.splice(l,1)
+				--l
+			}
+		}
 		var index_last_s = 0;
 		var info = {}
 		//lines.map(function(line){
@@ -389,7 +398,7 @@ DataBuilder.prototype = {
 		var arr_angle = []
 
 		for(var i = 2; i < data.length;i++){
-			var arr = data[i].split(' ');
+			var arr = data[i].replace(/\t/g, ' ').split(' ');
 			arr = this.delStr(arr);
 			arr_angle = arr_angle.concat(arr);
 		}
