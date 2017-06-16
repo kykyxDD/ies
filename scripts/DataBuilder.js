@@ -8,38 +8,55 @@ function DataBuilder() {
 		// color: 0x000000,
 		vertexColors: THREE.VertexColors
 	})
+	console.log('cont', main.ui.viewport)
+	var cont = dom.elem('div', 'cont_preload', main.ui.viewport)
+	var popup = dom.elem('div', 'popup', cont)
+	var preload = dom.elem('div', 'preload', popup)
+	var percent = dom.elem('div', 'percent', preload)
+	this.cont_preload = cont
+	this.preload = percent
+
 }
 
 DataBuilder.prototype = {
 
 	heights: 6,
 	verticals: 2,
-	subdivisions: 16,
+	subdivisions: 64,
 
 	colorK: -0.7,
 	colorA: -0.3,
+	showPreload: function(){
+		//dom.text(this.preload, '0%');
+		this.preload.style.width = '0%';
+		dom.addclass(this.cont_preload, 'show');
+	},
 
 	buildFromSource: function(text) {
 		// var lines = this.parseText(text)
+		this.showPreload()
 		var lines;
-		main.info_ies = {};
+		main.info_ies = {
+			
+		};
 		if(text.indexOf('IESNA')>=0){
 			lines = this.parseTextIES(text);
 
 		} else {
 			lines = this.parseText(text);
-			main.info_ies = false;
+			// main.info_ies = false;
 		}
-
 		main.info_ies.lines = lines;
-		
+		this.subdivisions = Math.ceil(64/lines.length)
 
-		console.log(lines[0].length, main.info_ies.azim.max,main.info_ies.polar.max);
+
+
+		//console.log(lines[0].length, main.info_ies.azim.max,main.info_ies.polar.max);
 
 		var linesCount = lines.length;
 		var data = [];
 
-		var planesCount = lines[0].length
+		var planesCount = lines.length ? lines[0].length : 0
 		var totalCount = planesCount * (this.subdivisions +1)
 
 		var minR =  Infinity
@@ -55,6 +72,7 @@ DataBuilder.prototype = {
 				if(maxR < r) maxR = r
 			}
 		}
+		this.verticals = Math.ceil(180/lines[0].length)
 
 		var normalR = 1 / maxR
 		for(var i = 0; i < lines.length; i++) {
@@ -102,6 +120,8 @@ DataBuilder.prototype = {
 			var start_angle = (main.info_ies.polar.max/360)* (2*Math.PI) - Math.PI;
 			finish_angle = start_angle + Math.PI;
 		}
+
+
 		
 		for(var i = 0; i < linesCount; i++) {
 			var row = lines[i]
@@ -141,7 +161,7 @@ DataBuilder.prototype = {
 		main.info_ies.minY = minY;
 		main.info_ies.maxY = maxY;
 
-		main.info_ies.data = data
+		main.info_ies.data = data;
 		main.view_info_ies.updateInfo();
 
 
@@ -151,8 +171,19 @@ DataBuilder.prototype = {
 		,   lineRoot = new THREE.Object3D
 		,   meshRoot = new THREE.Object3D
 		,   lradRoot = new THREE.Object3D
+		this.lineRoot = lineRoot
+		this.meshRoot = meshRoot
+		this.root = root
 
 		var planesCount = data.length
+		this.planesCount = planesCount
+		var index = 0;
+		var self = this;
+		this.data = data
+		this.index = 0;
+		this.height = height
+		
+		/*
 		for(var i = 0; i < planesCount; i++) {
 			var j = (i+1) % planesCount
 
@@ -160,27 +191,70 @@ DataBuilder.prototype = {
 				lineRoot.add(this.createPlane(data[i], height))
 			}
 			meshRoot.add(this.createMesh(data[i], data[j], height))
-		}
+		}*/
+
+
 
 		
+		return this.loadFigure()
+	},
+	showProgress: function (){
+		var percent = Math.floor((this.index/this.planesCount)*100) +'%';
+		//console.log('percent',percent)
+		//dom.text(this.preload, percent);
+		this.preload.style.width = percent;
+	},
+	loadFigure: function (){
+		this.showProgress();
+		var i = this.index
 
+		if(this.planesCount) {
+			var j = (i+1) % this.planesCount
+			var data_i = this.data[i];
+			var data_j = this.data[j];
+
+			if(i % (this.subdivisions +1) === 0) {
+				this.lineRoot.add(this.createPlane(data_i, this.height))
+			}
+			this.meshRoot.add(this.createMesh(data_i, data_j, this.height))
+		}
+
+		this.index++;
+
+		if(i < this.planesCount-1){
+			return setTimeout(this.loadFigure.bind(this),0)
+		} else {
+			return this.completeFigure()
+		}
+	},
+	completeFigure: function (){
 		var radiusCount = this.heights +1 || 1
 		// for(var k = 1; k < radiusCount; k++) {
 		// 	lradRoot.add(this.createRadius(k / radiusCount, data, minY, maxY))
 		// }
 
-		root.add(lineRoot)
-		root.add(meshRoot)
+		this.root.add(this.lineRoot)
+		this.root.add(this.meshRoot)
 		// root.add(lradRoot)
 
 		var s = 1.002
-		lineRoot.scale.set(s, s, s)
-		lradRoot.scale.set(s, s, s)
+		this.lineRoot.scale.set(s, s, s)
+		// lradRoot.scale.set(s, s, s)
+		var obj = {
+			object: this.root,
+			lineRoot: this.lineRoot,
+			meshRoot: this.meshRoot
+		}
+
+		main.view.setTree(obj)
+		onMaterial()
+		main.view.toCenter()
+		dom.remclass(this.cont_preload, 'show');
 
 		return {
-			object: root,
-			lineRoot: lineRoot,
-			meshRoot: meshRoot
+			object: this.root,
+			lineRoot: this.lineRoot,
+			meshRoot: this.meshRoot
 		}
 	},
 
@@ -352,7 +426,16 @@ DataBuilder.prototype = {
 			}
 		}
 		var index_last_s = 0;
-		var info = {}
+		var info = {
+			azim: {
+				min : 0,
+				max : 0
+			},
+			polar : {
+				min : 0,
+				max : 0
+			}
+		}
 		//lines.map(function(line){
 		for(var i = 0; i < lines.length; i++){
 			var line = lines[i];
@@ -392,6 +475,7 @@ DataBuilder.prototype = {
 		main.info_ies = info;
 		var data = lines.slice(index_last_s+1)
 		var index_zero = [];
+		if(!data[0]) return [];
 		var arr_info = this.delStr(data[0].split(' '))
 		var num_polar = +arr_info[3];
 		var num_azim = +arr_info[4];

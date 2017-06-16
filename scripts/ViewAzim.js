@@ -80,7 +80,7 @@ function ViewAzim(){
 			//arr.push(main.info_ies.lines[i][index])
 		}
 		console.log('arr',arr)*/
-		var planesCount = lines[0].length
+		var planesCount = lines[0] ? lines[0].length : 0;
 		var totalCount = planesCount;
 
 		var linesCount = lines.length;

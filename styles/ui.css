@@ -98,7 +98,7 @@
 .ui-data-input {
 	position: absolute;
 	left: 20px;
-	top: 20px;
+	top: 150px;
 	background-color: #bbb;
 	z-index: 1;
 }
@@ -106,7 +106,7 @@
 	background-color: #888;
 }
 .ui-data-input input[type="file"] {
-	width: 200px;
+	width: 235px;
 	height: 24px;
 	padding: 20px 12px;
 	cursor: pointer;

@@ -8,6 +8,7 @@ function ViewInfoIES(){
 	this.init = function(){
 		var cont = dom.elem('div', 'info_ies', main.ui.viewport)
 		this.obj_elem.parent = cont;
+		var logo = dom.elem('div', 'logo', main.ui.viewport)
 
 		var cont_info = dom.elem('div', 'cont_info', cont);
 		this.obj_elem.cont_info = cont_info;
@@ -111,7 +112,7 @@ function ViewInfoIES(){
 		}
 		index = 0
 		// return
-		var len = main.info_ies.lines[0].length
+		var len = main.info_ies.lines[0] ? main.info_ies.lines[0].length : 0;
 		max_val = len//Math.ceil(main.info_ies.lines[0].length/2);
 		if(max_val <= 1) {
 			dom.visible(this.obj_elem.btn_prev, false)

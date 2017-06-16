@@ -43,8 +43,8 @@ function datinit() {
 	main.gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
 
 	// main.gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
-	main.gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
-	main.gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
+	// main.gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
+	// main.gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
 
 	function v3redraw() {
 		main.view.needsRedraw = true
@@ -91,8 +91,8 @@ function onResize() {
 function onData(data) {
 	main.dataSource = data
 	rebuild()
-	onMaterial()
-	main.view.toCenter()
+	// onMaterial()
+	// main.view.toCenter()
 }
 
 function onMaterial() {
@@ -113,7 +113,7 @@ function onMaterial() {
 function rebuild() {
 	if(!main.dataSource) return
 	main.tree = main.builder.buildFromSource(main.dataSource)
-	main.view.setTree(main.tree)
+	// main.view.setTree(main.tree)
 }
 
 

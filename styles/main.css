@@ -217,3 +217,54 @@ body {
 	text-align: center;
 	font-size: 12px;
 }
+.cont_preload {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	/*background-color: white;*/
+	background-color: rgba(0,0,0,0.5);	
+	z-index: 99;
+	display: none;
+}
+.cont_preload .popup {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 200px;
+	height: 50px;
+	margin-top: -25px;
+	margin-left: -100px;
+	background-color: gray;
+	border-radius: 25px;
+}
+.cont_preload .popup .preload {
+	position: absolute;
+	width: 150px;
+	height: 10px;
+	background-color: rgba(0,0,0,0.9);
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	border-radius: 5px;
+	overflow: hidden;
+}
+.cont_preload .popup .percent{
+	width: 100%;
+	height: 100%;
+	background-color: green;
+}
+.cont_preload.show{
+	display: block;
+}
+
+.logo{
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 230px;
+	height: 150px;
+	background: url(../images/logo-lamp.png) no-repeat center;
+	background-size: contain;
+}

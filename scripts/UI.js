@@ -64,7 +64,7 @@ UI.DataInput = f.unit(Block, {
 		var file = this.input.files[0]
 		if(!file) return
 
-		this.reader.readAsText(file)
+		this.reader.readAsText(file, 'cp1251')
 	},
 
 	onLoad: function(e) {
