@@ -110,8 +110,9 @@ function ViewInfoIES(){
 			
 		}
 		index = 0
+		// return
 		var len = main.info_ies.lines[0].length
-		max_val = Math.ceil(main.info_ies.lines[0].length/2);
+		max_val = len//Math.ceil(main.info_ies.lines[0].length/2);
 		if(max_val <= 1) {
 			dom.visible(this.obj_elem.btn_prev, false)
 			dom.visible(this.obj_elem.btn_next, false)

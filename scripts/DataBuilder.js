@@ -31,7 +31,7 @@ DataBuilder.prototype = {
 			main.info_ies = false;
 		}
 
-		
+		main.info_ies.lines = lines;
 		
 
 		console.log(lines[0].length, main.info_ies.azim.max,main.info_ies.polar.max);
@@ -50,13 +50,11 @@ DataBuilder.prototype = {
 
 			for(var j = 0; j < row.length; j++) {
 				var r = row[j]
-				if(isNaN(r)) row[j] = 0
 
 				if(minR > r) minR = r
 				if(maxR < r) maxR = r
 			}
 		}
-		main.info_ies.lines = lines;
 
 		var normalR = 1 / maxR
 		for(var i = 0; i < lines.length; i++) {
@@ -403,10 +401,11 @@ DataBuilder.prototype = {
 			arr_data.push(arr_angle.splice(0, num_polar))
 		}
 
+		main.info_ies.lines_1 = arr_data;
 		return this.getArrData(arr_polar_angle, arr_azim_angle, arr_data)
 	},
 	getArrData: function(polar, azim, coor){
-		var arr_data = new Array(polar.length);
+		var arr_data = [];
 		var max_angle_azim = +azim[azim.length-1];
 		var max_angle_polar = +polar[polar.length-1];
 		main.info_ies.azim = {
@@ -421,11 +420,11 @@ DataBuilder.prototype = {
 		}
 
 		for(var i = 0; i < polar.length; i++){
-			var arr = new Array(azim.length);
-			for(var a = 0; a < azim.length; a++){
-				arr[a] = +coor[a][i];
+			arr_data[i] = [];
+			for(var j = 0; j < azim.length; j++){
+				arr_data[i][j] = +coor[j][i]
+				//if(isNaN(arr_data[i][j])) arr_data[i][j] = 0
 			}
-			arr_data[i] = arr;
 		}
 
 		if(max_angle_azim > 0 && max_angle_azim < 360){
@@ -435,7 +434,7 @@ DataBuilder.prototype = {
 				
 				var new_arr = [];
 				if(path%2 == 0){
-					var rever_arr = arr_data[i].slice() //.reverse();
+					var rever_arr = arr_data[i].slice().reverse();
 					var new_path = arr_data[i].slice().concat(rever_arr);
 					for(var p = 0; p < path/2; p++){
 						new_arr = new_arr.concat(new_path)
@@ -454,8 +453,9 @@ DataBuilder.prototype = {
 	},
 	delStr: function(arr){
 		for(var i = 0; i < arr.length; i++){
-			var num = +arr[i];
-			if(arr[i] === '' || (arr[i] != '0' && !num && i > 0)) {
+			var num = !isNaN(parseFloat(arr[i]))
+
+			if(!num){
 				arr.splice(i,1)
 				--i
 			}

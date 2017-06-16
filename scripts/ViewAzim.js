@@ -101,18 +101,17 @@ function ViewAzim(){
 			,   x2 = r * Math.cos(a)
 			,   y2 = r * Math.sin(a)
 
-			var x3 = x2// * Math.cos(b)
+			var x3 = -x2//* Math.cos(b)
 			,   y3 = y2
-			,   z3 = x2 //* Math.sin(b)
+			,   z3 = 0//x2* Math.sin(b)
 
 
 
 			data.push(new THREE.Vector3(x3, y3, z3))
-			//}
 		}
-		/*if(main.info_ies.polar.max == 180){
+		if(main.info_ies.azim.max >= 180){
 			var new_index = (Math.floor(planesCount/2) + index)%(planesCount)
-			for(var i = 0; i < linesCount; i++) {
+			for(var i = linesCount-1; i >= 0 ; i--) {
 				var row = lines[i]
 
 				//for(var j = 0; j < row.length; j++) {
@@ -123,16 +122,35 @@ function ViewAzim(){
 				,   x2 = r * Math.cos(a)
 				,   y2 = r * Math.sin(a)
 
-				var x3 = x2 * Math.cos(b)
+				var x3 = x2 //* Math.cos(b)
 				,   y3 = y2
-				,   z3 = x2 * Math.sin(b)
+				,   z3 = 0//x2 * Math.sin(b)
 
 
 
 				data.push(new THREE.Vector3(x3, y3, z3))
-				//}
 			}
-		}*/
+		} else {
+			for(var i = linesCount-1; i >= 0 ; i--) {
+				var row = lines[i]
+
+				//for(var j = 0; j < row.length; j++) {
+				var a =   finish_angle * i/linesCount - Math.PI/2
+				,   b = 2*Math.PI   * index/totalCount
+
+				var r = row[index]
+				,   x2 = r * Math.cos(a)
+				,   y2 = r * Math.sin(a)
+
+				var x3 = x2//* Math.cos(b)
+				,   y3 = y2
+				,   z3 = 0//x2* Math.sin(b)
+
+
+
+				data.push(new THREE.Vector3(x3, y3, z3))
+			}
+		}
 		// console.log(data)
 		return data
 	};
@@ -157,8 +175,8 @@ function ViewAzim(){
 		}
 		for(var i = 1; i < 10; i++){
 			var a = Math.PI*(i/10);
-			g.moveTo(-150*Math.cos(a), 150*Math.sin(a));
-			g.lineTo(150*Math.cos(a), -150*Math.sin(a));
+			g.moveTo(-150*Math.cos(a),  150*Math.sin(a));
+			g.lineTo( 150*Math.cos(a), -150*Math.sin(a));
 			
 		}
 		
@@ -187,20 +205,19 @@ function ViewAzim(){
 		stage.update();
 	}
 	this.drawLine = function(data, shape){
-		// console.log('data', data);
 		r = 50
 
 		var line = shape.graphics
 		line.beginStroke( '#FF0000' );
-		line.moveTo( data[0].x*r, data[0].y*-r );
+		
 
-		for(var i = 1; i < data.length; i++){
-			line.lineTo( (data[i].x*r), (data[i].y*-r) );
-		}
-		if(main.info_ies.azim.max <= 90) {
-			for(var i = data.length-1; i >= 0; i--){
-				line.lineTo( (-1*data[i].x*r), (data[i].y*-r) );
+		for(var i = 0; i < data.length; i++){
+			if(i == 0) {
+				line.moveTo( data[0].x*r, data[0].y*-r )
+			} else {
+				line.lineTo( (data[i].x*r), (data[i].y*-r) );
 			}
+			
 		}
 
 
