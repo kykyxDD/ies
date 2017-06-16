@@ -20,27 +20,43 @@ DataBuilder.prototype = {
 	colorA: -0.3,
 
 	buildFromSource: function(text) {
-		var lines = this.parseText(text)
+		// var lines = this.parseText(text)
+		var lines;
+		main.info_ies = {};
+		if(text.indexOf('IESNA')>=0){
+			lines = this.parseTextIES(text);
 
-		var linesCount = lines.length
+		} else {
+			lines = this.parseText(text);
+			main.info_ies = false;
+		}
 
-		var data = []
+		
+		
+
+		console.log(lines[0].length, main.info_ies.azim.max,main.info_ies.polar.max);
+
+		var linesCount = lines.length;
+		var data = [];
 
 		var planesCount = lines[0].length
 		var totalCount = planesCount * (this.subdivisions +1)
 
 		var minR =  Infinity
 		,   maxR = -Infinity
+
 		for(var i = 0; i < lines.length; i++) {
 			var row = lines[i]
 
 			for(var j = 0; j < row.length; j++) {
 				var r = row[j]
+				if(isNaN(r)) row[j] = 0
 
 				if(minR > r) minR = r
 				if(maxR < r) maxR = r
 			}
 		}
+		main.info_ies.lines = lines;
 
 		var normalR = 1 / maxR
 		for(var i = 0; i < lines.length; i++) {
@@ -75,12 +91,20 @@ DataBuilder.prototype = {
 		}
 
 		linesInterpolated.push(lines[linesCount -1])
+		console.log('maxR',maxR)
 
 		linesCount = (linesCount - 1) * this.verticals + 1
 		lines = linesInterpolated
 
 		var minY =  Infinity
 		,   maxY = -Infinity
+		
+		var finish_angle = Math.PI/2;
+		if(main.info_ies && main.info_ies.polar){
+			var start_angle = (main.info_ies.polar.max/360)* (2*Math.PI) - Math.PI;
+			finish_angle = start_angle + Math.PI;
+		}
+		
 		for(var i = 0; i < linesCount; i++) {
 			var row = lines[i]
 
@@ -96,7 +120,7 @@ DataBuilder.prototype = {
 			}
 
 			for(var j = 0; j < row.length; j++) {
-				var a =   Math.PI/2 * i/linesCount - Math.PI/2
+				var a =   finish_angle * i/linesCount - Math.PI/2
 				,   b = 2*Math.PI   * j/totalCount
 
 				var r = row[j]
@@ -113,6 +137,15 @@ DataBuilder.prototype = {
 				data[j].push(new THREE.Vector3(x3, y3, z3))
 			}
 		}
+		main.info_ies.minR = minR;
+		main.info_ies.maxR = maxR;
+
+		main.info_ies.minY = minY;
+		main.info_ies.maxY = maxY;
+
+		main.info_ies.data = data
+		main.view_info_ies.updateInfo();
+
 
 		var height = maxY - minY
 
@@ -132,13 +165,13 @@ DataBuilder.prototype = {
 		}
 
 		var radiusCount = this.heights +1 || 1
-		for(var k = 1; k < radiusCount; k++) {
-			lradRoot.add(this.createRadius(k / radiusCount, data, minY, maxY))
-		}
+		// for(var k = 1; k < radiusCount; k++) {
+		// 	lradRoot.add(this.createRadius(k / radiusCount, data, minY, maxY))
+		// }
 
 		root.add(lineRoot)
 		root.add(meshRoot)
-		root.add(lradRoot)
+		// root.add(lradRoot)
 
 		var s = 1.002
 		lineRoot.scale.set(s, s, s)
@@ -308,5 +341,125 @@ DataBuilder.prototype = {
 		}
 
 		return data
+	},
+	parseTextIES: function(text){
+		var lines = text.replace(/,/g, '.').trim().split('\n');
+		var index_last_s = 0;
+		var info = {}
+		//lines.map(function(line){
+		for(var i = 0; i < lines.length; i++){
+			var line = lines[i];
+			var arr_1 = line.split(':');
+			var arr_2 = line.split(']');
+			var key = false;
+			var val = false
+			if(arr_1.length > 1) {
+				key = arr_1[0];
+				val = arr_1.length == 2 ? arr_1[1] : arr_1.slice(1).join(':')
+			} else if(arr_2.length > 1){
+				var arr_3 = arr_2[0].split('[');
+
+				val = arr_2.slice(1).join(':');
+				if(arr_2.length > 1 && arr_3.length >= 1){
+					if(arr_3[0] == ''){
+						key = arr_3[1];
+					} else {
+						key = arr_3[0];
+					}
+				}
+
+				index_last_s = i;
+			} else if(line.indexOf('TILT=') >= 0){
+				var arr = line.split('=');
+				key = 'TILT';
+				val = arr.length == 2 ? arr[1] : arr_1.slice(1).join('=')
+
+				index_last_s = i;
+
+			}
+			if(key && val){
+				info[key.toLowerCase()] = val
+			}
+
+		}
+		main.info_ies = info;
+		var data = lines.slice(index_last_s+1)
+		var index_zero = [];
+		var arr_info = this.delStr(data[0].split(' '))
+		var num_polar = +arr_info[3];
+		var num_azim = +arr_info[4];
+		var arr_angle = []
+
+		for(var i = 2; i < data.length;i++){
+			var arr = data[i].split(' ');
+			arr = this.delStr(arr);
+			arr_angle = arr_angle.concat(arr);
+		}
+		var arr_polar_angle = arr_angle.splice(0, num_polar)
+		var arr_azim_angle = arr_angle.splice(0, num_azim)
+		var arr_data = [];
+
+		for(var i = 0; i < num_azim; i++){
+			arr_data.push(arr_angle.splice(0, num_polar))
+		}
+
+		return this.getArrData(arr_polar_angle, arr_azim_angle, arr_data)
+	},
+	getArrData: function(polar, azim, coor){
+		var arr_data = new Array(polar.length);
+		var max_angle_azim = +azim[azim.length-1];
+		var max_angle_polar = +polar[polar.length-1];
+		main.info_ies.azim = {
+			min: +azim[0],
+			arr: azim,
+			max: max_angle_azim,
+		}
+		main.info_ies.polar = {
+			min: +polar[0],
+			arr: polar,
+			max: max_angle_polar,
+		}
+
+		for(var i = 0; i < polar.length; i++){
+			var arr = new Array(azim.length);
+			for(var a = 0; a < azim.length; a++){
+				arr[a] = +coor[a][i];
+			}
+			arr_data[i] = arr;
+		}
+
+		if(max_angle_azim > 0 && max_angle_azim < 360){
+			var path = Math.floor(360/max_angle_azim);
+			for(var i = 0; i < arr_data.length; i++){
+				var item_arr_str = arr_data[i];
+				
+				var new_arr = [];
+				if(path%2 == 0){
+					var rever_arr = arr_data[i].slice() //.reverse();
+					var new_path = arr_data[i].slice().concat(rever_arr);
+					for(var p = 0; p < path/2; p++){
+						new_arr = new_arr.concat(new_path)
+					}
+				} else {
+					for(var p = 0; p < path; p++){
+						new_arr = new_arr.concat(item_arr_str)
+					}
+				}
+
+				arr_data[i] = new_arr
+			}
+		}
+	
+		return arr_data
+	},
+	delStr: function(arr){
+		for(var i = 0; i < arr.length; i++){
+			var num = +arr[i];
+			if(arr[i] === '' || (arr[i] != '0' && !num && i > 0)) {
+				arr.splice(i,1)
+				--i
+			}
+		}
+		return arr
 	}
 }

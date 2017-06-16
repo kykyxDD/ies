@@ -3,6 +3,7 @@ var main = {}
 main.linesOnly = false
 main.linesVisible = true
 main.rotation = 0
+main.info_ies = false
 
 function init() {
 	main.bus   = new EventEmitter
@@ -13,6 +14,9 @@ function init() {
 	main.view  = new View3(main.ui.viewport)
 	main.timer = new Timer(onTick)
 	main.builder = new DataBuilder
+	main.view_azim = new ViewAzim()
+	main.view_info_ies = new ViewInfoIES()
+
 
 	run()
 }
@@ -38,7 +42,7 @@ function datinit() {
 	main.gui.add(main, 'linesOnly').name('Lines Only').onChange(onMaterial)
 	main.gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
 
-	main.gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
+	// main.gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
 	main.gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
 	main.gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
 

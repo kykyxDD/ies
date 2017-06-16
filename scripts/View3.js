@@ -94,7 +94,7 @@ View3.prototype = {
 		return new THREE.LineSegments(geometry, material)
 	},
 
-	makeRing: function(radius, divisions) {
+	makeRing: function(radius, divisions, a) {
 		var geometry = new THREE.Geometry
 
 		for(var i = 0; i < divisions; i++) {
@@ -178,7 +178,14 @@ View3.prototype = {
 			this.orbit.target.set(0, this.orbit.target.y, 0)
 		}
 
-		this.camera.position.copy(offset).setLength(radius).add(this.orbit.target)
+		this.camera.position.copy(offset).setLength(radius*1.5).add(this.orbit.target)
+
+		// console.log('len',main.view.camera.position.length())
+		// console.log('near',main.view.camera.near)
+		// console.log('far', main.view.camera.far)
+		var len_pos_camera = main.view.camera.position.length();
+
+
 
 		this.orbit.update()
 
