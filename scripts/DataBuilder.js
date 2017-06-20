@@ -47,20 +47,16 @@ DataBuilder.prototype = {
 			// main.info_ies = false;
 		}
 		main.info_ies.lines = lines;
-		this.subdivisions = Math.ceil(64/lines.length)
 
-
-
-		//console.log(lines[0].length, main.info_ies.azim.max,main.info_ies.polar.max);
-
+		this.subdivisions = Math.ceil(64/lines[0].length);
 		var linesCount = lines.length;
 		var data = [];
 
 		var planesCount = lines.length ? lines[0].length : 0
 		var totalCount = planesCount * (this.subdivisions +1)
 
-		var minR =  Infinity
-		,   maxR = -Infinity
+		var minR =  Infinity,
+			maxR = -Infinity
 
 		for(var i = 0; i < lines.length; i++) {
 			var row = lines[i]
@@ -72,7 +68,7 @@ DataBuilder.prototype = {
 				if(maxR < r) maxR = r
 			}
 		}
-		this.verticals = Math.ceil(180/lines[0].length)
+		this.verticals = Math.ceil(180/lines.length);
 
 		var normalR = 1 / maxR
 		for(var i = 0; i < lines.length; i++) {
@@ -89,10 +85,10 @@ DataBuilder.prototype = {
 
 		var linesInterpolated = []
 		for(var i = 0; i < lines.length -1; i++) {
-			var a = i ? lines[i - 1] : lines[0]
-			,   b = lines[i]
-			,   c = i + 1 < linesCount ? lines[i+1] : b
-			,   d = i + 2 < linesCount ? lines[i+2] : c
+			var a = i ? lines[i - 1] : lines[0],
+			    b = lines[i],
+			    c = i + 1 < linesCount ? lines[i+1] : b,
+			    d = i + 2 < linesCount ? lines[i+2] : c
 
 			for(var j = 0; j < this.verticals; j++) {
 				var p = j / this.verticals
@@ -106,14 +102,13 @@ DataBuilder.prototype = {
 			}
 		}
 
-		linesInterpolated.push(lines[linesCount -1])
-		console.log('maxR',maxR)
+		linesInterpolated.push(lines[linesCount -1]);
 
-		linesCount = (linesCount - 1) * this.verticals + 1
-		lines = linesInterpolated
+		linesCount = (linesCount - 1) * this.verticals + 1;
+		lines = linesInterpolated;
 
-		var minY =  Infinity
-		,   maxY = -Infinity
+		var minY =  Infinity,
+			maxY = -Infinity;
 		
 		var finish_angle = Math.PI/2;
 		if(main.info_ies && main.info_ies.polar){
@@ -121,14 +116,14 @@ DataBuilder.prototype = {
 			finish_angle = start_angle + Math.PI;
 		}
 
+		var start_azim = (Math.PI*2)*(parseFloat(main.info_ies.azim.arr[0])/360);
 
-		
 		for(var i = 0; i < linesCount; i++) {
 			var row = lines[i]
 
 			for(var j = row.length -1; j >= 0; j--) {
-				var a = row[j]
-				,   b = row[(j+1)%row.length]
+				var a = row[j],
+				    b = row[(j+1)%row.length]
 
 				for(var k = this.subdivisions -1; k >= 0; k--) {
 					var p = k / this.subdivisions
@@ -139,15 +134,15 @@ DataBuilder.prototype = {
 
 			for(var j = 0; j < row.length; j++) {
 				var a =   finish_angle * i/linesCount - Math.PI/2
-				,   b = 2*Math.PI   * j/totalCount
+				,   b = (2*Math.PI   * j/totalCount + start_azim)%(Math.PI*2)
 
-				var r = row[j]
-				,   x2 = r * Math.cos(a)
-				,   y2 = r * Math.sin(a)
+				var r = row[j],
+				    x2 = r * Math.cos(a),
+				    y2 = r * Math.sin(a)
 
-				var x3 = x2 * Math.cos(b)
-				,   y3 = y2
-				,   z3 = x2 * Math.sin(b)
+				var x3 = x2 * Math.cos(b),
+				    y3 = y2,
+				    z3 = x2 * Math.sin(b)
 
 				if(minY > y3) minY = y3
 				if(maxY < y3) maxY = y3
@@ -388,7 +383,7 @@ DataBuilder.prototype = {
 
 		return lines.map(function(line) { return line.split(';').map(parseFloat) })
 
-		for(var i = 0; i < cols; i++) data.push([])
+		/*for(var i = 0; i < cols; i++) data.push([])
 
 		for(var i = 0; i < rows; i++) {
 			var line = lines[i].split(';').map(parseFloat)
@@ -414,7 +409,7 @@ DataBuilder.prototype = {
 			}
 		}
 
-		return data
+		return data*/
 	},
 	parseTextIES: function(text){
 		var ts = /\w/
@@ -429,13 +424,17 @@ DataBuilder.prototype = {
 		var info = {
 			azim: {
 				min : 0,
+				arr : [0],
 				max : 0
 			},
 			polar : {
 				min : 0,
+				arr : [0],
 				max : 0
-			}
+			},
+			info_data: false
 		}
+		var info_data = {};
 		//lines.map(function(line){
 		for(var i = 0; i < lines.length; i++){
 			var line = lines[i];
@@ -468,17 +467,21 @@ DataBuilder.prototype = {
 
 			}
 			if(key && val){
-				info[key.toLowerCase()] = val
+				info_data[key.toLowerCase()] = val
 			}
-
 		}
-		main.info_ies = info;
+		main.info_ies.info_data = info_data;
 		var data = lines.slice(index_last_s+1)
 		var index_zero = [];
 		if(!data[0]) return [];
 		var arr_info = this.delStr(data[0].split(' '))
-		var num_polar = +arr_info[3];
-		var num_azim = +arr_info[4];
+		var arr_info_1 = this.delStr(data[1].split(' '))
+		var num_polar = parseFloat(arr_info[3]);
+		var num_azim = parseFloat(arr_info[4]);
+		main.info_ies.info_data.light_flow = parseFloat(arr_info[1]);
+		main.info_ies.info_data.polar = num_polar;
+		main.info_ies.info_data.azim = num_azim;
+		main.info_ies.info_data.power = parseFloat(arr_info_1[2]);
 		var arr_angle = []
 
 		for(var i = 2; i < data.length;i++){
@@ -499,17 +502,33 @@ DataBuilder.prototype = {
 	},
 	getArrData: function(polar, azim, coor){
 		var arr_data = [];
-		var max_angle_azim = +azim[azim.length-1];
-		var max_angle_polar = +polar[polar.length-1];
+		var first_angle_azim = parseFloat(azim[0]);
+		var last_angle_azim = parseFloat(azim[azim.length-1]);
+		var sum_azim = last_angle_azim + (360 - first_angle_azim)%360;
+
+		var first_angle_polar = parseFloat(polar[0]);
+		var last_angle_polar = parseFloat(polar[polar.length-1]);
+		var sum_polar = last_angle_polar + (360 - first_angle_polar)%360;
+		
+
+		for(var i = 0; i < azim.length; i++){
+			azim[i] = parseFloat(azim[i])
+		}
+		for(var i = 0; i < polar.length; i++){
+			polar[i] = parseFloat(polar[i])
+		}
+
 		main.info_ies.azim = {
-			min: +azim[0],
+			min: first_angle_azim,
 			arr: azim,
-			max: max_angle_azim,
+			max: last_angle_azim,
+			sum: sum_azim
 		}
 		main.info_ies.polar = {
-			min: +polar[0],
+			min: first_angle_polar,
 			arr: polar,
-			max: max_angle_polar,
+			max: last_angle_polar,
+			sum: sum_polar
 		}
 
 		for(var i = 0; i < polar.length; i++){
@@ -520,8 +539,8 @@ DataBuilder.prototype = {
 			}
 		}
 
-		if(max_angle_azim > 0 && max_angle_azim < 360){
-			var path = Math.floor(360/max_angle_azim);
+		if(sum_azim > 0 && sum_azim < 360){
+			var path = Math.floor(360/sum_azim);
 			for(var i = 0; i < arr_data.length; i++){
 				var item_arr_str = arr_data[i];
 				

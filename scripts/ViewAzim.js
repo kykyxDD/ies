@@ -34,124 +34,80 @@ function ViewAzim(){
 	};
 	this.updateViewAzim = function(index){
 		// console.log('updateViewAzim')
-		container.removeAllChildren()
-
-
-		minR = main.info_ies.minR
-		maxR = main.info_ies.maxR
-		minY = main.info_ies.minY
-		maxY = main.info_ies.maxY
-		var max_r = Math.max(Math.abs(minR), Math.abs(maxR))
-		var max_y = Math.max(Math.abs(minY), Math.abs(maxY))
-		r = Math.max(max_r, max_y)
-		// console.log(r)
-		
-
+		container.removeAllChildren();
 		var data = this.getCoor(index);
-		// var data = this.getCoor1(index)
 		var draw_lines = this.drawLines();
 		var draw_figure = this.drawFigure(data);
 
-		
-		var scale = 1 ; 
-		if(r > canvas.height/2){
-			scale = ((canvas.height/2)-10)/r
-		} else if(r < canvas.height/4){
-			scale = ((canvas.height/2))/r
-		}
-
-		container.scaleX = container.scaleY = scale;
+		stage.update();
+	};
+	this.addViewAzim = function(index){
+		var data = this.getCoor(index);
+		var draw_figure = this.drawFigure(data, '#C78202');
 
 		stage.update();
-
 	};
-	this.getCoor1 = function(index) {
-		var data = main.info_ies.data;
-		var arr = [];
-		for(var i = 0; i< data.length; i++){
-			arr.push(data[i][index])
-		}
-		return arr
+
+	this.setViewAzim = function(index){
+
+		
 	}
+
 	this.getCoor = function(index){
-		var data = []//main.info_ies.data;
-		var lines = main.info_ies.lines
-		/*for(var i = 0; i < main.info_ies.lines.length; i++){
-			//arr.push(main.info_ies.lines[i][index])
-		}
-		console.log('arr',arr)*/
+		var data = [];
+		var lines = main.info_ies.lines;
+
 		var planesCount = lines[0] ? lines[0].length : 0;
 		var totalCount = planesCount;
-
 		var linesCount = lines.length;
 		
 		var finish_angle = Math.PI/2;
 		if(main.info_ies && main.info_ies.polar){
-			var start_angle = (main.info_ies.polar.max/360)* (2*Math.PI) - Math.PI;
+			var start_angle = (main.info_ies.polar.sum/360)* (2*Math.PI) - Math.PI;
 			finish_angle = start_angle + Math.PI;
 		}
+		var start_azim = (Math.PI*2)*(parseFloat(main.info_ies.azim.arr[0])/360);
 		for(var i = 0; i < linesCount; i++) {
-			var row = lines[i]
+			var row = lines[i];
 
-			//for(var j = 0; j < row.length; j++) {
-			var a =   finish_angle * i/linesCount - Math.PI/2
-			,   b = 2*Math.PI   * index/totalCount
+			var a =   finish_angle * i/linesCount - Math.PI/2,
+				b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2);
 
-			var r = row[index]
-			,   x2 = r * Math.cos(a)
-			,   y2 = r * Math.sin(a)
+			var r_0 = row[index],
+				x = r_0 * Math.cos(a),
+				y = r_0 * Math.sin(a);
 
-			var x3 = -x2//* Math.cos(b)
-			,   y3 = y2
-			,   z3 = 0//x2* Math.sin(b)
-
-
-
-			data.push(new THREE.Vector3(x3, y3, z3))
+			data.push(new THREE.Vector2(x, y))
 		}
-		if(main.info_ies.azim.max >= 180){
+		if(main.info_ies.azim.sum >= 180){
 			var new_index = (Math.floor(planesCount/2) + index)%(planesCount)
 			for(var i = linesCount-1; i >= 0 ; i--) {
 				var row = lines[i]
 
-				//for(var j = 0; j < row.length; j++) {
-				var a =   finish_angle * i/linesCount - Math.PI/2
-				,   b = 2*Math.PI   * new_index/totalCount
+				var a =   finish_angle * i/linesCount - Math.PI/2,
+				    b =  (2*Math.PI   * new_index/totalCount + start_azim)%(Math.PI*2)//2*Math.PI   * new_index/totalCount
 
-				var r = row[new_index]
-				,   x2 = r * Math.cos(a)
-				,   y2 = r * Math.sin(a)
+				var r_0 = row[new_index],
+					x = -r_0 * Math.cos(a),
+					y = r_0 * Math.sin(a);
 
-				var x3 = x2 //* Math.cos(b)
-				,   y3 = y2
-				,   z3 = 0//x2 * Math.sin(b)
-
-
-
-				data.push(new THREE.Vector3(x3, y3, z3))
+				data.push(new THREE.Vector2(x, y))
 			}
 		} else {
 			for(var i = linesCount-1; i >= 0 ; i--) {
-				var row = lines[i]
+				var row = lines[i];
 
-				//for(var j = 0; j < row.length; j++) {
-				var a =   finish_angle * i/linesCount - Math.PI/2
-				,   b = 2*Math.PI   * index/totalCount
+				var a =   finish_angle * i/linesCount - Math.PI/2,
+					b =  (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2)
 
-				var r = row[index]
-				,   x2 = r * Math.cos(a)
-				,   y2 = r * Math.sin(a)
+				var r_0 = row[index],
+					x = -r_0 * Math.cos(a),
+					y = r_0 * Math.sin(a)
 
-				var x3 = x2//* Math.cos(b)
-				,   y3 = y2
-				,   z3 = 0//x2* Math.sin(b)
-
-
-
-				data.push(new THREE.Vector3(x3, y3, z3))
+				data.push(new THREE.Vector2(x, y))
 			}
 		}
-		// console.log(data)
+
 		return data
 	};
 	this.drawLines = function(){
@@ -162,7 +118,7 @@ function ViewAzim(){
 		stage.update();
 	};
 	this.drawGrid = function(shape){
-		var g = shape.graphics;//new createjs.Graphics();
+		var g = shape.graphics;
 		g.setStrokeStyle(0.1);
 
 		var max_size_r = Math.max(Math.abs(minR), Math.abs(maxR));
@@ -188,7 +144,6 @@ function ViewAzim(){
 
 		g.endStroke();
 
-
 		this.createTextAngle(shape);
 		return g
 	};
@@ -197,19 +152,17 @@ function ViewAzim(){
  		text.x = 100;
 
 	};
-	this.drawFigure = function(data){
+	this.drawFigure = function(data, color){
 		var shape = new createjs.Shape();
-		var graphics = this.drawLine(data, shape);
-
 		container.addChild(shape)
+		var graphics = this.drawLine(data, shape, color);
 		stage.update();
 	}
-	this.drawLine = function(data, shape){
-		r = 50
+	this.drawLine = function(data, shape, color){
+		var r = 80;
 
-		var line = shape.graphics
-		line.beginStroke( '#FF0000' );
-		
+		var line = shape.graphics;
+		line.beginStroke( color ? color : '#FF0000' );
 
 		for(var i = 0; i < data.length; i++){
 			if(i == 0) {
@@ -217,11 +170,10 @@ function ViewAzim(){
 			} else {
 				line.lineTo( (data[i].x*r), (data[i].y*-r) );
 			}
-			
 		}
 
-
 		line.endStroke();
+		stage.update();
 		return line
 	}
 }
