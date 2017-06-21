@@ -32,12 +32,54 @@ UI.DataInput = f.unit(Block, {
 	ename: 'ui-data-input',
 
 	create: function() {
-		this.input  = dom.input('file', 'file-input', this.element)
+
+		var btn_load_demo = dom.elem('span', 'load_demo', this.element)
+		dom.text(btn_load_demo, 'Load Demo File');
+
+		dom.on('click', btn_load_demo, this.loadStartFile.bind(this));
+
+		var label = dom.elem('label', 'label_file_input', this.element);
+		this.label = label;
+
+
+		var span = dom.elem('span', 'span_input', label)
+		span.innerHTML = 'Upload *.ies File ';
+		this.span = span;
+		this.input  = dom.input('file', 'file-input', label);
 		this.reader = new FileReader
 
 		dom.on('change', this.input,   this)
 		dom.on('load',   this.reader,  this)
-		// dom.on('tap',    this.element, this)
+	},
+
+	xmlhttp: function(){
+		var xmlhttp;
+		try {
+			xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		} catch (e) {
+			try {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			} catch (E) {
+				xmlhttp = false;
+			}
+		}
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+			xmlhttp = new XMLHttpRequest();
+		}
+		return xmlhttp;
+	},
+	loadStartFile: function(){
+		var url = './data/8663.IES';
+		var xhr = this.xmlhttp();
+		xhr.open("GET", url, true);
+		var self = this;
+
+		xhr.onreadystatechange = function(){
+			if (this.readyState == 4 && this.status == 200) {
+				onData(this.responseText)
+			}
+		};
+		xhr.send();
 	},
 
 	handleEvent: function(e) {
@@ -62,7 +104,9 @@ UI.DataInput = f.unit(Block, {
 
 	onChange: function(e) {
 		var file = this.input.files[0]
+
 		if(!file) return
+		this.span.innerHTML = file.name;
 
 		this.reader.readAsText(file, 'cp1251')
 	},

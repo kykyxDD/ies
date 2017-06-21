@@ -32,13 +32,39 @@
 }
 
 
+.dg.main  {
+	width: 300px;
+}
+.dg.main .change {
+	display: inline-block;
+	width: 90px;
+	height: 90px;
+	margin-right: 10px;
+}
+.dg.main .change label {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-color: grey;
+}
+.dg.main .change input {
+	display: none;
+}
+.dg.main .change input:checked + label{
+	background-color: #ff0000;
+}
+
+
 .view3 {
 	position: absolute;
 	left: 0;
 	top: 0;
+	bottom: 0;
+	right: 0;
 	width: 100%;
 	height: 100%;
 	z-index: 0;
+	background-color: #000;
 
 	-webkit-user-select: none;
 	   -moz-user-select: none;
@@ -99,15 +125,52 @@
 	position: absolute;
 	left: 20px;
 	top: 150px;
-	background-color: #bbb;
+	
 	z-index: 1;
 }
-.ui-data-input:hover {
+.ui-data-input .load_demo:hover,
+.ui-data-input label.label_file_input:hover, {
 	background-color: #888;
+}
+
+.load_demo {
+	display: block;
+	height: 64px;
+	width: 259px;
+	background-color: #bbb;
+	font-size: 18px;
+    text-align: center;
+    line-height: 64px;
+    margin-bottom: 10px;
+    cursor: pointer;
 }
 .ui-data-input input[type="file"] {
 	width: 235px;
 	height: 24px;
 	padding: 20px 12px;
 	cursor: pointer;
+	display: none;
+}
+
+.ui-data-input label.label_file_input {
+	width: 235px;
+	height: 24px;
+	padding: 20px 12px;
+	cursor: pointer;
+	display: block;
+	font-size: 18px;
+	text-align: center;
+	background-color: #bbb;
+}
+
+.ui-data-input label span{
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	display: block;
+	width: 100%;
+	white-space: nowrap; /* Запрещаем перенос строк */
+    overflow: hidden; /* Обрезаем все, что не помещается в область */
+
+
+    text-overflow: ellipsis;
 }

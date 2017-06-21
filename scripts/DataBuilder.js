@@ -1,20 +1,19 @@
 function DataBuilder() {
 	this.lineMaterial = new THREE.LineBasicMaterial({
-		// color: 0x000000,
 		vertexColors: THREE.VertexColors
 	})
 
 	this.meshMaterial = new THREE.MeshBasicMaterial({
-		// color: 0x000000,
 		vertexColors: THREE.VertexColors
 	})
-	console.log('cont', main.ui.viewport)
+	// console.log('cont', main.ui.viewport)
 	var cont = dom.elem('div', 'cont_preload', main.ui.viewport)
 	var popup = dom.elem('div', 'popup', cont)
 	var preload = dom.elem('div', 'preload', popup)
 	var percent = dom.elem('div', 'percent', preload)
 	this.cont_preload = cont
 	this.preload = percent
+	this.index_line = 0;
 
 }
 
@@ -178,6 +177,7 @@ DataBuilder.prototype = {
 		this.index = 0;
 		this.height = height
 		
+		
 		/*
 		for(var i = 0; i < planesCount; i++) {
 			var j = (i+1) % planesCount
@@ -195,8 +195,7 @@ DataBuilder.prototype = {
 	},
 	showProgress: function (){
 		var percent = Math.floor((this.index/this.planesCount)*100) +'%';
-		//console.log('percent',percent)
-		//dom.text(this.preload, percent);
+;
 		this.preload.style.width = percent;
 	},
 	loadFigure: function (){
@@ -212,16 +211,18 @@ DataBuilder.prototype = {
 				this.lineRoot.add(this.createPlane(data_i, this.height))
 			}
 			this.meshRoot.add(this.createMesh(data_i, data_j, this.height))
+
 		}
 
 		this.index++;
 
 		if(i < this.planesCount-1){
 			return setTimeout(this.loadFigure.bind(this),0)
-		} else {
+		} else {			
 			return this.completeFigure()
 		}
 	},
+
 	completeFigure: function (){
 		var radiusCount = this.heights +1 || 1
 		// for(var k = 1; k < radiusCount; k++) {
@@ -245,6 +246,10 @@ DataBuilder.prototype = {
 		onMaterial()
 		main.view.toCenter()
 		dom.remclass(this.cont_preload, 'show');
+		var child = this.lineRoot.children[this.index_line];
+		// console.log('child', child.material.wrapRGB)
+		// child.material.color.r = 1
+		// child.material.needsUpdate = true
 
 		return {
 			object: this.root,
@@ -326,6 +331,33 @@ DataBuilder.prototype = {
 
 		return new THREE.Line(geometry, this.lineMaterial)
 	},
+	updateMaterial: function(){
+		var color = main.linesOnly ? 0xffffff : 0x000000;
+		var vertexColors = main.linesOnly ? THREE.VertexColors : 0
+		var visible = main.linesVisible
+		var vis_linesOnly
+
+		var index_asim = (Math.ceil(this.lineRoot.children.length/2) + this.index_line)%this.lineRoot.children.length;
+		for(var l = 0; l < this.lineRoot.children.length; l++){
+			var line = this.lineRoot.children[l];
+			if(l != this.index_line && l != index_asim){
+				line.material.color.set(color);
+			} else {
+				line.material.color.set(0xff0000);
+			}
+			
+			line.material.vertexColors = vertexColors;//main.linesOnly ? THREE.VertexColors : 0
+			line.material.visible = visible;
+			line.material.needsUpdate = true
+		}
+		for(var m = 0; m < this.meshRoot.children.length; m++){
+			var mesh = this.meshRoot.children[m];
+			mesh.material.visible = !main.linesOnly
+		}
+
+		main.view.needsRedraw = true
+
+	},
 
 	createPlane: function(data, height) {
 		var vertices = []
@@ -345,8 +377,12 @@ DataBuilder.prototype = {
 		var geometry = new THREE.BufferGeometry
 		geometry.addAttribute('position', new THREE.Float32Attribute(vertices, 3))
 		geometry.addAttribute('color', new THREE.Float32Attribute(colors, 3))
+		var mater_0 = new THREE.LineBasicMaterial({
+			vertexColors: THREE.VertexColors
+		})
+		var mater_1 = this.lineMaterial
 
-		return new THREE.Line(geometry, this.lineMaterial)
+		return new THREE.Line(geometry, mater_0)//this.lineMaterial)
 	},
 
 	createMesh: function(left, right, height) {
@@ -442,10 +478,7 @@ DataBuilder.prototype = {
 			var arr_2 = line.split(']');
 			var key = false;
 			var val = false
-			if(arr_1.length > 1) {
-				key = arr_1[0];
-				val = arr_1.length == 2 ? arr_1[1] : arr_1.slice(1).join(':')
-			} else if(arr_2.length > 1){
+			 if(arr_2.length > 1){
 				var arr_3 = arr_2[0].split('[');
 
 				val = arr_2.slice(1).join(':');
@@ -458,6 +491,9 @@ DataBuilder.prototype = {
 				}
 
 				index_last_s = i;
+			} else if(arr_1.length > 1) {
+				key = arr_1[0];
+				val = arr_1.length == 2 ? arr_1[1] : arr_1.slice(1).join(':')
 			} else if(line.indexOf('TILT=') >= 0){
 				var arr = line.split('=');
 				key = 'TILT';
@@ -534,8 +570,7 @@ DataBuilder.prototype = {
 		for(var i = 0; i < polar.length; i++){
 			arr_data[i] = [];
 			for(var j = 0; j < azim.length; j++){
-				arr_data[i][j] = +coor[j][i]
-				//if(isNaN(arr_data[i][j])) arr_data[i][j] = 0
+				arr_data[i][j] = parseFloat(coor[j][i])
 			}
 		}
 

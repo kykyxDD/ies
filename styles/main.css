@@ -137,7 +137,7 @@ body {
 	right: 0;
 	width: 280px;
 	color: #fff;
-	padding: 10px 0px;
+	padding: 10px 0px 15px;
 	background-color: rgb(26, 26, 26);
 	font-size: 11px;
 }
@@ -152,8 +152,9 @@ body {
 	display: table-cell;
 }
 .info_ies .info .name {
-	width: 70px;
+	width: 95px;
 	padding-left: 20px;
+	text-transform: uppercase;
 }
 .info_ies .info .val {
 	padding-right: 20px;
@@ -182,12 +183,13 @@ body {
 	vertical-align: middle;
 }
 .info_ies .vis_azim .cont_switch .cont_val {
-	vertical-align: top;
+	vertical-align: middle;
 	padding: 0 10px;
+	position: relative;
 }
 .info_ies .vis_azim .cont_switch .cont_val .range_azim {
-	width: 100%;
-	margin: 0;
+	width: 170px;
+    margin: 0 auto;
 }
 .info_ies .vis_azim .cont_switch .angle {
 	width: 30px;
@@ -196,13 +198,16 @@ body {
 }
 
 .info_ies .vis_azim .val {
-	vertical-align: middle;
+	    /* vertical-align: middle; */
+    display: block;
+    height: 25px;
 }
 .info_ies .vis_azim .angle .icon{
 	width: 12px;
 	height: 12px;
 	padding: 5px;
 	position: relative;
+	cursor: pointer;
 	background-color: rgb(109, 109, 109);
 }
 .info_ies .vis_azim .angle .icon:before {
@@ -226,6 +231,8 @@ body {
 .info_ies .vis_azim .val {
 	text-align: center;
 	font-size: 12px;
+	    line-height: 25px;
+	/*margin-bottom: 10px;*/
 }
 .cont_preload {
 	position: fixed;
@@ -278,9 +285,94 @@ body {
 	background: url(../images/logo-lamp.png) no-repeat center;
 	background-size: contain;
 }
+.cont_list_val {
+	width: 175px;
+	overflow-x: hidden;
+	margin-bottom: 10px;
+	position: absolute;
+	pointer-events: none;
+	height: 30px;
+	top:0;
+}
+.cont_list_val:before ,
+.cont_list_val:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	width: 10px;
+	height: 15px;
+	z-index: 1;
+} 
+.cont_list_val:before  {
 
+	left: 0;
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1a1a1a+0,7db9e8+100&1+0,0+100 */
+	background: -moz-linear-gradient(left, rgba(26,26,26,1) 0%, rgba(125,185,232,0) 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(left, rgba(26,26,26,1) 0%,rgba(125,185,232,0) 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to right, rgba(26,26,26,1) 0%,rgba(125,185,232,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1a1a1a', endColorstr='#007db9e8',GradientType=1 ); /* IE6-9 */
+}
+.cont_list_val:after  {
+	
+	right: 0;
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7db9e8+0,1a1a1a+100&0+0,1+100 */
+	background: -moz-linear-gradient(left, rgba(125,185,232,0) 0%, rgba(26,26,26,1) 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(left, rgba(125,185,232,0) 0%,rgba(26,26,26,1) 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to right, rgba(125,185,232,0) 0%,rgba(26,26,26,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#007db9e8', endColorstr='#1a1a1a',GradientType=1 ); /* IE6-9 */
+}
+.list_val {
 
+}
+.list_val .itm {
+	display: inline-block;
+	width: 30px;
+	text-align: center;
+	position: relative;
+}
+.list_val .itm:before {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 12px;
+	width: 1px;
+	height: 12px;
+	margin-left: -1px;
+	background-color: gray;
+}
 
+.cont_range {
+	width: 100%;
+	height: 10px;
+	position: relative;
+}
+.cont_range .line {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background-color: blue;
+}
+.cont_range .cont_slider{
+	width: 10px;
+	margin-left: -5px;
+	height: 100%;
+	position: absolute;
+	bottom: 0;
+}
+.cont_range .cont_slider:hover .slider {
+	background-color: orange;
+}
+.cont_range .cont_slider .slider {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 50%;
+	height: 100%;
+	background-color: green;
+}
+.cont_range .cont_slider .slider.left {
+	margin-left: -5px;
+}
 
 
 input[type=range] {
@@ -303,14 +395,14 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 input[type=range]::-webkit-slider-thumb {
   box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-  border: 0px solid #000000;
-  height: 10px;
-  width: 5px;
-  border-radius: 3px;
-  background: #6D6D6D;
+  width: 0; 
+  height: 0; 
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 13px solid #6D6D6D;
   cursor: pointer;
   -webkit-appearance: none;
-  margin-top: -3.6px;
+  margin-top: -5px;
 }
 input[type=range]:focus::-webkit-slider-runnable-track {
   background: #0006D0;
@@ -327,9 +419,11 @@ input[type=range]::-moz-range-track {
 }
 input[type=range]::-moz-range-thumb {
   box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-  border: 0px solid #000000;
-  height: 10px;
-  width: 5px;
+  width: 0; 
+  height: 0; 
+    border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 13px solid #6D6D6D;
   border-radius: 3px;
   background: #6D6D6D;
   cursor: pointer;
@@ -358,9 +452,11 @@ input[type=range]::-ms-fill-upper {
 }
 input[type=range]::-ms-thumb {
   box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-  border: 0px solid #000000;
-  height: 10px;
-  width: 5px;
+  width: 0; 
+  height: 0; 
+   border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 13px solid #6D6D6D;
   border-radius: 3px;
   background: #6D6D6D;
   cursor: pointer;

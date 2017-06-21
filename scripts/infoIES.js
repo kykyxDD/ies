@@ -65,9 +65,27 @@ function ViewInfoIES(){
 
 		var light_flow = dom.elem('div', 'info light_flow' ,cont_info );
 		var elem_name_light_flow = dom.elem('div', 'name', light_flow );
-		dom.text(elem_name_light_flow, 'Световой поток');
+		dom.text(elem_name_light_flow, 'Light flow');
 		var elem_val_light_flow = dom.elem('div', 'val', light_flow );
 		this.obj_elem.light_flow = elem_val_light_flow;
+
+		var power = dom.elem('div', 'info light_flow' ,cont_info );
+		var elem_name_power = dom.elem('div', 'name', power );
+		dom.text(elem_name_power, 'Power');
+		var elem_val_power = dom.elem('div', 'val', power );
+		this.obj_elem.power = elem_val_power;
+
+		var polar = dom.elem('div', 'info light_flow' ,cont_info );
+		var elem_name_polar = dom.elem('div', 'name', polar );
+		dom.text(elem_name_polar, 'Number of polar angles');
+		var elem_val_polar = dom.elem('div', 'val', polar );
+		this.obj_elem.polar = elem_val_polar;
+
+		var azim = dom.elem('div', 'info light_flow' ,cont_info );
+		var elem_name_azim = dom.elem('div', 'name', azim );
+		dom.text(elem_name_azim, 'Number of azimuth angles');
+		var elem_val_azim = dom.elem('div', 'val', azim );
+		this.obj_elem.azim = elem_val_azim;
 
 		var cont_vis_azim = dom.elem('div', 'vis_azim', cont);
 		var cont_btn = dom.elem('div', 'cont_switch', cont_vis_azim);
@@ -75,14 +93,18 @@ function ViewInfoIES(){
 		var icon_btn_prev = dom.elem('div', 'icon', btn_prev);
 		var cont_val = dom.elem('div', 'cont_val', cont_btn);
 		var text_vis = dom.elem('div', 'val', cont_val);
+		var cont_list_val = dom.elem('div', 'cont_list_val', cont_val);
+		var list_val = dom.elem('div', 'list_val', cont_list_val);
 		var btn_next = dom.elem('div', 'angle next_angle', cont_btn);
 		var icon_btn_next = dom.elem('div', 'icon', btn_next);
 		var cont_view = dom.elem('div', 'cont_view', cont_vis_azim) ;
 		this.obj_elem.text_azim = text_vis;
 		this.obj_elem.btn_prev = btn_prev
 		this.obj_elem.btn_next = btn_next
+		this.obj_elem.elem_list_val = list_val;
+		this.obj_elem.list_val = [];
 		main.view_azim.init(cont_view);
-		dom.text(this.obj_elem.text_azim, '0');
+		dom.text(this.obj_elem.text_azim, '');
 
 		var range = dom.input('range', 'range_azim', cont_val);
 		range.setAttribute('min', 0);
@@ -90,11 +112,11 @@ function ViewInfoIES(){
 		range.setAttribute('step', 1);
 		this.obj_elem.range = range;
 
+
+		// this.createRange(cont_val)
+
 		this.hiddenPanel()
 
-/*		range.addEventListener('input', function(){
-			console.log('change', this.value)
-		});*/
 
 		range.addEventListener('input', this.changeIndex.bind(this))
 
@@ -126,39 +148,61 @@ function ViewInfoIES(){
 		this.setViewAzim();
 	};
 	this.setViewAzim = function(){
+		
+		var val = this.obj_elem.range.value
+		index = Math.floor(parseFloat(val));
+		main.builder.index_line = index;
 		main.view_azim.updateViewAzim(index);
 
+		if(main.builder.lineRoot && main.builder.meshRoot){
+			main.builder.updateMaterial()	
+		}
+		
+
+
+		var left = Math.floor(-(val*30 + 15) +5) + (157/(max_val))*val + 5 // + (160/(max_val +1))*index ) + 5  
+
+		this.obj_elem.elem_list_val.style.marginLeft = left +'px';
+
 		var text = main.info_ies.azim.arr[index]; //(index+1)+'/'+max_val
-		dom.text(this.obj_elem.text_azim, text);
+		// dom.text(this.obj_elem.text_azim, text);
 		this.viewToGraph();
+
+		// main.builder.highlightLines(index)
 	};
 	
 	
 	this.updateInfo = function(){
 		var data = main.info_ies.info_data
+		var obj = this.obj_elem
 
 		if(!data) {
 			dom.visible(this.obj_elem.cont_info, false)
 		} else {
 			dom.visible(this.obj_elem.cont_info, true)
 
-			dom.text(this.obj_elem.iesna, data.iesna );
-			dom.text(this.obj_elem.test, data.test );
-			dom.text(this.obj_elem.date, data.date || data.data );
-			dom.text(this.obj_elem.manufac, data.manufac );
-			dom.text(this.obj_elem.lumcat, data.lumcat );
-			dom.text(this.obj_elem.luminaire, data.luminaire );
-			dom.text(this.obj_elem.lamp, data.lamp );
-			dom.text(this.obj_elem.other, data.other );
-			dom.text(this.obj_elem.light_flow, data.light_flow );
-			
+			dom.text(obj.iesna, data.iesna );
+			dom.text(obj.test, data.test );
+			dom.text(obj.date, data.date || data.data );
+			dom.text(obj.manufac, data.manufac );
+			dom.text(obj.lumcat, data.lumcat );
+			dom.text(obj.luminaire, data.luminaire );
+			dom.text(obj.lamp, data.lamp );
+			dom.text(obj.other, data.other );
+			dom.text(obj.light_flow, data.light_flow );	
+			dom.text(obj.polar, data.polar)
+			dom.text(obj.azim, data.azim)
+			dom.text(obj.power, data.power )
 		}
-		index = 0
 
 		var len = main.info_ies.lines[0] ? main.info_ies.lines[0].length : 0;
 		max_val = main.info_ies.azim.arr.length -1//len
-		var step = 0;
-		main.view_azim.updateViewAzim(index);
+
+		var index_of = main.info_ies.azim.arr.indexOf(0);
+		index = index_of >= 0 ? index_of : 0;
+		// console.log('index',index)
+		this.obj_elem.range.value = index;
+		this.setViewAzim()
 
 		if(max_val <= 1) {
 			var text = main.info_ies.azim.arr.length > 0 ? 'Axial symmetry' : '';
@@ -167,36 +211,86 @@ function ViewInfoIES(){
 			this.hiddenPanel();
 		} else {
 			this.showPanel();
+			dom.text(this.obj_elem.text_azim, '');
 
 			var ind = main.info_ies.azim.arr.indexOf(90);
 			if(ind >= 0){
 				main.view_azim.addViewAzim(ind);
 			}			
 		}
-		
-		
+	};
+
+	this.createRange = function(par){
+		var self = this;
+		this.mouse_down = false
+
+		var elem = dom.elem('div', 'cont_range', par);
+
+		var line = dom.elem('div','line',elem);
+		var cont_slider = dom.elem('div','cont_slider',line);
+		var slider_0 = dom.elem('div','slider left', cont_slider);
+		var slider_1 = dom.elem('div','slider right', cont_slider);
+
+		cont_slider.addEventListener('mousedown', function(){
+			// console.log('mousedown')
+			self.mouse_down = true;
+		})
+		var body = document.body;
+		body.addEventListener('mousemove', function(){
+			if(self.mouse_down) {
+
+			}
+		});
+
 	};
 	this.hiddenPanel = function(){
 		dom.visible(this.obj_elem.btn_prev, false);
 		dom.visible(this.obj_elem.btn_next, false);
+		dom.visible(this.obj_elem.elem_list_val, false)
 		
 		dom.display(this.obj_elem.range, false);
 	};
 	this.showPanel = function(){
-		dom.visible(this.obj_elem.btn_prev, true)
-		dom.visible(this.obj_elem.btn_next, true)
-		
+		dom.visible(this.obj_elem.btn_prev, true);
+		dom.visible(this.obj_elem.btn_next, true);		
+		dom.visible(this.obj_elem.elem_list_val, true)
 
 		this.obj_elem.range.setAttribute('max', max_val);
-		var index_of = main.info_ies.azim.arr.indexOf(0);
-		index = index_of >= 0 ? index_of : 0;
+		// var index_of = main.info_ies.azim.arr.indexOf(0);
+		// index = index_of >= 0 ? index_of : 0;
+		main.view_azim.updateViewAzim(index);
 		var text = main.info_ies.azim.arr[index]; //(index+1)+'/'+max_val
 		dom.text(this.obj_elem.text_azim, text);
-		this.obj_elem.range.setAttribute('value', index);
-		this.setViewAzim()
+		this.obj_elem.range.value = index;
+		// this.setViewAzim()
+		this.updateListVal()
 		
 		dom.display(this.obj_elem.range, true)
 	};
+	this.removeAllVal = function(){
+		var elem_list = this.obj_elem.elem_list_val;
+		// var list = [];
+		this.obj_elem.list_val = [];
+
+		while (elem_list.firstChild) {
+		    elem_list.removeChild(elem_list.firstChild);
+		}
+	};
+
+	this.updateListVal = function(){
+		var arr = main.info_ies.azim.arr;
+		var elem_list = this.obj_elem.elem_list_val;
+		// var list = [];
+		this.obj_elem.list_val = [];
+		this.removeAllVal();
+		elem_list.style.width = (arr.length*30) + 'px';
+
+		for(var i = 0; i < arr.length; i++){
+			var elem = dom.elem('div', 'itm', elem_list)
+			dom.text(elem, arr[i]);
+			this.obj_elem.list_val.push(elem);
+		}
+	}
 	this.viewToGraph = function(){
 		if(main.info_ies.azim.arr[index] == 0){
 			var ind = main.info_ies.azim.arr.indexOf(90);

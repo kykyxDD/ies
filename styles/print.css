@@ -1,0 +1,40 @@
+@media print {
+	* {-webkit-print-color-adjust:exact;}
+	.ui-data-input {
+		display: none !important; ;
+	}
+	.logo {
+		width: 170px;
+		height: 110px;
+	}
+	.info_ies {
+		font-size: 8px;
+		width: 200px;
+	}
+	.info_ies .vis_azim .cont_switch {
+		padding: 5px;
+	}
+	.info_ies .vis_azim .cont_switch .angle {
+		display: none;
+	}
+	.cont_list_val:after,
+	.cont_list_val:before {
+		display: none
+	}
+	.list_val .itm:before {
+		top: 8px;
+		height: 8px;
+	}
+	.info_ies .vis_azim .val {
+		height: 20px;
+	}
+	.view3 canvas {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+	}
+
+}

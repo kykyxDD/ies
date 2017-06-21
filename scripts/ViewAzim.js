@@ -14,15 +14,8 @@ function ViewAzim(){
 
 
 	this.init = function(cont){
-		// console.log('ViewAzim',cont)
 		dom.append(cont, canvas)
 		stage = new createjs.Stage(canvas);
-
-		var circle = new createjs.Shape();
-		circle.graphics.beginFill("red").drawCircle(0, 0, 50);
-		circle.x = 75;
-		circle.y = 75;
-		// stage.addChild(circle);
 
 		container = new createjs.Container();
 		container.x = canvas.width/2;
@@ -33,7 +26,6 @@ function ViewAzim(){
 		stage.update();
 	};
 	this.updateViewAzim = function(index){
-		// console.log('updateViewAzim')
 		container.removeAllChildren();
 		var data = this.getCoor(index);
 		var draw_lines = this.drawLines();
@@ -43,15 +35,10 @@ function ViewAzim(){
 	};
 	this.addViewAzim = function(index){
 		var data = this.getCoor(index);
-		var draw_figure = this.drawFigure(data, '#C78202');
+		var draw_figure = this.drawFigure(data, '#0000ff');
 
 		stage.update();
 	};
-
-	this.setViewAzim = function(index){
-
-		
-	}
 
 	this.getCoor = function(index){
 		var data = [];
@@ -70,7 +57,7 @@ function ViewAzim(){
 		for(var i = 0; i < linesCount; i++) {
 			var row = lines[i];
 
-			var a =   finish_angle * i/linesCount - Math.PI/2,
+			var a = finish_angle * i/linesCount - Math.PI/2,
 				b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2);
 
 			var r_0 = row[index],
@@ -84,25 +71,26 @@ function ViewAzim(){
 			for(var i = linesCount-1; i >= 0 ; i--) {
 				var row = lines[i]
 
-				var a =   finish_angle * i/linesCount - Math.PI/2,
-				    b =  (2*Math.PI   * new_index/totalCount + start_azim)%(Math.PI*2)//2*Math.PI   * new_index/totalCount
+				var a = finish_angle * i/linesCount - Math.PI/2,
+				    b = (2*Math.PI   * new_index/totalCount + start_azim)%(Math.PI*2)//2*Math.PI   * new_index/totalCount
 
 				var r_0 = row[new_index],
 					x = -r_0 * Math.cos(a),
-					y = r_0 * Math.sin(a);
+					y =  r_0 * Math.sin(a);
 
 				data.push(new THREE.Vector2(x, y))
 			}
 		} else {
+			// console.log('< 180')
 			for(var i = linesCount-1; i >= 0 ; i--) {
 				var row = lines[i];
 
-				var a =   finish_angle * i/linesCount - Math.PI/2,
-					b =  (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2)
+				var a = finish_angle * i/linesCount - Math.PI/2,
+					b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2)
 
 				var r_0 = row[index],
 					x = -r_0 * Math.cos(a),
-					y = r_0 * Math.sin(a)
+					y =  r_0 * Math.sin(a)
 
 				data.push(new THREE.Vector2(x, y))
 			}
@@ -159,10 +147,11 @@ function ViewAzim(){
 		stage.update();
 	}
 	this.drawLine = function(data, shape, color){
-		var r = 80;
-
+		var r = 90;
+		shape.alpha = 0.3;
 		var line = shape.graphics;
 		line.beginStroke( color ? color : '#FF0000' );
+		line.beginFill("#fefe8a");
 
 		for(var i = 0; i < data.length; i++){
 			if(i == 0) {
@@ -171,7 +160,7 @@ function ViewAzim(){
 				line.lineTo( (data[i].x*r), (data[i].y*-r) );
 			}
 		}
-
+		line.endFill();
 		line.endStroke();
 		stage.update();
 		return line

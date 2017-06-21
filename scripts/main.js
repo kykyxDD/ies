@@ -39,8 +39,49 @@ function datinit() {
 
 	// main.gui.add(main.view, 'enableWire').name('Wireframe').onChange(v3redraw).listen()
 
-	main.gui.add(main, 'linesOnly').name('Lines Only').onChange(onMaterial)
-	main.gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
+	// main.gui.add(main, 'linesOnly').name('Lines Only').onChange(onMaterial)
+	// main.gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
+
+// console.log('ui',main.ui.viewport )
+
+	var cont_change = dom.elem('div', 'dg main', main.ui.viewport);
+	// console.log('change',cont_change)
+
+	var cont_all = dom.elem('div', 'change cont_all', cont_change);
+	var input_all = dom.input('radio', 'input_change all', cont_all);
+	input_all.setAttribute('name', 'figure');
+	input_all.id = 'change_all';
+	input_all.checked = true
+	var label_all = dom.elem('label', 'label_change all', cont_all);
+	label_all.setAttribute('for', 'change_all');
+
+	dom.on('change', input_all, function(){
+		onChangeFigure('all');
+	});
+
+	var cont_figure = dom.elem('div', 'change cont_figure', cont_change);
+	var input_figure = dom.input('radio', 'input_change figure', cont_figure);
+	input_figure.setAttribute('name', 'figure');
+	input_figure.id = 'change_figure';
+	var label_figure = dom.elem('label', 'label_change figure', cont_figure);
+	label_figure.setAttribute('for', 'change_figure');
+
+	dom.on('change', input_figure, function(){
+		onChangeFigure('figure');
+	});
+
+	var cont_line = dom.elem('div', 'change cont_line', cont_change);
+	var input_line = dom.input('radio', 'input_change line', cont_line);
+	input_line.setAttribute('name', 'figure');
+	input_line.id = 'change_line';
+	var label_line = dom.elem('label', 'label_change line', cont_line);
+	label_line.setAttribute('for', 'change_line');
+
+	dom.on('change', input_line, function(){
+		onChangeFigure('line');
+	});
+
+
 
 	// main.gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
 	// main.gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
@@ -98,16 +139,23 @@ function onData(data) {
 function onMaterial() {
 	if(!main.tree) return
 
-	main.builder.meshMaterial.visible = !main.linesOnly
-
-	main.builder.lineMaterial.color.set(main.linesOnly ? 0xffffff : 0x000000)
-	main.builder.lineMaterial.vertexColors = main.linesOnly ? THREE.VertexColors : 0
-	main.builder.lineMaterial.visible = main.linesVisible
-
-
-	main.builder.lineMaterial.needsUpdate = true
+	main.builder.updateMaterial()
 
 	main.view.needsRedraw = true
+}
+function onChangeFigure(val){
+	if(val == 'all'){ 
+		main.linesOnly = false
+		main.linesVisible = true
+	} else if(val == 'figure'){ 
+		main.linesOnly = false
+		main.linesVisible = false
+	} else if(val == 'line'){ 
+		main.linesOnly = true
+		main.linesVisible = true
+	} 
+	onMaterial()
+
 }
 
 function rebuild() {
