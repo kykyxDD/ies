@@ -64,12 +64,15 @@
 .dg.main .change input {
 	display: none;
 }
-.dg.main .change input:checked + label{
+.dg.main .change input:checked + label
+{
 	/*background-color: #ff0000;*/
 	border-color: #86eb13;
 }
 
-
+.dg.main .change label:hover{
+	/*background-color: #4C4C4C;*/
+}
 .view3 {
 	position: absolute;
 	left: 0;

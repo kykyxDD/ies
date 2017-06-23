@@ -47,7 +47,7 @@ DataBuilder.prototype = {
 		}
 		main.info_ies.lines = lines;
 
-		this.subdivisions = Math.max(16, Math.ceil(64/lines[0].length));
+		this.subdivisions = Math.max(8, Math.ceil(64/lines[0].length));
 
 		var linesCount = lines.length;
 		var data = [];
@@ -178,21 +178,7 @@ DataBuilder.prototype = {
 		this.index = 0;
 		this.height = height
 		
-		
-		/*
-		for(var i = 0; i < planesCount; i++) {
-			var j = (i+1) % planesCount
-
-			if(i % (this.subdivisions +1) === 0) {
-				lineRoot.add(this.createPlane(data[i], height))
-			}
-			meshRoot.add(this.createMesh(data[i], data[j], height))
-		}*/
-
-
-
-		
-		return this.loadFigure()
+		return this.loadFigure();
 	},
 	showProgress: function (){
 		var percent = Math.floor((this.index/this.planesCount)*100) +'%';
@@ -226,9 +212,7 @@ DataBuilder.prototype = {
 
 	completeFigure: function (){
 		var radiusCount = this.heights +1 || 1
-		// for(var k = 1; k < radiusCount; k++) {
-		// 	lradRoot.add(this.createRadius(k / radiusCount, data, minY, maxY))
-		// }
+
 
 		this.root.add(this.lineRoot)
 		this.root.add(this.meshRoot)
@@ -236,7 +220,6 @@ DataBuilder.prototype = {
 
 		var s = 1.002
 		this.lineRoot.scale.set(s, s, s)
-		// lradRoot.scale.set(s, s, s)
 		var obj = {
 			object: this.root,
 			lineRoot: this.lineRoot,
@@ -247,10 +230,6 @@ DataBuilder.prototype = {
 		onMaterial()
 		main.view.toCenter()
 		dom.remclass(this.cont_preload, 'show');
-		var child = this.lineRoot.children[this.index_line];
-		// console.log('child', child.material.wrapRGB)
-		// child.material.color.r = 1
-		// child.material.needsUpdate = true
 
 		return {
 			object: this.root,
@@ -343,11 +322,13 @@ DataBuilder.prototype = {
 			var line = this.lineRoot.children[l];
 			if(l != this.index_line && l != index_asim){
 				line.material.color.set(color);
+				line.material.vertexColors = vertexColors;
 			} else {
-				line.material.color.set(0xff0000);
+				line.material.color.set(0xff0000);				
+				line.material.vertexColors = 0;
 			}
 			
-			line.material.vertexColors = vertexColors;//main.linesOnly ? THREE.VertexColors : 0
+			//main.linesOnly ? THREE.VertexColors : 0
 			line.material.visible = visible;
 			line.material.needsUpdate = true
 		}
@@ -501,7 +482,7 @@ DataBuilder.prototype = {
 				index_last_s = i;
 
 			}
-			if(line.indexOf('IESNA:LM-63-') >= 0) {
+			if(line.indexOf('IESNA:LM-63') >= 0) {
 				info_data['iesna'] = line.replace('IESNA:LM-63-', '');
 			}
 			if(key && val){

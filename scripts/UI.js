@@ -31,6 +31,7 @@ UI.DataInput = f.unit(Block, {
 	unitName: 'UI_DataInput',
 	ename: 'ui-data-input',
 	demo_file: '8663.IES',
+	text_span: 'Upload *.ies File',
 
 	create: function() {
 
@@ -44,7 +45,7 @@ UI.DataInput = f.unit(Block, {
 
 
 		var span = dom.elem('span', 'span_input', label)
-		span.innerHTML = 'Upload *.ies File ';
+		span.innerHTML = this.text_span;
 		this.span = span;
 		this.input  = dom.input('file', 'file-input', label);
 		this.reader = new FileReader
@@ -70,6 +71,8 @@ UI.DataInput = f.unit(Block, {
 		return xmlhttp;
 	},
 	loadStartFile: function(){
+		this.input.value = '';
+		this.span.innerHTML = this.text_span;
 		var url = './data/'+this.demo_file;
 		var xhr = this.xmlhttp();
 		xhr.open("GET", url, true);

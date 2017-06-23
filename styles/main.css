@@ -168,6 +168,12 @@ body {
 	border-radius: 5px;
 	cursor: pointer;
 }
+.btn_openEdit:hover,
+.btn_down:hover,
+.load_demo:hover,
+.ui-data-input label.label_file_input:hover {
+	background-color: #E4E4E4;
+}
 
 .info_ies .popup {
 	position: fixed;
@@ -251,6 +257,10 @@ body {
 } 
 .info_ies .popup .itm .val input {
 	width: 100%;
+	padding: 3px 5px;
+	border-radius: 3px;
+	height: 20px;
+	border: 1px solid #545454;
 }
 
 .info_ies .cont_info {

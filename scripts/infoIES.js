@@ -217,6 +217,7 @@ function ViewInfoIES(){
 		var arr_data = [];
 		for(var i = 0; i < arr.length; i++){
 			var key = arr[i];
+			if(!data[key] || (key == 'data' && data['date'])) continue
 			if(key == 'iesna') {
 				str = ['IESNA:LM-63-', data[key]].join('')
 			} else if(key != 'tilt'){
@@ -265,8 +266,23 @@ function ViewInfoIES(){
 		var lines = main.info_ies.lines;
 		for(var a = 0; a < len_azim; a++){
 			arr_data[a] = [];
-			for(var p = 0; p < len_polar; p++){			
-				arr_data[a][p] = (lines[p][a]*maxR).toFixed(4)
+			for(var p = 0; p < len_polar; p++){	
+				var num = lines[p][a]*maxR
+				var arr_num = (''+num).split('.')
+				if(arr_num[1] && arr_num[1].length > 4){
+					var fix = parseFloat(arr_num[1].substr(0, 4))
+					if(fix){
+						if((10000 - fix) > 1){
+							num = num.toFixed(4);
+						} else {
+							num = Math.ceil(num);
+						}
+					} else {
+						num = Math.floor(num);
+					}
+				}
+
+				arr_data[a][p] = num
 			}
 			arr_data[a] = arr_data[a].join(' ');
 		}
@@ -343,19 +359,22 @@ function ViewInfoIES(){
 		var obj = this.obj_elem
 
 		if(iesna != data.iesna) {
+			console.log('iesna')
 			save = true
 			main.info_ies.info_data.iesna = iesna
 			dom.text(obj.iesna, iesna );
 		}
 		if(test != data.test) {
+			console.log('test')
 			save = true
 			main.info_ies.info_data.test = test
 			dom.text(obj.test, test );
 		}
 
 		if(data.date && data.date != time){
+			console.log('time')
 			save = true
-			main.info_ies.info_data.data = time 
+			main.info_ies.info_data.date = time 
 			dom.text(obj.data, time)
 		} else if(data.data && data.data != time){
 			save = true
@@ -367,26 +386,31 @@ function ViewInfoIES(){
 		}
 
 		if(manufac != data.manufac) {
+			console.log('manufac')
 			save = true
 			main.info_ies.info_data.manufac = manufac
 			dom.text(obj.manufac, manufac)
 		}		 
 		if(lumcat != data.lumcat) {
+			console.log('lumcat')
 			save = true
 			main.info_ies.info_data.lumcat = lumcat
 			dom.text(obj.lumcat, lumcat)
 		}
 		if(luminaire != data.luminaire) {
+			console.log('luminaire')
 			save = true
 			main.info_ies.info_data.luminaire = luminaire
 			dom.text(obj.luminaire, luminaire)
 		}		 
 		if(lamp != data.lamp) {
+			console.log('lamp')
 			save = true
 			main.info_ies.info_data.lamp = lamp
 			dom.text(obj.lamp, lamp)
 		}
 		if(other != data.other) {
+			console.log('other')
 			save = true
 			main.info_ies.info_data.other = other
 			dom.text(obj.other, other)
@@ -483,7 +507,6 @@ function ViewInfoIES(){
 		var data = main.info_ies.info_data
 		var obj = this.obj_elem
 
-		console.log('updateInfo')
 		dom.visible(this.obj_elem.btn_down, false)
 
 		if(!data) {
