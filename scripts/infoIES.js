@@ -5,87 +5,55 @@ function ViewInfoIES(){
 	var index = 0;
 	var max_val = 0
 
+	var mediaQueryList = window.matchMedia('print');
+	mediaQueryList.addListener(function(mql) {
+		if (mql.matches) {
+			mql.preventDefault();
+			mql.stopPropagation();
+			main.view.renderer.setClearColor(0xffffff);
+			window.onResize();
+			console.log('onResize matches width',main.view.element.offsetWidth, main.view.renderer.domElement.width)
+			console.log('onResize matches height',main.view.element.offsetHeight, main.view.renderer.domElement.height)
+			// window.print();
+		} else {
+			main.view.renderer.setClearColor(main.view.background);
+			window.onResize();
+			console.log('onResize',main.view.element.offsetWidth, main.view.element.offsetHeight)
+		}
+		
+	});
+	// window.onclose = function(){
+	// 	main.view.renderer.setClearColor(main.view.background);
+	// }
+
 	this.init = function(){
+
+		this.visPopupEdit = false
 		var cont = dom.elem('div', 'info_ies', main.ui.viewport)
 		this.obj_elem.parent = cont;
 		var logo = dom.elem('div', 'logo', main.ui.viewport)
-
 		var cont_info = dom.elem('div', 'cont_info', cont);
+
+		this.createPopup(cont, cont_info);
+
+
 		this.obj_elem.cont_info = cont_info;
-		var iesna = dom.elem('div', 'info iesna' ,cont_info );
-		var elem_name_iesna = dom.elem('div', 'name', iesna );
-		dom.text(elem_name_iesna, 'IESNA');
-		var elem_val_iesna = dom.elem('div', 'val', iesna );
-		this.obj_elem.iesna = elem_val_iesna;
+		
 
-		var test = dom.elem('div', 'info test' ,cont_info );
-		var elem_name_test = dom.elem('div', 'name', test );
-		dom.text(elem_name_test, 'TEST');
-		var elem_val_test = dom.elem('div', 'val', test );
-		this.obj_elem.test = elem_val_test;
+		this.obj_elem.iesna = createElemInfo('iesna', 'IESNA:LM-63-');
+		this.obj_elem.test = createElemInfo('test');
+		this.obj_elem.data = createElemInfo('data');
+		this.obj_elem.manufac = createElemInfo('manufac');
+		this.obj_elem.lumcat = createElemInfo('lumcat');
+		this.obj_elem.luminaire = createElemInfo('luminaire');
+		this.obj_elem.lamp = createElemInfo('lamp');
+		this.obj_elem.other = createElemInfo('other');
 
-		var date = dom.elem('div', 'info date' ,cont_info );
-		var elem_name_date = dom.elem('div', 'name', date );
-		dom.text(elem_name_date, 'DATE');
-		var elem_val_date = dom.elem('div', 'val', date );
-		this.obj_elem.date = elem_val_date;
+		// this.obj_elem.light_flow = createElemInfo('Light flow')
 
-		var manufac = dom.elem('div', 'info manufac' ,cont_info );
-		var elem_name_manufac = dom.elem('div', 'name', manufac );
-		dom.text(elem_name_manufac, 'MANUFAC');
-		var elem_val_manufac = dom.elem('div', 'val', manufac );
-		this.obj_elem.manufac = elem_val_manufac;
-
-
-
-		var lumcat = dom.elem('div', 'info lumcat' ,cont_info );
-		var elem_name_lumcat = dom.elem('div', 'name', lumcat );
-		dom.text(elem_name_lumcat, 'LUMCAT');
-		var elem_val_lumcat = dom.elem('div', 'val', lumcat );
-		this.obj_elem.lumcat = elem_val_lumcat;
-
-		var luminaire = dom.elem('div', 'info luminaire' ,cont_info );
-		var elem_name_luminaire = dom.elem('div', 'name', luminaire );
-		dom.text(elem_name_luminaire, 'LUMINAIRE');
-		var elem_val_luminaire = dom.elem('div', 'val', luminaire );
-		this.obj_elem.luminaire = elem_val_luminaire;
-
-		var lamp = dom.elem('div', 'info lamp' ,cont_info );
-		var elem_name_lamp = dom.elem('div', 'name', lamp );
-		dom.text(elem_name_lamp, 'LAMP');
-		var elem_val_lamp = dom.elem('div', 'val', lamp );
-		this.obj_elem.lamp = elem_val_lamp;
-
-
-		var other = dom.elem('div', 'info other' ,cont_info );
-		var elem_name_other = dom.elem('div', 'name', other );
-		dom.text(elem_name_other, 'OTHER');
-		var elem_val_other = dom.elem('div', 'val', other );
-		this.obj_elem.other = elem_val_other;
-
-		var light_flow = dom.elem('div', 'info light_flow' ,cont_info );
-		var elem_name_light_flow = dom.elem('div', 'name', light_flow );
-		dom.text(elem_name_light_flow, 'Light flow');
-		var elem_val_light_flow = dom.elem('div', 'val', light_flow );
-		this.obj_elem.light_flow = elem_val_light_flow;
-
-		var power = dom.elem('div', 'info light_flow' ,cont_info );
-		var elem_name_power = dom.elem('div', 'name', power );
-		dom.text(elem_name_power, 'Power');
-		var elem_val_power = dom.elem('div', 'val', power );
-		this.obj_elem.power = elem_val_power;
-
-		var polar = dom.elem('div', 'info light_flow' ,cont_info );
-		var elem_name_polar = dom.elem('div', 'name', polar );
-		dom.text(elem_name_polar, 'Number of polar angles');
-		var elem_val_polar = dom.elem('div', 'val', polar );
-		this.obj_elem.polar = elem_val_polar;
-
-		var azim = dom.elem('div', 'info light_flow' ,cont_info );
-		var elem_name_azim = dom.elem('div', 'name', azim );
-		dom.text(elem_name_azim, 'Number of azimuth angles');
-		var elem_val_azim = dom.elem('div', 'val', azim );
-		this.obj_elem.azim = elem_val_azim;
+		this.obj_elem.power = createElemInfo('power');
+		this.obj_elem.polar = createElemInfo('polar', 'Number of polar angles');
+		this.obj_elem.azim =  createElemInfo('polar', 'Number of azimuth angles');
 
 		var cont_vis_azim = dom.elem('div', 'vis_azim', cont);
 		var cont_btn = dom.elem('div', 'cont_switch', cont_vis_azim);
@@ -112,9 +80,6 @@ function ViewInfoIES(){
 		range.setAttribute('step', 1);
 		this.obj_elem.range = range;
 
-
-		// this.createRange(cont_val)
-
 		this.hiddenPanel()
 
 
@@ -127,7 +92,334 @@ function ViewInfoIES(){
 			self.nextAngle();
 		});
 
+		function createElemInfo(itm , text){
+			var elem = dom.elem('div', 'info '+itm ,cont_info );
+			var name = dom.div('name', elem );
+			dom.text(name, text ? text : itm);
+			var val = dom.div('val', elem );
+			
+			return val
+		}
+
+		this.createInfoFooter()
+
 	};
+
+	
+
+	this.createInfoFooter = function(){
+		var par = main.ui.viewport;
+		var elem = dom.div('info_footer', par);
+		var elem_programs = dom.div("link_program", elem);
+		var name_programs = dom.div('name', elem_programs)
+		dom.text(name_programs, 'About the program:');
+		var val_programs = dom.div('val', elem_programs);
+		var link = dom.a('http://ies.sharakshane.com/', 'link', val_programs );
+		dom.text(link, 'http://ies.sharakshane.com/')
+
+		var elem_author = dom.div('list_author', elem);
+		var name_link = dom.div('name', elem_author);
+		dom.text(name_link, 'Authors:');
+		var val_author = dom.div('val', elem_author);
+		var autor_0 = dom.div('itm_author', val_author);
+		dom.html(autor_0, 'Anton Sharakshane,  Ph.D., Kotel&rsquo;nikov Institute of Radio-engineering and Electronics of Russian Academy of Sciences, anton.sharakshane@gmail.com, CV ' )
+		var autor_1 = dom.div('itm_author', val_author);
+		dom.html(autor_1, 'Sergey Gnedoy, gnedoy@gmail.com');
+	};
+
+	this.createPopup = function(cont, cont_info){
+
+		var btn_edit = dom.div('btn_openEdit', cont_info)
+		var btn_down = dom.div('btn_down', cont_info)
+		dom.visible(btn_down, false)
+
+		dom.on('click', btn_down, this.prepareFiles.bind(this))
+
+
+		this.obj_elem.btn_edit = btn_edit;
+		this.obj_elem.btn_down = btn_down
+
+		dom.display(this.obj_elem.btn_edit, false);
+
+		dom.on('click', btn_edit, this.showPopup.bind(this));
+
+		var popup = dom.div('popup', cont);
+
+		var content = dom.div('content', popup);
+		var itm_popup = dom.div('itm_popup', content);
+		var body = dom.div('body', itm_popup);
+		var cont_btn = dom.div('cont_btn', itm_popup);
+
+		var btn_save = dom.div('btn save', cont_btn);
+		dom.text(btn_save, 'save');
+
+		var btn_cancel = dom.div('btn cancel', cont_btn);
+		dom.text(btn_cancel, 'cancel');
+
+		dom.on('click', btn_cancel , this.hidePopup.bind(this))
+
+		dom.on('click', btn_save, this.saveInfo.bind(this))
+
+
+		var par = body
+
+		var obj_iesna = itmElem('iesna', 'IESNA:LM-63-');
+		var obj_test = itmElem('test');
+		var obj_data = itmElem('data');
+		var obj_manufac = itmElem('manufac');
+		var obj_lumcat = itmElem('lumcat');
+		var obj_luminaire = itmElem('luminaire');
+		var obj_lamp = itmElem('lamp');
+		var obj_other = itmElem('other');
+		// var obj_light_flow = itmElem('light_flow');
+
+		// var obj_polar = itmElem('polar');
+		// var obj_azim = itmElem('azim');
+		// var obj_power = itmElem('power');
+
+		this.obj_elem.popup = {};
+		this.obj_elem.popup.elem = popup;
+		this.obj_elem.popup.content = body;
+
+		this.obj_elem.popup.iesna = obj_iesna;
+		this.obj_elem.popup.test = obj_test;
+		this.obj_elem.popup.data = obj_data;
+		this.obj_elem.popup.manufac = obj_manufac;
+		this.obj_elem.popup.lumcat = obj_lumcat;
+		this.obj_elem.popup.luminaire = obj_luminaire;
+		this.obj_elem.popup.lamp = obj_lamp;
+		this.obj_elem.popup.other = obj_other;
+		// this.obj_elem.popup.light_flow = obj_light_flow;
+
+		function itmElem(val, text){
+			var elem_iesna = dom.elem('div', 'itm' ,par);
+			var name = dom.elem('div', 'name', elem_iesna);
+			var cont_val = dom.elem('div', 'val', elem_iesna);
+			var input = dom.input('text', '', cont_val)
+			dom.text(name, text ? text : val);
+			input.setAttribute('name', val);
+
+			return input
+		}
+
+	};
+
+	this.prepareFiles = function(){
+
+		var text = this.getNewInfoFile()
+		this.downloadFiles(text)
+	};
+	this.getNewInfoFile = function(){
+
+		var arr = ['iesna', 'test', 'data', 'manufac', 'lumcat', 'luminaire', 'lampcat', 'lamp', 'other', 'more', 'tilt']
+
+		var data = main.info_ies.info_data
+		var arr_data = [];
+		for(var i = 0; i < arr.length; i++){
+			var key = arr[i];
+			if(key == 'iesna') {
+				str = ['IESNA:LM-63-', data[key]].join('')
+			} else if(key != 'tilt'){
+				str = ['['+key.toUpperCase()+']', data[key]].join(' ');
+			} else {
+				str = [ key.toUpperCase(), data[key]].join('=');
+			}
+			arr_data.push(str);
+		}
+
+		for(var key in data){
+			if(key == 'line' || key == 'light_flow' || key == 'power' || key == 'azim' || key == 'polar') continue
+			if(arr.indexOf(key) >= 0) continue
+			var str = '';
+			
+			if(key == 'iesna') {
+				str = ['IESNA:LM-63-', data[key]].join('')
+			} else if(key != 'tilt'){
+				str = ['['+key.toUpperCase()+']', data[key]].join(' ');
+			} else {
+				str = [ key.toUpperCase(), data[key]].join('=');
+			}
+			arr_data.splice(-2, 0, str);
+		}
+		arr_data.push(data.line[0].join(' '))
+		arr_data.push(data.line[1].join(' '))
+
+
+
+		arr_data.push(main.info_ies.polar.arr.join(' '))
+		arr_data.push(main.info_ies.azim.arr.join(' '))
+		var str_data = this.getArrayData();
+		arr_data.push(str_data)
+		var data_sould = arr_data.join('\n')
+		return data_sould
+	};
+
+	this.getArrayData = function(){
+		var len_polar = main.info_ies.polar.arr.length;
+		var len_azim = main.info_ies.azim.arr.length;
+		var arr_data = [];
+		var minR = main.info_ies.minR;
+		var maxR = main.info_ies.maxR;
+		var diff = maxR - minR;
+
+		var lines = main.info_ies.lines;
+		for(var a = 0; a < len_azim; a++){
+			arr_data[a] = [];
+			for(var p = 0; p < len_polar; p++){			
+				arr_data[a][p] = (lines[p][a]*maxR).toFixed(4)
+			}
+			arr_data[a] = arr_data[a].join(' ');
+		}
+		return arr_data.join('\n')
+	};
+
+	this.downloadFiles = function(text){
+		var file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
+		// console.log(file_name)
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+		element.setAttribute('download', 'new '+ file_name);
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
+
+	}
+
+	this.openEditPopup = function(){
+		var data = main.info_ies.info_data
+		var elem_popup = this.obj_elem.popup;
+
+
+		var par = this.obj_elem.popup.content;
+
+		
+		elem_popup.iesna.value = data.iesna ? data.iesna : '';
+		elem_popup.test.value = data.test ? data.test : '';
+		var time = data.date || data.data;
+		elem_popup.data.value = time ? time : '' ;
+		elem_popup.manufac.value = data.manufac ? data.manufac : '';
+		elem_popup.lumcat.value = data.lumcat ? data.lumcat : '';
+		elem_popup.luminaire.value = data.luminaire ? data.luminaire : '';
+		elem_popup.lamp.value = data.lamp ? data.lamp : '';
+		elem_popup.other.value = data.other ? data.other : '';
+		// elem_popup.light_flow.value = data.light_flow ? data.light_flow : '';
+
+		// var obj_polar = itmElem();
+		// dom.text(obj_polar.name, 'polar');
+		// obj_polar.input.value = data.polar ? data.polar : '';
+		
+		// var obj_azim = itmElem();
+		// dom.text(obj_azim.name, 'azim');
+		// obj_azim.input.value = data.azim ? data.azim : '';
+		
+		// var obj_power = itmElem();
+		// dom.text(obj_power.name, 'power');
+		// obj_power.input.value = data.power ? data.power : '';
+
+		
+	};
+
+	this.saveInfo = function(){
+
+		var data = main.info_ies.info_data;
+		var elem_popup = this.obj_elem.popup;
+
+
+		var iesna = elem_popup.iesna.value
+		var test = elem_popup.test.value
+		var time = elem_popup.data.value
+		var manufac = elem_popup.manufac.value
+		var lumcat = elem_popup.lumcat.value
+		var luminaire = elem_popup.luminaire.value
+		var lamp = elem_popup.lamp.value
+		var other = elem_popup.other.value
+		// var light_flow = elem_popup.light_flow.value
+
+		var save = false;
+		var obj = this.obj_elem
+
+		if(iesna != data.iesna) {
+			save = true
+			main.info_ies.info_data.iesna = iesna
+			dom.text(obj.iesna, iesna );
+		}
+		if(test != data.test) {
+			save = true
+			main.info_ies.info_data.test = test
+			dom.text(obj.test, test );
+		}
+
+		if(data.date && data.date != time){
+			save = true
+			main.info_ies.info_data.data = time 
+			dom.text(obj.data, time)
+		} else if(data.data && data.data != time){
+			save = true
+			main.info_ies.info_data.data = time 
+			dom.text(obj.data, time)
+		} else if(!data.date && !data.data && time) {
+			main.info_ies.info_data.data = time
+			dom.text(obj.data, time)
+		}
+
+		if(manufac != data.manufac) {
+			save = true
+			main.info_ies.info_data.manufac = manufac
+			dom.text(obj.manufac, manufac)
+		}		 
+		if(lumcat != data.lumcat) {
+			save = true
+			main.info_ies.info_data.lumcat = lumcat
+			dom.text(obj.lumcat, lumcat)
+		}
+		if(luminaire != data.luminaire) {
+			save = true
+			main.info_ies.info_data.luminaire = luminaire
+			dom.text(obj.luminaire, luminaire)
+		}		 
+		if(lamp != data.lamp) {
+			save = true
+			main.info_ies.info_data.lamp = lamp
+			dom.text(obj.lamp, lamp)
+		}
+		if(other != data.other) {
+			save = true
+			main.info_ies.info_data.other = other
+			dom.text(obj.other, other)
+		}
+		// if(parseFloat(light_flow) != data.light_flow) {
+		// 	save = true
+		// 	console.log('light_flow')
+		// }
+
+		console.log('save', save)
+
+		if(save) {
+			dom.visible(this.obj_elem.btn_down, true)
+		}
+
+		this.closePopup()
+	}
+
+
+
+	this.showPopup = function(){
+		if(!main.info_ies.info_data) return
+		this.visPopupEdit = true
+		dom.display(this.obj_elem.popup.elem, true);
+		this.openEditPopup()
+	};
+
+	this.hidePopup = function(){
+		this.visPopupEdit = false
+		this.closePopup();
+		// dom.display(this.obj_elem.popup.elem, false);
+	};
+
 	this.prevAngle = function(){
 		if(index - 1 < 0) return
 		index -= 1;
@@ -164,32 +456,52 @@ function ViewInfoIES(){
 
 		this.obj_elem.elem_list_val.style.marginLeft = left +'px';
 
-		var text = main.info_ies.azim.arr[index]; //(index+1)+'/'+max_val
+		// var text = main.info_ies.azim.arr[index]; //(index+1)+'/'+max_val
 		// dom.text(this.obj_elem.text_azim, text);
 		this.viewToGraph();
-
-		// main.builder.highlightLines(index)
 	};
-	
+
+	this.openPopup = function(){
+
+	};
+	this.closePopup = function(){
+		var elem_popup = this.obj_elem.popup;
+		
+		elem_popup.iesna.value = '';
+		elem_popup.test.value = '';
+		elem_popup.data.value = '';
+		elem_popup.manufac.value = '';
+		elem_popup.lumcat.value = '';
+		elem_popup.luminaire.value = '';
+		elem_popup.lamp.value = '';
+		elem_popup.other.value = '';
+
+		dom.display(this.obj_elem.popup.elem, false);
+	}
 	
 	this.updateInfo = function(){
 		var data = main.info_ies.info_data
 		var obj = this.obj_elem
 
+		console.log('updateInfo')
+		dom.visible(this.obj_elem.btn_down, false)
+
 		if(!data) {
-			dom.visible(this.obj_elem.cont_info, false)
+			dom.display(this.obj_elem.cont_info, false)
+			dom.display(this.obj_elem.btn_edit, false)
 		} else {
-			dom.visible(this.obj_elem.cont_info, true)
+			dom.display(this.obj_elem.cont_info, true)
+			dom.display(this.obj_elem.btn_edit, true)
 
 			dom.text(obj.iesna, data.iesna );
 			dom.text(obj.test, data.test );
-			dom.text(obj.date, data.date || data.data );
+			dom.text(obj.data, data.date || data.data );
 			dom.text(obj.manufac, data.manufac );
 			dom.text(obj.lumcat, data.lumcat );
 			dom.text(obj.luminaire, data.luminaire );
 			dom.text(obj.lamp, data.lamp );
 			dom.text(obj.other, data.other );
-			dom.text(obj.light_flow, data.light_flow );	
+			// dom.text(obj.light_flow, data.light_flow );	
 			dom.text(obj.polar, data.polar)
 			dom.text(obj.azim, data.azim)
 			dom.text(obj.power, data.power )
@@ -220,29 +532,6 @@ function ViewInfoIES(){
 		}
 	};
 
-	this.createRange = function(par){
-		var self = this;
-		this.mouse_down = false
-
-		var elem = dom.elem('div', 'cont_range', par);
-
-		var line = dom.elem('div','line',elem);
-		var cont_slider = dom.elem('div','cont_slider',line);
-		var slider_0 = dom.elem('div','slider left', cont_slider);
-		var slider_1 = dom.elem('div','slider right', cont_slider);
-
-		cont_slider.addEventListener('mousedown', function(){
-			// console.log('mousedown')
-			self.mouse_down = true;
-		})
-		var body = document.body;
-		body.addEventListener('mousemove', function(){
-			if(self.mouse_down) {
-
-			}
-		});
-
-	};
 	this.hiddenPanel = function(){
 		dom.visible(this.obj_elem.btn_prev, false);
 		dom.visible(this.obj_elem.btn_next, false);
@@ -256,10 +545,9 @@ function ViewInfoIES(){
 		dom.visible(this.obj_elem.elem_list_val, true)
 
 		this.obj_elem.range.setAttribute('max', max_val);
-		// var index_of = main.info_ies.azim.arr.indexOf(0);
-		// index = index_of >= 0 ? index_of : 0;
+
 		main.view_azim.updateViewAzim(index);
-		var text = main.info_ies.azim.arr[index]; //(index+1)+'/'+max_val
+		var text = main.info_ies.azim.arr[index];
 		dom.text(this.obj_elem.text_azim, text);
 		this.obj_elem.range.value = index;
 		// this.setViewAzim()
@@ -269,7 +557,6 @@ function ViewInfoIES(){
 	};
 	this.removeAllVal = function(){
 		var elem_list = this.obj_elem.elem_list_val;
-		// var list = [];
 		this.obj_elem.list_val = [];
 
 		while (elem_list.firstChild) {
@@ -280,7 +567,6 @@ function ViewInfoIES(){
 	this.updateListVal = function(){
 		var arr = main.info_ies.azim.arr;
 		var elem_list = this.obj_elem.elem_list_val;
-		// var list = [];
 		this.obj_elem.list_val = [];
 		this.removeAllVal();
 		elem_list.style.width = (arr.length*30) + 'px';

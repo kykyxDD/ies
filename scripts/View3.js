@@ -180,12 +180,7 @@ View3.prototype = {
 
 		this.camera.position.copy(offset).setLength(radius*1.5).add(this.orbit.target)
 
-		// console.log('len',main.view.camera.position.length())
-		// console.log('near',main.view.camera.near)
-		// console.log('far', main.view.camera.far)
 		var len_pos_camera = main.view.camera.position.length();
-
-
 
 		this.orbit.update()
 
@@ -244,10 +239,10 @@ View3.prototype = {
 		// this.camera.top    = -300
 		// this.camera.bottom =  300
 
-		this.elementOffset = dom.offset(this.element)
-		this.toCenter()
+		this.elementOffset = dom.offset(this.element);
+		this.toCenter();
 
-		this.needsRedraw = true
+		this.needsRedraw = true;
 	},
 
 	updateRay: function() {

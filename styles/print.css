@@ -3,13 +3,27 @@
 	.ui-data-input {
 		display: none !important; ;
 	}
+	.dg.main {
+	    bottom: 80px;
+	}
+	.info_footer {
+		display: block;
+	}
 	.logo {
 		width: 170px;
 		height: 110px;
 	}
+	.ui .viewport {
+		background-color: #fff;
+	}
 	.info_ies {
+		background-color: #fff;
 		font-size: 8px;
 		width: 200px;
+		color: #000;
+		background-color: #fff;
+		border-left: 1px solid;
+		border-bottom: 1px solid;
 	}
 	.info_ies .vis_azim .cont_switch {
 		padding: 5px;
@@ -17,6 +31,13 @@
 	.info_ies .vis_azim .cont_switch .angle {
 		display: none;
 	}
+	.btn_openEdit {
+		display: none;
+	}
+	.cont_list_val {
+		margin-left: -3px;
+	}
+
 	.cont_list_val:after,
 	.cont_list_val:before {
 		display: none
@@ -29,12 +50,13 @@
 		height: 20px;
 	}
 	.view3 canvas {
-		position: absolute;
+		/*position: absolute;
 		top: 0;
 		left: 0;
 		right: 0;
 		bottom: 0;
-		margin: auto;
+		margin: auto;*/
+		background-color: #fff !important;
 	}
 
 }

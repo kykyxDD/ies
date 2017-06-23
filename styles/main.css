@@ -141,6 +141,121 @@ body {
 	background-color: rgb(26, 26, 26);
 	font-size: 11px;
 }
+.btn_openEdit{
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	background-color: #BBBBBB;
+	left: -50px;
+	background-image: url(../images/icon_edit.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 55%;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.btn_down {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	background-color: #BBBBBB;
+	top: 50px;
+	left: -50px;
+	background-image: url(../images/icon_down.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 65%;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.info_ies .popup {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(1,1,1,0.5);
+	z-index: 2;
+	display: none;
+}
+.info_ies .popup .content {
+	position: absolute;
+	width: 340px;
+	/*height: 350px;*/
+	
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	display: table;
+}
+.info_ies .popup .itm_popup {
+	/*display: block;*/
+	margin: auto 0;
+	width: 100%;
+	/*padding: 20px;*/
+	background-color: grey;
+	border-radius: 5px;
+}
+.info_ies .popup .body {
+	margin: 0 20px 0;
+    padding-top: 20px;
+}
+.info_ies .popup .cont_btn {
+	margin: 10px 20px 0;
+	padding-bottom: 20px;
+	/*padding: 20px 20px 0 20px;*/
+}
+.info_ies .popup .btn {
+	display: inline-block;
+	cursor: pointer;
+}
+.info_ies .popup .cont_btn {
+	text-align: center;
+	margin-top: 15px;
+}
+.info_ies .popup .cont_btn .btn {
+	width: 90px;
+	font-size: 12px;
+	font-weight: bold;
+	height: 25px;
+	line-height: 25px;
+	border-radius: 5px;
+	text-transform: uppercase;
+}
+
+.info_ies .popup .cont_btn .btn.save{
+	background-color: green;
+	margin-right: 10px;
+}
+.info_ies .popup .cont_btn .btn.cancel{
+	background-color: orange;
+}
+.info_ies .popup .itm {
+	width: 100%;
+	margin-bottom: 7px;
+}
+.info_ies .popup .itm > div{
+	display: inline-block;
+}
+.info_ies .popup .itm .name {
+	width: 100px;
+	text-transform: uppercase;
+}
+.info_ies .popup .itm .val {
+	width: 190px;
+} 
+.info_ies .popup .itm .val input {
+	width: 100%;
+}
+
+.info_ies .cont_info {
+	position: relative;
+}
 .info_ies .info {
 	width: 100%;
 	padding: 5px 0px;
@@ -466,4 +581,33 @@ input[type=range]:focus::-ms-fill-lower {
 }
 input[type=range]:focus::-ms-fill-upper {
   background: #0006D0;
+}
+
+.info_footer {
+	position: absolute;
+	color: #fff;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	z-index: 10;
+	display: none;
+}
+.info_footer .link_program {
+	margin-bottom: 10px;
+}
+.info_footer .link_program > div,
+.info_footer .list_author > div {
+	display: table-cell;
+}
+.info_footer .name {
+	width: 100px;
+	padding-right: 10px;
+    text-align: right;
+}
+.info_footer .list_author .itm_author {
+	margin-bottom: 5px;
+}
+
+.info_footer a {
+	color: #fff;
 }

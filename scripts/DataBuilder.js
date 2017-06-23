@@ -47,7 +47,8 @@ DataBuilder.prototype = {
 		}
 		main.info_ies.lines = lines;
 
-		this.subdivisions = Math.ceil(64/lines[0].length);
+		this.subdivisions = Math.max(16, Math.ceil(64/lines[0].length));
+
 		var linesCount = lines.length;
 		var data = [];
 
@@ -195,7 +196,7 @@ DataBuilder.prototype = {
 	},
 	showProgress: function (){
 		var percent = Math.floor((this.index/this.planesCount)*100) +'%';
-;
+
 		this.preload.style.width = percent;
 	},
 	loadFigure: function (){
@@ -474,11 +475,11 @@ DataBuilder.prototype = {
 		//lines.map(function(line){
 		for(var i = 0; i < lines.length; i++){
 			var line = lines[i];
-			var arr_1 = line.split(':');
+			// var arr_1 = line.split(':');
 			var arr_2 = line.split(']');
 			var key = false;
-			var val = false
-			 if(arr_2.length > 1){
+			var val = false;
+			if(arr_2.length > 1){
 				var arr_3 = arr_2[0].split('[');
 
 				val = arr_2.slice(1).join(':');
@@ -491,16 +492,17 @@ DataBuilder.prototype = {
 				}
 
 				index_last_s = i;
-			} else if(arr_1.length > 1) {
-				key = arr_1[0];
-				val = arr_1.length == 2 ? arr_1[1] : arr_1.slice(1).join(':')
-			} else if(line.indexOf('TILT=') >= 0){
+			} 
+			if(line.indexOf('TILT=') >= 0){
 				var arr = line.split('=');
 				key = 'TILT';
-				val = arr.length == 2 ? arr[1] : arr_1.slice(1).join('=')
+				val = arr[1]
 
 				index_last_s = i;
 
+			}
+			if(line.indexOf('IESNA:LM-63-') >= 0) {
+				info_data['iesna'] = line.replace('IESNA:LM-63-', '');
 			}
 			if(key && val){
 				info_data[key.toLowerCase()] = val
@@ -518,6 +520,9 @@ DataBuilder.prototype = {
 		main.info_ies.info_data.polar = num_polar;
 		main.info_ies.info_data.azim = num_azim;
 		main.info_ies.info_data.power = parseFloat(arr_info_1[2]);
+		main.info_ies.info_data.line = [
+			arr_info, arr_info_1
+		]
 		var arr_angle = []
 
 		for(var i = 2; i < data.length;i++){

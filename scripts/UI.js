@@ -30,6 +30,7 @@ UI = f.unit(Block, {
 UI.DataInput = f.unit(Block, {
 	unitName: 'UI_DataInput',
 	ename: 'ui-data-input',
+	demo_file: '8663.IES',
 
 	create: function() {
 
@@ -69,7 +70,7 @@ UI.DataInput = f.unit(Block, {
 		return xmlhttp;
 	},
 	loadStartFile: function(){
-		var url = './data/8663.IES';
+		var url = './data/'+this.demo_file;
 		var xhr = this.xmlhttp();
 		xhr.open("GET", url, true);
 		var self = this;
