@@ -4,6 +4,7 @@ function ViewAzim(){
 	canvas.id = 'canvas_azim';
 	canvas.width = 200;
 	canvas.height = 200;
+	this.arrData = [];
 
 	var minR = 0,
 		maxR = 0,
@@ -12,10 +13,14 @@ function ViewAzim(){
 		r = 0
 	canvas.style.backgroundColor = 'rgb(255,255,255)';
 
-
 	this.init = function(cont){
 		dom.append(cont, canvas)
 		stage = new createjs.Stage(canvas);
+
+		var btn = dom.div('save_canvas', cont)
+		dom.text(btn, 'DOWNLOAD');
+
+		dom.on('click',btn, this.downCanvas.bind(this));
 
 		container = new createjs.Container();
 		container.x = canvas.width/2;
@@ -28,6 +33,8 @@ function ViewAzim(){
 	};
 	this.updateViewAzim = function(index){
 		container.removeAllChildren();
+
+		this.arrData = [];
 		var draw_lines = this.drawLines();
 		var zero = main.builder.index_zero;
 		var perp = main.builder.index_perp;
@@ -35,6 +42,7 @@ function ViewAzim(){
 			(index != zero.itm && index != zero.sim) &&
 			(index != perp.itm && index != perp.sim)){
 			var data = this.getCoor(index);
+			this.arrData.push({data:data, color: '#00ff00'});
 			var draw_figure = this.drawFigure(data);
 		}
 
@@ -42,6 +50,7 @@ function ViewAzim(){
 	};
 	this.addViewAzim = function(index, color ){
 		var data = this.getCoor(index);
+		this.arrData.push({data:data, color: color});
 		var draw_figure = this.drawFigure(data, color);
 
 		stage.update();
@@ -112,30 +121,29 @@ function ViewAzim(){
 		container.addChild(shape)
 		stage.update();
 	};
-	this.drawGrid = function(shape){
+	this.drawGrid = function(shape, size){
 		var g = shape.graphics;
 		g.setStrokeStyle(0.1);
+		var s = size ? size : 100;
 
 		var max_size_r = Math.max(Math.abs(minR), Math.abs(maxR));
 		
 		g.beginStroke( '#000000' );
-		for(var i = 1; i < 15; i++){
-			
-			g.arc(0,0,10*i, 0, Math.PI*2)
-
+		for(var i = 1; i < 15; i++){			
+			g.arc(0,0,(s/10)*i, 0, Math.PI*2)
 		}
 		for(var i = 1; i < 10; i++){
 			var a = Math.PI*(i/10);
-			g.moveTo(-150*Math.cos(a),  150*Math.sin(a));
-			g.lineTo( 150*Math.cos(a), -150*Math.sin(a));
+			g.moveTo(-s*1.5*Math.cos(a),  s*1.5*Math.sin(a));
+			g.lineTo( s*1.5*Math.cos(a), -s*1.5*Math.sin(a));
 			
 		}
 		
-		g.moveTo( -100, 0 );
-		g.lineTo( 100, 0 );
+		g.moveTo( -s, 0 );
+		g.lineTo( s, 0 );
 
-		g.moveTo( 0, -100 );
-		g.lineTo( 0, 100 );
+		g.moveTo( 0, -s );
+		g.lineTo( 0, s );
 
 		g.endStroke();
 
@@ -154,7 +162,7 @@ function ViewAzim(){
 		stage.update();
 	}
 	this.drawLine = function(data, shape, color){
-		var r = 90;
+		var r = (shape.stage.canvas.width/2)*0.9;
 		shape.alpha = 0.3;
 		var line = shape.graphics;
 		line.beginStroke( color ? color : '#00ff00' );
@@ -171,5 +179,52 @@ function ViewAzim(){
 		line.endStroke();
 		stage.update();
 		return line
-	}
+	};
+	this.downCanvas = function(){
+		console.log('arrData',this.arrData)
+		var clone_canvas = dom.elem('canvas', '', false);
+		// canvas.id = 'canvas_azim';
+		clone_canvas.width = 600;
+		clone_canvas.height = 600;
+		clone_canvas.style.backgroundColor = '#ffffff';
+
+		var s = new createjs.Stage(clone_canvas);
+
+		var btn = dom.div('save_canvas', cont)
+		dom.text(btn, 'DOWNLOAD');
+
+		dom.on('click',btn, this.downCanvas.bind(this));
+
+		var cont = new createjs.Container();
+		cont.x = clone_canvas.width/2;
+		cont.y = clone_canvas.height/2;
+
+		s.addChild(cont)
+		var shape = new createjs.Shape();
+		shape.graphics.beginFill('#ffffff').drawRect(clone_canvas.width/2, clone_canvas.height/2, clone_canvas.width, clone_canvas.height)
+		var graphics = this.drawGrid(shape, 300);
+		cont.addChild(shape)
+		
+		var shape_1 = new createjs.Shape();
+		cont.addChild(shape_1);
+
+		for(var i = 0 ; i < this.arrData.length; i++){
+			var itm = this.arrData[i];
+			this.drawLine(itm.data, shape_1, itm.color)
+		}
+
+		s.update();
+
+		var format_image = "image/jpeg";
+		var format = "jpg";
+
+		var file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
+		file_name = file_name.substr(0, file_name.length-4);
+
+		var a = document.createElement('a');
+		a.href = clone_canvas.toDataURL(format_image);
+		a.download = 'thumbnails ' +file_name+'.' + format;
+		a.click();
+
+	};
 }

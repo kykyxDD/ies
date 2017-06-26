@@ -214,7 +214,7 @@ function ViewInfoIES(){
 		var arr_data = [];
 		for(var i = 0; i < arr.length; i++){
 			var key = arr[i];
-			if(!data[key] || (key == 'data' && data['date'])) continue
+			if(data[key] == undefined || (key == 'data' && data['date'])) continue
 			if(key == 'iesna') {
 				str = ['IESNA:LM-63-', data[key]].join('')
 			} else if(key != 'tilt'){
@@ -286,18 +286,15 @@ function ViewInfoIES(){
 
 	this.downloadFiles = function(text){
 		var file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
-		// console.log(file_name)
 		var element = document.createElement('a');
 		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
 		element.setAttribute('download', 'new '+ file_name);
 
-		element.style.display = 'none';
-		document.body.appendChild(element);
-
+		// element.style.display = 'none';
+		// document.body.appendChild(element);
 		element.click();
 
-		document.body.removeChild(element);
-
+		// document.body.removeChild(element);
 	}
 
 	this.openEditPopup = function(){
@@ -459,7 +456,7 @@ function ViewInfoIES(){
 
 	this.checkVal = function(obj, val){
 		var test = false;
-		var ts = /\w/;
+		var ts = /[a-zа-я0-9]/i;
 		var test_val = ts.test(val);
 		var test_obj = obj ? ts.test(obj) : false;
 
