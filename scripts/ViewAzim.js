@@ -22,20 +22,27 @@ function ViewAzim(){
 		container.y = canvas.height/2;
 
 		stage.addChild(container)
+		var draw_lines = this.drawLines();
 
 		stage.update();
 	};
 	this.updateViewAzim = function(index){
 		container.removeAllChildren();
-		var data = this.getCoor(index);
 		var draw_lines = this.drawLines();
-		var draw_figure = this.drawFigure(data);
+		var zero = main.builder.index_zero;
+		var perp = main.builder.index_perp;
+		if(main.info_ies.azim.arr.length >= 1 && 
+			(index != zero.itm && index != zero.sim) &&
+			(index != perp.itm && index != perp.sim)){
+			var data = this.getCoor(index);
+			var draw_figure = this.drawFigure(data);
+		}
 
 		stage.update();
 	};
-	this.addViewAzim = function(index){
+	this.addViewAzim = function(index, color ){
 		var data = this.getCoor(index);
-		var draw_figure = this.drawFigure(data, '#0000ff');
+		var draw_figure = this.drawFigure(data, color);
 
 		stage.update();
 	};
@@ -81,7 +88,7 @@ function ViewAzim(){
 				data.push(new THREE.Vector2(x, y))
 			}
 		} else {
-			// console.log('< 180')
+
 			for(var i = linesCount-1; i >= 0 ; i--) {
 				var row = lines[i];
 
@@ -150,7 +157,7 @@ function ViewAzim(){
 		var r = 90;
 		shape.alpha = 0.3;
 		var line = shape.graphics;
-		line.beginStroke( color ? color : '#FF0000' );
+		line.beginStroke( color ? color : '#00ff00' );
 		line.beginFill("#fefe8a");
 
 		for(var i = 0; i < data.length; i++){

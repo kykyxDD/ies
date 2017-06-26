@@ -56,6 +56,7 @@ kbd = {
 		kbd.setkey(e, 0) },
 
 	setkey: function(e, down) {
+		if(main.view_info_ies.visPopupEdit) return
 		kbd.event = e
 		kbd.down = down
 		kbd.key = kbd.map[e.keyCode]

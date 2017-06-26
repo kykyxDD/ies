@@ -8,6 +8,7 @@ function View3(root) {
 	this.scene     = new THREE.Scene
 	// this.scene.fog = new THREE.FogExp2(this.background, 0.6)
 	this.orbit     = new THREE.OrbitControls(this.camera, this.element)
+	this.orbit.noKeys = true
 	this.fpview    = new THREE.FirstPersonControls(this.camera, this.element)
 	this.light     = new THREE.AmbientLight(0xffffff)
 	this.direct    = new THREE.DirectionalLight(0xffffff, 0.2)

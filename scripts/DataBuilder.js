@@ -14,6 +14,14 @@ function DataBuilder() {
 	this.cont_preload = cont
 	this.preload = percent
 	this.index_line = 0;
+	this.index_zero = {
+		itm: 0,
+		sim: 0
+	}; 
+	this.index_perp = {
+		itm: 0,
+		sim: 0
+	};  // перпендикуляр
 
 }
 
@@ -177,7 +185,7 @@ DataBuilder.prototype = {
 		this.data = data
 		this.index = 0;
 		this.height = height
-		
+
 		return this.loadFigure();
 	},
 	showProgress: function (){
@@ -225,6 +233,14 @@ DataBuilder.prototype = {
 			lineRoot: this.lineRoot,
 			meshRoot: this.meshRoot
 		}
+
+		var index_zero = main.info_ies.azim.arr.indexOf(0);
+		var index_perp  = main.info_ies.azim.arr.indexOf(90);
+
+		this.index_zero.itm = index_zero >= 0 ? index_zero : 0;
+		this.index_zero.sim = (Math.ceil(obj.lineRoot.children.length/2) + index_zero)%this.lineRoot.children.length;
+		this.index_perp.itm = index_perp >= 0 ? index_perp : 0;
+		this.index_perp.sim = (Math.ceil(obj.lineRoot.children.length/2) + index_perp)%this.lineRoot.children.length;
 
 		main.view.setTree(obj)
 		onMaterial()
@@ -294,16 +310,6 @@ DataBuilder.prototype = {
 		}
 		vertices.push(vertices[0], vertices[1], vertices[2])
 		colors.push(colors[0], colors[1], colors[2])
-		// var j = Math.floor(k * data[0].length)
-		// for(var i = 0; i < data.length; i++) {
-		// 	var v = data[i][j]
-
-		// 	color.toArray(colors, i * 3)
-		// 	vertices.push(v.x, v.y, v.z)
-		// }
-		// var v = data[0][j]
-		// color.toArray(colors, i * 3)
-		// vertices.push(v.x, v.y, v.z)
 
 		var geometry = new THREE.BufferGeometry
 		geometry.addAttribute('position', new THREE.Float32Attribute(vertices, 3))
@@ -315,17 +321,26 @@ DataBuilder.prototype = {
 		var color = main.linesOnly ? 0xffffff : 0x000000;
 		var vertexColors = main.linesOnly ? THREE.VertexColors : 0
 		var visible = main.linesVisible
-		var vis_linesOnly
+		var zero = this.index_zero
+		var perp = this.index_perp
 
 		var index_asim = (Math.ceil(this.lineRoot.children.length/2) + this.index_line)%this.lineRoot.children.length;
+
+
 		for(var l = 0; l < this.lineRoot.children.length; l++){
 			var line = this.lineRoot.children[l];
-			if(l != this.index_line && l != index_asim){
-				line.material.color.set(color);
-				line.material.vertexColors = vertexColors;
-			} else {
-				line.material.color.set(0xff0000);				
+			if(l == zero.itm || l == zero.sim){
+				line.material.color.set(0xff0000);
 				line.material.vertexColors = 0;
+			} else if(l == perp.itm || l == perp.sim) {
+				line.material.color.set(0x0000ff);
+				line.material.vertexColors = 0;
+			} else if(l == this.index_line || l == index_asim){
+				line.material.color.set(0x00ff00);
+				line.material.vertexColors = 0;
+			} else {
+				line.material.color.set(color);
+				line.material.vertexColors = vertexColors;				
 			}
 			
 			//main.linesOnly ? THREE.VertexColors : 0

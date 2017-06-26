@@ -36,20 +36,18 @@ function ViewInfoIES(){
 
 		this.createPopup(cont, cont_info);
 
-
 		this.obj_elem.cont_info = cont_info;
-		
 
-		this.obj_elem.iesna = createElemInfo('iesna', 'IESNA:LM-63-');
 		this.obj_elem.test = createElemInfo('test');
 		this.obj_elem.data = createElemInfo('data');
 		this.obj_elem.manufac = createElemInfo('manufac');
 		this.obj_elem.lumcat = createElemInfo('lumcat');
 		this.obj_elem.luminaire = createElemInfo('luminaire');
+		this.obj_elem.lampcat = createElemInfo('lampcat');
 		this.obj_elem.lamp = createElemInfo('lamp');
 		this.obj_elem.other = createElemInfo('other');
 
-		// this.obj_elem.light_flow = createElemInfo('Light flow')
+		this.obj_elem.light_flow = createElemInfo('Light flow')
 
 		this.obj_elem.power = createElemInfo('power');
 		this.obj_elem.polar = createElemInfo('polar', 'Number of polar angles');
@@ -99,9 +97,9 @@ function ViewInfoIES(){
 			var val = dom.div('val', elem );
 			
 			return val
-		}
+		};
 
-		this.createInfoFooter()
+		this.createInfoFooter();
 
 	};
 
@@ -160,15 +158,14 @@ function ViewInfoIES(){
 
 		dom.on('click', btn_save, this.saveInfo.bind(this))
 
-
 		var par = body
 
-		var obj_iesna = itmElem('iesna', 'IESNA:LM-63-');
 		var obj_test = itmElem('test');
 		var obj_data = itmElem('data');
 		var obj_manufac = itmElem('manufac');
 		var obj_lumcat = itmElem('lumcat');
 		var obj_luminaire = itmElem('luminaire');
+		var obj_lampcat = itmElem('lampcat');
 		var obj_lamp = itmElem('lamp');
 		var obj_other = itmElem('other');
 		// var obj_light_flow = itmElem('light_flow');
@@ -181,20 +178,20 @@ function ViewInfoIES(){
 		this.obj_elem.popup.elem = popup;
 		this.obj_elem.popup.content = body;
 
-		this.obj_elem.popup.iesna = obj_iesna;
 		this.obj_elem.popup.test = obj_test;
 		this.obj_elem.popup.data = obj_data;
 		this.obj_elem.popup.manufac = obj_manufac;
 		this.obj_elem.popup.lumcat = obj_lumcat;
 		this.obj_elem.popup.luminaire = obj_luminaire;
+		this.obj_elem.popup.lampcat = obj_lampcat
 		this.obj_elem.popup.lamp = obj_lamp;
 		this.obj_elem.popup.other = obj_other;
 		// this.obj_elem.popup.light_flow = obj_light_flow;
 
 		function itmElem(val, text){
-			var elem_iesna = dom.elem('div', 'itm' ,par);
-			var name = dom.elem('div', 'name', elem_iesna);
-			var cont_val = dom.elem('div', 'val', elem_iesna);
+			var elem = dom.elem('div', 'itm' ,par);
+			var name = dom.elem('div', 'name', elem);
+			var cont_val = dom.elem('div', 'val', elem);
 			var input = dom.input('text', '', cont_val)
 			dom.text(name, text ? text : val);
 			input.setAttribute('name', val);
@@ -245,8 +242,6 @@ function ViewInfoIES(){
 		arr_data.push(data.line[0].join(' '))
 		arr_data.push(data.line[1].join(' '))
 
-
-
 		arr_data.push(main.info_ies.polar.arr.join(' '))
 		arr_data.push(main.info_ies.azim.arr.join(' '))
 		var str_data = this.getArrayData();
@@ -282,7 +277,7 @@ function ViewInfoIES(){
 					}
 				}
 
-				arr_data[a][p] = num
+				arr_data[a][p] = num;
 			}
 			arr_data[a] = arr_data[a].join(' ');
 		}
@@ -308,21 +303,56 @@ function ViewInfoIES(){
 	this.openEditPopup = function(){
 		var data = main.info_ies.info_data
 		var elem_popup = this.obj_elem.popup;
-
-
 		var par = this.obj_elem.popup.content;
 
-		
-		elem_popup.iesna.value = data.iesna ? data.iesna : '';
 		elem_popup.test.value = data.test ? data.test : '';
+		if(data.test){
+			main.info_ies.info_data.test = elem_popup.test.value;
+		}
+
 		var time = data.date || data.data;
 		elem_popup.data.value = time ? time : '' ;
+		if(data.date) {
+			main.info_ies.info_data.date = elem_popup.data.value;
+		} else if(data.data) {
+			main.info_ies.info_data.data = elem_popup.data.value;
+		}
+
 		elem_popup.manufac.value = data.manufac ? data.manufac : '';
+		if(data.manufac){
+			main.info_ies.info_data.manufac = elem_popup.manufac.value
+		}
 		elem_popup.lumcat.value = data.lumcat ? data.lumcat : '';
+		if(data.lumcat){
+			main.info_ies.info_data.lumcat = elem_popup.lumcat.value
+		}
+
 		elem_popup.luminaire.value = data.luminaire ? data.luminaire : '';
+		if(data.luminaire){
+			main.info_ies.info_data.luminaire = elem_popup.luminaire.value
+		}
+
+
+		elem_popup.lampcat.value = data.lampcat ? data.lampcat : '';
+		if(data.lampcat){
+			main.info_ies.info_data.lampcat = elem_popup.lampcat.value;
+		}
+
+
 		elem_popup.lamp.value = data.lamp ? data.lamp : '';
+		if(data.lamp){
+			main.info_ies.info_data.lamp = elem_popup.lamp.value
+		}
+
 		elem_popup.other.value = data.other ? data.other : '';
+		if(data.other){
+			main.info_ies.info_data.other = elem_popup.other.value
+		}
+
 		// elem_popup.light_flow.value = data.light_flow ? data.light_flow : '';
+		// if(data.light_flow) {
+		// 	main.info_ies.info_data.light_flow = elem_popup.light_flow.value
+		// }
 
 		// var obj_polar = itmElem();
 		// dom.text(obj_polar.name, 'polar');
@@ -344,72 +374,70 @@ function ViewInfoIES(){
 		var data = main.info_ies.info_data;
 		var elem_popup = this.obj_elem.popup;
 
-
-		var iesna = elem_popup.iesna.value
-		var test = elem_popup.test.value
-		var time = elem_popup.data.value
-		var manufac = elem_popup.manufac.value
-		var lumcat = elem_popup.lumcat.value
-		var luminaire = elem_popup.luminaire.value
-		var lamp = elem_popup.lamp.value
-		var other = elem_popup.other.value
-		// var light_flow = elem_popup.light_flow.value
+		var test = elem_popup.test.value;
+		var time = elem_popup.data.value;
+		var manufac = elem_popup.manufac.value;
+		var lumcat = elem_popup.lumcat.value;
+		var luminaire = elem_popup.luminaire.value;
+		var lampcat = elem_popup.lampcat.value;
+		var lamp = elem_popup.lamp.value;
+		var other = elem_popup.other.value;
+		
 
 		var save = false;
-		var obj = this.obj_elem
+		var obj = this.obj_elem;
 
-		if(iesna != data.iesna) {
-			console.log('iesna')
-			save = true
-			main.info_ies.info_data.iesna = iesna
-			dom.text(obj.iesna, iesna );
-		}
-		if(test != data.test) {
+		if(this.checkVal(data.test, test)) {
 			console.log('test')
 			save = true
 			main.info_ies.info_data.test = test
 			dom.text(obj.test, test );
 		}
 
-		if(data.date && data.date != time){
-			console.log('time')
+		if(this.checkVal(data.date, time)){
 			save = true
 			main.info_ies.info_data.date = time 
 			dom.text(obj.data, time)
-		} else if(data.data && data.data != time){
+		} else if(this.checkVal(data.data, time)){
 			save = true
 			main.info_ies.info_data.data = time 
 			dom.text(obj.data, time)
-		} else if(!data.date && !data.data && time) {
-			main.info_ies.info_data.data = time
-			dom.text(obj.data, time)
 		}
 
-		if(manufac != data.manufac) {
-			console.log('manufac')
-			save = true
-			main.info_ies.info_data.manufac = manufac
-			dom.text(obj.manufac, manufac)
-		}		 
-		if(lumcat != data.lumcat) {
-			console.log('lumcat')
+		if(this.checkVal(data.manufac, manufac)){
+			console.log('manufac', true)
+			save = true;
+			main.info_ies.info_data.manufac = manufac;
+			dom.text(obj.manufac, manufac);
+		}
+		
+		if(this.checkVal(data.lumcat, lumcat)) {
+			console.log('lumcat', true)
 			save = true
 			main.info_ies.info_data.lumcat = lumcat
 			dom.text(obj.lumcat, lumcat)
 		}
-		if(luminaire != data.luminaire) {
+
+		if(this.checkVal(data.luminaire, luminaire)) {
 			console.log('luminaire')
 			save = true
 			main.info_ies.info_data.luminaire = luminaire
 			dom.text(obj.luminaire, luminaire)
-		}		 
-		if(lamp != data.lamp) {
+		}
+
+		if(this.checkVal(data.lampcat, lampcat)){
+			save = true
+			main.info_ies.info_data.lampcat = lampcat
+			dom.text(obj.lampcat, lampcat)
+		}
+
+		if(this.checkVal(data.lamp, lamp)) {
 			console.log('lamp')
 			save = true
 			main.info_ies.info_data.lamp = lamp
 			dom.text(obj.lamp, lamp)
 		}
-		if(other != data.other) {
+		if(this.checkVal(data.other, other)) {
 			console.log('other')
 			save = true
 			main.info_ies.info_data.other = other
@@ -429,7 +457,23 @@ function ViewInfoIES(){
 		this.closePopup()
 	}
 
+	this.checkVal = function(obj, val){
+		var test = false;
+		var ts = /\w/;
+		var test_val = ts.test(val);
+		var test_obj = obj ? ts.test(obj) : false;
 
+		if(obj){
+			if((!test_obj && test_val) || 
+				(test_obj && !test_val) || 
+				(test_obj && test_val && obj != val)) {
+				test = true;
+			}
+		} else if(test_val){
+			test = true
+		}
+		return test
+	}
 
 	this.showPopup = function(){
 		if(!main.info_ies.info_data) return
@@ -464,25 +508,23 @@ function ViewInfoIES(){
 		this.setViewAzim();
 	};
 	this.setViewAzim = function(){
-		
+
 		var val = this.obj_elem.range.value
 		index = Math.floor(parseFloat(val));
 		main.builder.index_line = index;
 		main.view_azim.updateViewAzim(index);
 
+
 		if(main.builder.lineRoot && main.builder.meshRoot){
-			main.builder.updateMaterial()	
+			main.builder.updateMaterial();
 		}
-		
 
-
-		var left = Math.floor(-(val*30 + 15) +5) + (157/(max_val))*val + 5 // + (160/(max_val +1))*index ) + 5  
+		var left = Math.floor(-(val*30 + 15) +5) + (157/max_val)*val + 5;
 
 		this.obj_elem.elem_list_val.style.marginLeft = left +'px';
 
-		// var text = main.info_ies.azim.arr[index]; //(index+1)+'/'+max_val
-		// dom.text(this.obj_elem.text_azim, text);
 		this.viewToGraph();
+
 	};
 
 	this.openPopup = function(){
@@ -490,13 +532,13 @@ function ViewInfoIES(){
 	};
 	this.closePopup = function(){
 		var elem_popup = this.obj_elem.popup;
-		
-		elem_popup.iesna.value = '';
+
 		elem_popup.test.value = '';
 		elem_popup.data.value = '';
 		elem_popup.manufac.value = '';
 		elem_popup.lumcat.value = '';
 		elem_popup.luminaire.value = '';
+		elem_popup.lampcat.value = '';
 		elem_popup.lamp.value = '';
 		elem_popup.other.value = '';
 
@@ -516,15 +558,15 @@ function ViewInfoIES(){
 			dom.display(this.obj_elem.cont_info, true)
 			dom.display(this.obj_elem.btn_edit, true)
 
-			dom.text(obj.iesna, data.iesna );
 			dom.text(obj.test, data.test );
 			dom.text(obj.data, data.date || data.data );
 			dom.text(obj.manufac, data.manufac );
 			dom.text(obj.lumcat, data.lumcat );
 			dom.text(obj.luminaire, data.luminaire );
+			dom.text(obj.lampcat, data.lampcat );
 			dom.text(obj.lamp, data.lamp );
 			dom.text(obj.other, data.other );
-			// dom.text(obj.light_flow, data.light_flow );	
+			dom.text(obj.light_flow, data.light_flow );
 			dom.text(obj.polar, data.polar)
 			dom.text(obj.azim, data.azim)
 			dom.text(obj.power, data.power )
@@ -535,7 +577,6 @@ function ViewInfoIES(){
 
 		var index_of = main.info_ies.azim.arr.indexOf(0);
 		index = index_of >= 0 ? index_of : 0;
-		// console.log('index',index)
 		this.obj_elem.range.value = index;
 		this.setViewAzim()
 
@@ -548,10 +589,15 @@ function ViewInfoIES(){
 			this.showPanel();
 			dom.text(this.obj_elem.text_azim, '');
 
-			var ind = main.info_ies.azim.arr.indexOf(90);
-			if(ind >= 0){
-				main.view_azim.addViewAzim(ind);
-			}			
+			var ind_0 = main.info_ies.azim.arr.indexOf(0);
+			if(ind_0 >= 0){
+				main.view_azim.addViewAzim(ind_0, '#ff0000');
+			}
+
+			var ind_1 = main.info_ies.azim.arr.indexOf(90);
+			if(ind_1 >= 0){
+				main.view_azim.addViewAzim(ind_1, '#0000ff');
+			}
 		}
 	};
 
@@ -559,12 +605,12 @@ function ViewInfoIES(){
 		dom.visible(this.obj_elem.btn_prev, false);
 		dom.visible(this.obj_elem.btn_next, false);
 		dom.visible(this.obj_elem.elem_list_val, false)
-		
+
 		dom.display(this.obj_elem.range, false);
 	};
 	this.showPanel = function(){
 		dom.visible(this.obj_elem.btn_prev, true);
-		dom.visible(this.obj_elem.btn_next, true);		
+		dom.visible(this.obj_elem.btn_next, true);
 		dom.visible(this.obj_elem.elem_list_val, true)
 
 		this.obj_elem.range.setAttribute('max', max_val);
@@ -575,7 +621,7 @@ function ViewInfoIES(){
 		this.obj_elem.range.value = index;
 		// this.setViewAzim()
 		this.updateListVal()
-		
+
 		dom.display(this.obj_elem.range, true)
 	};
 	this.removeAllVal = function(){
@@ -583,7 +629,7 @@ function ViewInfoIES(){
 		this.obj_elem.list_val = [];
 
 		while (elem_list.firstChild) {
-		    elem_list.removeChild(elem_list.firstChild);
+			elem_list.removeChild(elem_list.firstChild);
 		}
 	};
 
@@ -601,13 +647,18 @@ function ViewInfoIES(){
 		}
 	}
 	this.viewToGraph = function(){
-		if(main.info_ies.azim.arr[index] == 0){
-			var ind = main.info_ies.azim.arr.indexOf(90);
-			if(ind >= 0){
-				main.view_azim.addViewAzim(ind);
-			}
+
+		var ind_0 = main.info_ies.azim.arr.indexOf(0);
+		if(ind_0 >= 0){
+			main.view_azim.addViewAzim(ind_0, '#ff0000');
 		}
+
+		var ind_1 = main.info_ies.azim.arr.indexOf(90);
+		if(ind_1 >= 0){
+			main.view_azim.addViewAzim(ind_1, '#0000ff');
+		}
+
 	};
 	this.init()
-	
+
 }
