@@ -28,9 +28,10 @@ UI = f.unit(Block, {
 
 
 UI.DataInput = f.unit(Block, {
+	charset: 'utf-8' , 
 	unitName: 'UI_DataInput',
 	ename: 'ui-data-input',
-	demo_file: 'new.ies',
+	demo_file: '8663.IES',
 	text_span: 'Upload *.ies File',
 
 	create: function() {
@@ -80,7 +81,6 @@ UI.DataInput = f.unit(Block, {
 
 		xhr.onreadystatechange = function(){
 			if (this.readyState == 4 && this.status == 200) {
-				// console.log(this)
 				onData(this.responseText)
 			}
 		};
@@ -108,18 +108,26 @@ UI.DataInput = f.unit(Block, {
 	},
 
 	onChange: function(e) {
-		var file = this.input.files[0]
+		var file = this.input.files[0];
 
 		if(!file) return
 		this.span.innerHTML = file.name;
-		// console.log('file',file)
 
-		this.reader.readAsText(file, 'cp1251')
+		this.reader.readAsText(file, this.charset) // utf-8 cp1251
 	},
 
 	onLoad: function(e) {
-		var data = this.reader.result
+		var data = this.reader.result;
+		var ts = /[а-я]/i;
 
-		this.events.emit('data_input', data)
+		if(this.charset == 'utf-8' && !ts.test(data)){
+			this.charset = 'cp1251';
+			this.onChange()
+		} else {
+			this.events.emit('data_input', data)
+			this.charset = 'utf-8';
+		}
+
+		// this.events.emit('data_input', data)
 	}
 })

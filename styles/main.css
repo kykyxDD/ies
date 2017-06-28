@@ -289,7 +289,7 @@ body {
 	display: block;
 }
 .info_ies .vis_azim .save_canvas {
-	background-color: green;
+	background-color: #146726;
 	height: 25px;
 	text-align: center;
 	line-height: 25px;
@@ -609,26 +609,90 @@ input[type=range]:focus::-ms-fill-upper {
 .info_footer {
 	position: absolute;
 	color: #fff;
-	bottom: 0;
-	right: 0;
-	left: 0;
+	bottom: 20px;
+	/*right: 0;*/
+	left: 20px;
 	z-index: 10;
+	/*display: none;*/
+}
+.info_footer .btn_author {
+	display: block;
+	width: 120px;
+	height: 30px;
+	background-color: #3467CC;
+	text-transform: uppercase;
+	border-radius: 5px;
+	text-align: center;
+	line-height: 30px;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.info_footer .content {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
+	background: rgba(0, 0, 0, 0.7);
+	color: #D6D6D6;
 	display: none;
+}
+.info_footer .content.show {
+	display: block;
+}
+.info_footer .list_author {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 300px;
+	height: 200px;
+	margin-top: -120px;
+	margin-left: -170px;
+	background-color: #1A1A1A;
+	padding: 20px;
+	border-radius: 10px;
+	border: 1px solid #2C2C2C;
 }
 .info_footer .link_program {
 	margin-bottom: 10px;
 }
-.info_footer .link_program > div,
+.info_footer .title {
+	font-size: 22px;
+	font-weight: bold;
+	text-align: center;
+}
+.info_footer .authors {
+	padding-left: 15px;
+    font-size: 13px;
+}
+.info_footer .close {
+	margin: 50px auto 0;
+	display: table;
+	width: 100px;
+	height: 25px;
+	background-color: blue;
+	border-radius: 5px;
+	text-align: center;
+	line-height: 25px;
+	text-transform: uppercase;
+	font-size: 11px;
+	font-weight: bold;
+	cursor: pointer;
+}
+/*.info_footer .link_program > div,
 .info_footer .list_author > div {
 	display: table-cell;
-}
+}*/
 .info_footer .name {
 	width: 100px;
 	padding-right: 10px;
 	text-align: right;
 }
 .info_footer .list_author .itm_author {
-	margin-bottom: 5px;
+	margin-bottom: 10px;
+	padding-left: 10px;
 }
 
 .info_footer a {

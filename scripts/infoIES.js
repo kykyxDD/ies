@@ -49,7 +49,7 @@ function ViewInfoIES(){
 
 		// this.obj_elem.light_flow = createElemInfo('Light flow')
 
-		// this.obj_elem.power = createElemInfo('power');
+		this.obj_elem.power = createElemInfo('power');
 		this.obj_elem.polar = createElemInfo('polar', 'Number of polar angles');
 		this.obj_elem.azim =  createElemInfo('polar', 'Number of azimuth angles');
 
@@ -103,12 +103,38 @@ function ViewInfoIES(){
 
 	};
 
-	
 
 	this.createInfoFooter = function(){
 		var par = main.ui.viewport;
 		var elem = dom.div('info_footer', par);
-		var elem_programs = dom.div("link_program", elem);
+
+		var btn_author = dom.div('btn_author', elem);
+		dom.text(btn_author, 'Authors');
+
+		var cont_author = dom.div('content', elem);
+		var elem_text = dom.div('list_author', cont_author);
+		var title = dom.div('title', elem_text);
+		dom.text(title, 'Authors')
+
+		var ul = dom.elem('ol', 'authors', elem_text);
+
+		var autor_0 = dom.elem('li', 'itm_author', ul);
+		dom.html(autor_0, 'Anton Sharakshane,  Ph.D., Kotel&rsquo;nikov Institute of Radio-engineering and Electronics of Russian Academy of Sciences, anton.sharakshane@gmail.com, CV ' )
+		var autor_1 = dom.elem('li', 'itm_author', ul);
+		dom.html(autor_1, 'Sergey Gnedoy, gnedoy@gmail.com'); 
+
+		var close = dom.div('close', elem_text);
+		dom.text(close, 'close' )
+
+		dom.on('click', btn_author, function(){
+			dom.addclass(cont_author, 'show')
+		});
+
+		dom.on('click', close, function(){
+			dom.remclass(cont_author, 'show')
+		});
+
+		/*var elem_programs = dom.div("link_program", elem);
 		var name_programs = dom.div('name', elem_programs)
 		dom.text(name_programs, 'About the program:');
 		var val_programs = dom.div('val', elem_programs);
@@ -122,7 +148,7 @@ function ViewInfoIES(){
 		var autor_0 = dom.div('itm_author', val_author);
 		dom.html(autor_0, 'Anton Sharakshane,  Ph.D., Kotel&rsquo;nikov Institute of Radio-engineering and Electronics of Russian Academy of Sciences, anton.sharakshane@gmail.com, CV ' )
 		var autor_1 = dom.div('itm_author', val_author);
-		dom.html(autor_1, 'Sergey Gnedoy, gnedoy@gmail.com');
+		dom.html(autor_1, 'Sergey Gnedoy, gnedoy@gmail.com');*/
 	};
 
 	this.createPopup = function(cont, cont_info){
@@ -212,6 +238,9 @@ function ViewInfoIES(){
 
 		var data = main.info_ies.info_data
 		var arr_data = [];
+
+		data.more = 'This file has been modified by IESVIEW.COM';
+
 		for(var i = 0; i < arr.length; i++){
 			var key = arr[i];
 			if(data[key] == undefined || (key == 'data' && data['date'])) continue
@@ -290,12 +319,8 @@ function ViewInfoIES(){
 
 	this.downloadFiles = function(text){
 		var file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
-		// var element = document.createElement('a');
-		// element.setAttribute('href', 'data:text/plain;' + encodeURIComponent(text));
-		// element.setAttribute('download', 'new '+ file_name);
 
-		// element.click();
-		var data = new Blob([text], {type: 'text/plain;charset=windows-1251,'});
+		var data = new Blob([text], {type: 'text/plain;charset=utf-8,'});
 		var textFile = window.URL.createObjectURL(data)
 		var element = document.createElement('a');
 		element.setAttribute('href', textFile);
@@ -489,14 +514,13 @@ function ViewInfoIES(){
 	this.hidePopup = function(){
 		this.visPopupEdit = false
 		this.closePopup();
-		// dom.display(this.obj_elem.popup.elem, false);
 	};
 
 	this.prevAngle = function(){
 		if(index - 1 < 0) return
 		index -= 1;
 
-		this.obj_elem.range.value = index
+		// this.obj_elem.range.value = index
 		this.setViewAzim();
 	};
 	this.nextAngle = function(){
@@ -504,7 +528,7 @@ function ViewInfoIES(){
 		if(index+1 >= max_val+1) return 
 
 		index += 1;
-		this.obj_elem.range.value = index
+		// this.obj_elem.range.value = index
 		this.setViewAzim();
 	};
 	this.changeIndex = function(){
@@ -512,23 +536,17 @@ function ViewInfoIES(){
 		this.setViewAzim();
 	};
 	this.setViewAzim = function(){
-
-		var val = this.obj_elem.range.value
-		index = Math.floor(parseFloat(val));
+		this.obj_elem.range.value = index;
 		main.builder.index_line = index;
-
 
 		if(main.builder.lineRoot && main.builder.meshRoot){
 			main.builder.updateMaterial();
 		}
 
 		if(this.updateMarRange){
-			var left = Math.floor(-(val*30 + 15) +5) + (157/max_val)*val + 5;
-
+			var left = Math.floor(-(index*30 + 15) +5) + (157/max_val)*index + 5;
 			this.obj_elem.elem_list_val.style.marginLeft = left +'px';	
 		}
-
-		
 
 	};
 
@@ -574,16 +592,13 @@ function ViewInfoIES(){
 			// dom.text(obj.light_flow, data.light_flow );
 			dom.text(obj.polar, data.polar)
 			dom.text(obj.azim, data.azim)
-			// dom.text(obj.power, data.power )
+			dom.text(obj.power, data.power )
 		}
 
 		var len = main.info_ies.lines[0] ? main.info_ies.lines[0].length : 0;
 		max_val = main.info_ies.azim.arr.length -1//len
 
-		var index_of = main.info_ies.azim.arr.indexOf(0);
-		index = index_of >= 0 ? index_of : 0;
-		this.obj_elem.range.value = index;
-		this.setViewAzim()
+		index = main.info_ies.azim.arr.indexOf(main.info_ies.azim.min_angle);
 
 
 		if(max_val <= 1) {
@@ -596,6 +611,7 @@ function ViewInfoIES(){
 			dom.text(this.obj_elem.text_azim, '');
 
 		}
+		this.setViewAzim()
 	};
 
 
@@ -618,15 +634,12 @@ function ViewInfoIES(){
 		this.updateMarRange = true
 		if((max_val+1)*30 < 170){
 			w = Math.ceil(155/(max_val)) ;
-			console.log('big', w)
 			this.updateMarRange = false
 		}
 
-		// main.view_azim.updateViewAzim(index);
 		var text = main.info_ies.azim.arr[index];
 		dom.text(this.obj_elem.text_azim, text);
-		this.obj_elem.range.value = index;
-		this.setViewAzim()
+	
 		this.updateListVal(w)
 
 		dom.display(this.obj_elem.range, true)
@@ -647,9 +660,14 @@ function ViewInfoIES(){
 		this.removeAllVal();
 		w = w ? w : 30;
 		elem_list.style.width = (arr.length*w) + 'px';
-		var left = !this.updateMarRange ? Math.floor(-w/2 + 10) : -5;
+		
 
-		elem_list.style.marginLeft = left + 'px';
+		if(!this.updateMarRange){
+			var left = !this.updateMarRange ? Math.floor(-w/2 + 10) : -5;
+			elem_list.style.marginLeft = left + 'px';
+		}
+
+		
 
 		for(var i = 0; i < arr.length; i++){
 			var elem = dom.elem('div', 'itm', elem_list)
