@@ -47,9 +47,9 @@ function ViewInfoIES(){
 		this.obj_elem.lamp = createElemInfo('lamp');
 		this.obj_elem.other = createElemInfo('other');
 
-		this.obj_elem.light_flow = createElemInfo('Light flow')
+		// this.obj_elem.light_flow = createElemInfo('Light flow')
 
-		this.obj_elem.power = createElemInfo('power');
+		// this.obj_elem.power = createElemInfo('power');
 		this.obj_elem.polar = createElemInfo('polar', 'Number of polar angles');
 		this.obj_elem.azim =  createElemInfo('polar', 'Number of azimuth angles');
 
@@ -246,7 +246,11 @@ function ViewInfoIES(){
 		arr_data.push(main.info_ies.azim.arr.join(' '))
 		var str_data = this.getArrayData();
 		arr_data.push(str_data)
-		var data_sould = arr_data.join('\n')
+		//var data_sould = arr_data.join(' \n')
+		var data_sould = arr_data[0];
+		for(var i = 1; i < arr_data.length; i++){
+			data_sould += '\r\n' + arr_data[i]
+		}
 		return data_sould
 	};
 
@@ -286,15 +290,18 @@ function ViewInfoIES(){
 
 	this.downloadFiles = function(text){
 		var file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
+		// var element = document.createElement('a');
+		// element.setAttribute('href', 'data:text/plain;' + encodeURIComponent(text));
+		// element.setAttribute('download', 'new '+ file_name);
+
+		// element.click();
+		var data = new Blob([text], {type: 'text/plain;charset=windows-1251,'});
+		var textFile = window.URL.createObjectURL(data)
 		var element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+		element.setAttribute('href', textFile);
 		element.setAttribute('download', 'new '+ file_name);
+		element.click()
 
-		// element.style.display = 'none';
-		// document.body.appendChild(element);
-		element.click();
-
-		// document.body.removeChild(element);
 	}
 
 	this.openEditPopup = function(){
@@ -509,18 +516,19 @@ function ViewInfoIES(){
 		var val = this.obj_elem.range.value
 		index = Math.floor(parseFloat(val));
 		main.builder.index_line = index;
-		main.view_azim.updateViewAzim(index);
 
 
 		if(main.builder.lineRoot && main.builder.meshRoot){
 			main.builder.updateMaterial();
 		}
 
-		var left = Math.floor(-(val*30 + 15) +5) + (157/max_val)*val + 5;
+		if(this.updateMarRange){
+			var left = Math.floor(-(val*30 + 15) +5) + (157/max_val)*val + 5;
 
-		this.obj_elem.elem_list_val.style.marginLeft = left +'px';
+			this.obj_elem.elem_list_val.style.marginLeft = left +'px';	
+		}
 
-		this.viewToGraph();
+		
 
 	};
 
@@ -563,10 +571,10 @@ function ViewInfoIES(){
 			dom.text(obj.lampcat, data.lampcat );
 			dom.text(obj.lamp, data.lamp );
 			dom.text(obj.other, data.other );
-			dom.text(obj.light_flow, data.light_flow );
+			// dom.text(obj.light_flow, data.light_flow );
 			dom.text(obj.polar, data.polar)
 			dom.text(obj.azim, data.azim)
-			dom.text(obj.power, data.power )
+			// dom.text(obj.power, data.power )
 		}
 
 		var len = main.info_ies.lines[0] ? main.info_ies.lines[0].length : 0;
@@ -577,6 +585,7 @@ function ViewInfoIES(){
 		this.obj_elem.range.value = index;
 		this.setViewAzim()
 
+
 		if(max_val <= 1) {
 			var text = main.info_ies.azim.arr.length > 0 ? 'Axial symmetry' : '';
 			dom.text(this.obj_elem.text_azim, text);
@@ -586,17 +595,10 @@ function ViewInfoIES(){
 			this.showPanel();
 			dom.text(this.obj_elem.text_azim, '');
 
-			var ind_0 = main.info_ies.azim.arr.indexOf(0);
-			if(ind_0 >= 0){
-				main.view_azim.addViewAzim(ind_0, '#ff0000');
-			}
-
-			var ind_1 = main.info_ies.azim.arr.indexOf(90);
-			if(ind_1 >= 0){
-				main.view_azim.addViewAzim(ind_1, '#0000ff');
-			}
 		}
 	};
+
+
 
 	this.hiddenPanel = function(){
 		dom.visible(this.obj_elem.btn_prev, false);
@@ -611,13 +613,21 @@ function ViewInfoIES(){
 		dom.visible(this.obj_elem.elem_list_val, true)
 
 		this.obj_elem.range.setAttribute('max', max_val);
+		var w = false
 
-		main.view_azim.updateViewAzim(index);
+		this.updateMarRange = true
+		if((max_val+1)*30 < 170){
+			w = Math.ceil(155/(max_val)) ;
+			console.log('big', w)
+			this.updateMarRange = false
+		}
+
+		// main.view_azim.updateViewAzim(index);
 		var text = main.info_ies.azim.arr[index];
 		dom.text(this.obj_elem.text_azim, text);
 		this.obj_elem.range.value = index;
-		// this.setViewAzim()
-		this.updateListVal()
+		this.setViewAzim()
+		this.updateListVal(w)
 
 		dom.display(this.obj_elem.range, true)
 	};
@@ -630,32 +640,27 @@ function ViewInfoIES(){
 		}
 	};
 
-	this.updateListVal = function(){
+	this.updateListVal = function(w){
 		var arr = main.info_ies.azim.arr;
 		var elem_list = this.obj_elem.elem_list_val;
 		this.obj_elem.list_val = [];
 		this.removeAllVal();
-		elem_list.style.width = (arr.length*30) + 'px';
+		w = w ? w : 30;
+		elem_list.style.width = (arr.length*w) + 'px';
+		var left = !this.updateMarRange ? Math.floor(-w/2 + 10) : -5;
+
+		elem_list.style.marginLeft = left + 'px';
 
 		for(var i = 0; i < arr.length; i++){
 			var elem = dom.elem('div', 'itm', elem_list)
 			dom.text(elem, arr[i]);
+			if(w){
+				elem.style.width = w + 'px';
+			}
+			
 			this.obj_elem.list_val.push(elem);
 		}
 	}
-	this.viewToGraph = function(){
-
-		var ind_0 = main.info_ies.azim.arr.indexOf(0);
-		if(ind_0 >= 0){
-			main.view_azim.addViewAzim(ind_0, '#ff0000');
-		}
-
-		var ind_1 = main.info_ies.azim.arr.indexOf(90);
-		if(ind_1 >= 0){
-			main.view_azim.addViewAzim(ind_1, '#0000ff');
-		}
-
-	};
 	this.init()
 
 }

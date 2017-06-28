@@ -1,4 +1,7 @@
 function DataBuilder() {
+
+	this.viewFigure = false;
+
 	this.lineMaterial = new THREE.LineBasicMaterial({
 		vertexColors: THREE.VertexColors
 	})
@@ -40,8 +43,13 @@ DataBuilder.prototype = {
 	},
 
 	buildFromSource: function(text) {
+
+		this.lineRoot = false
+		this.meshRoot = false
+		this.root = false
 		// var lines = this.parseText(text)
-		this.showPreload()
+		this.showPreload();
+		main.view_azim.clearAllContainer();
 		var lines;
 		main.info_ies = {
 			
@@ -167,7 +175,6 @@ DataBuilder.prototype = {
 		main.info_ies.data = data;
 		main.view_info_ies.updateInfo();
 
-
 		var height = maxY - minY
 
 		var root     = new THREE.Object3D
@@ -188,6 +195,7 @@ DataBuilder.prototype = {
 
 		return this.loadFigure();
 	},
+
 	showProgress: function (){
 		var percent = Math.floor((this.index/this.planesCount)*100) +'%';
 
@@ -233,19 +241,24 @@ DataBuilder.prototype = {
 			lineRoot: this.lineRoot,
 			meshRoot: this.meshRoot
 		}
+		var min_azim = main.info_ies.azim.min_angle
 
-		var index_zero = main.info_ies.azim.arr.indexOf(0);
-		var index_perp  = main.info_ies.azim.arr.indexOf(90);
+		var mean = min_azim == 0 ? 90 : 45;
 
-		this.index_zero.itm = index_zero >= 0 ? index_zero : 0;
-		this.index_zero.sim = (Math.ceil(obj.lineRoot.children.length/2) + index_zero)%this.lineRoot.children.length;
-		this.index_perp.itm = index_perp >= 0 ? index_perp : 0;
-		this.index_perp.sim = (Math.ceil(obj.lineRoot.children.length/2) + index_perp)%this.lineRoot.children.length;
+		var index_zero = main.info_ies.azim.arr.indexOf(min_azim);
+		var index_perp  = main.info_ies.azim.arr.indexOf(min_azim + mean);
+
+		this.index_zero.itm = index_zero;
+		this.index_zero.sim = (Math.floor(obj.lineRoot.children.length/2) + index_zero)%this.lineRoot.children.length;
+		this.index_perp.itm = index_perp;
+		this.index_perp.sim = (Math.floor(obj.lineRoot.children.length/2) + index_perp)%this.lineRoot.children.length;
+		main.view_azim.loadNewFigure(this.index_zero, this.index_perp)
 
 		main.view.setTree(obj)
 		onMaterial()
 		main.view.toCenter()
 		dom.remclass(this.cont_preload, 'show');
+		this.viewFigure = true;
 
 		return {
 			object: this.root,
@@ -323,9 +336,30 @@ DataBuilder.prototype = {
 		var visible = main.linesVisible
 		var zero = this.index_zero
 		var perp = this.index_perp
+		var arr_azim = main.info_ies.azim;
 
-		var index_asim = (Math.ceil(this.lineRoot.children.length/2) + this.index_line)%this.lineRoot.children.length;
+		var itm_angle = arr_azim.arr[this.index_line];
+		var index_asim = 0;
 
+
+		if(arr_azim.max_angle > 180){ //  || (arr_azim.min_angle == 90 && arr_azim.max_angle == 270)){
+			var mean = (arr_azim.max_angle - arr_azim.min_angle)/2;
+			var asim_angle = itm_angle + mean;
+			if(asim_angle > arr_azim.max) {
+				asim_angle -= arr_azim.max
+			}
+			var index_asim_angle = arr_azim.arr.indexOf(asim_angle)
+
+			if(index_asim_angle >= 0) {
+				index_asim = index_asim_angle
+			} else {
+				index_asim = (Math.floor(this.lineRoot.children.length/2) + this.index_line)%this.lineRoot.children.length;
+			}
+		} else if(arr_azim.max_angle == 180){
+			index_asim = arr_azim.arr.length + this.index_line;
+		} else if(arr_azim.max_angle == 90) {
+			index_asim = arr_azim.arr.length*2 + this.index_line;
+		}
 
 		for(var l = 0; l < this.lineRoot.children.length; l++){
 			var line = this.lineRoot.children[l];
@@ -340,10 +374,9 @@ DataBuilder.prototype = {
 				line.material.vertexColors = 0;
 			} else {
 				line.material.color.set(color);
-				line.material.vertexColors = vertexColors;				
+				line.material.vertexColors = vertexColors;
 			}
-			
-			//main.linesOnly ? THREE.VertexColors : 0
+
 			line.material.visible = visible;
 			line.material.needsUpdate = true
 		}
@@ -352,7 +385,9 @@ DataBuilder.prototype = {
 			mesh.material.visible = !main.linesOnly
 		}
 
-		main.view.needsRedraw = true
+		main.view.needsRedraw = true;
+
+		main.view_azim.updateViewAzim(this.index_line, index_asim);
 
 	},
 
@@ -546,16 +581,23 @@ DataBuilder.prototype = {
 		var first_angle_polar = parseFloat(polar[0]);
 		var last_angle_polar = parseFloat(polar[polar.length-1]);
 		var sum_polar = last_angle_polar + (360 - first_angle_polar)%360;
-		
+
+		var min_azim = 10000;
+		var max_azim = 0;
+
 
 		for(var i = 0; i < azim.length; i++){
 			azim[i] = parseFloat(azim[i])
+			min_azim = Math.min(min_azim, azim[i])
+			max_azim = Math.max(max_azim, azim[i])
 		}
 		for(var i = 0; i < polar.length; i++){
 			polar[i] = parseFloat(polar[i])
 		}
 
 		main.info_ies.azim = {
+			min_angle: min_azim,
+			max_angle: max_azim,
 			min: first_angle_azim,
 			arr: azim,
 			max: last_angle_azim,

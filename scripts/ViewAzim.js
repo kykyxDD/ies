@@ -1,5 +1,5 @@
 function ViewAzim(){
-	var stage,container;
+	var stage, container, cont_axis, global_cont;
 	var canvas = dom.elem('canvas', 'canvas_azim', false);
 	canvas.id = 'canvas_azim';
 	canvas.width = 200;
@@ -22,28 +22,78 @@ function ViewAzim(){
 
 		dom.on('click',btn, this.downCanvas.bind(this));
 
-		container = new createjs.Container();
-		container.x = canvas.width/2;
-		container.y = canvas.height/2;
+		global_cont = new createjs.Container();
+		global_cont.x = canvas.width/2;
+		global_cont.y = canvas.height/2;
 
-		stage.addChild(container)
+		cont_axis = new createjs.Container();
+		global_cont.addChild(cont_axis);
+
+		container = new createjs.Container();
+		container.x = 0; //canvas.width/2;
+		container.y = 0; //canvas.height/2;
+		global_cont.addChild(container)
+
+		stage.addChild(global_cont)
 		var draw_lines = this.drawLines();
 
 		stage.update();
 	};
-	this.updateViewAzim = function(index){
+
+	this.clearAllContainer = function(){
+		container.removeAllChildren();
+		cont_axis.removeAllChildren();
+	}
+
+	this.loadNewFigure = function(index_zero, index_perp){
+		// console.log('load');
+		this.arrData = [];
+		this.clearAllContainer();
+		var shape = new createjs.Shape();
+		cont_axis.addChild(shape);
+		var data = this.getCoor(index_zero.itm, index_zero.sim)
+		this.arrData.push({data:data, color: '#ff0000'});
+		var draw_figure = this.drawLine(data, shape, '#ff0000'); //this.drawFigure(data, '#ff0000');
+
+		var data = this.getCoor(index_perp.itm, index_perp.sim)
+		this.arrData.push({data:data, color: '#0000ff'});
+		var draw_figure = this.drawLine(data, shape, '#0000ff'); //this.drawFigure(data, '#0000ff');
+
+		stage.update();
+	}
+	this.updateViewAzim = function(index, index_sim){
+
 		container.removeAllChildren();
 
-		this.arrData = [];
-		var draw_lines = this.drawLines();
+		this.arrData[2] = false;
 		var zero = main.builder.index_zero;
 		var perp = main.builder.index_perp;
-		if(main.info_ies.azim.arr.length >= 1 && 
-			(index != zero.itm && index != zero.sim) &&
-			(index != perp.itm && index != perp.sim)){
-			var data = this.getCoor(index);
-			this.arrData.push({data:data, color: '#00ff00'});
-			var draw_figure = this.drawFigure(data);
+		if(main.info_ies.azim.arr.length >= 1 ){
+
+			if((index != zero.itm && index != zero.sim) &&
+			(index != perp.itm && index != perp.sim) && 
+			(index_sim != zero.itm && index_sim != zero.sim) &&
+			(index_sim != perp.itm && index_sim != perp.sim)){
+				var data = this.getCoor(index, index_sim);
+				this.arrData[2] = {data:data, color: '#00ff00'};
+				var draw_figure = this.drawFigure(data);
+			} else {
+				if(index == zero.itm || index == zero.sim ||
+					index == perp.itm || index == perp.sim){
+					index = undefined
+				} 
+				if(index_sim == zero.itm || index_sim == zero.sim ||
+					index_sim == perp.itm || index_sim == perp.sim){
+					index_sim = undefined
+				}
+
+				if(index >= 0 || index_sim >= 0){
+					var data = this.getCoor(index, index_sim);
+					this.arrData[2] = {data:data, color: '#00ff00'};
+					var draw_figure = this.drawFigure(data);
+				}
+			}
+			
 		}
 
 		stage.update();
@@ -56,7 +106,8 @@ function ViewAzim(){
 		stage.update();
 	};
 
-	this.getCoor = function(index){
+	this.getCoor = function(index, index_sim){
+		// console.log('getCoor',index,index_sim);
 		var data = [];
 		var lines = main.info_ies.lines;
 
@@ -70,20 +121,30 @@ function ViewAzim(){
 			finish_angle = start_angle + Math.PI;
 		}
 		var start_azim = (Math.PI*2)*(parseFloat(main.info_ies.azim.arr[0])/360);
-		for(var i = 0; i < linesCount; i++) {
-			var row = lines[i];
+		if(index >= 0){
+			for(var i = 0; i < linesCount; i++) {
+				var row = lines[i];
 
-			var a = finish_angle * i/linesCount - Math.PI/2,
-				b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2);
+				var a = finish_angle * i/linesCount - Math.PI/2,
+					b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2);
 
-			var r_0 = row[index],
-				x = r_0 * Math.cos(a),
-				y = r_0 * Math.sin(a);
+				var r_0 = row[index],
+					x = r_0 * Math.cos(a),
+					y = r_0 * Math.sin(a);
 
-			data.push(new THREE.Vector2(x, y))
+				data.push(new THREE.Vector2(x, y))
+			}
 		}
 		if(main.info_ies.azim.sum >= 180){
-			var new_index = (Math.floor(planesCount/2) + index)%(planesCount)
+			var new_index
+			if(index_sim >=0){
+				new_index = index_sim%planesCount;
+			} else {
+				new_index = (Math.floor(planesCount/2) + index)%(planesCount)	
+			}
+			
+			
+			// console.log('index',new_index)
 			for(var i = linesCount-1; i >= 0 ; i--) {
 				var row = lines[i]
 
@@ -97,18 +158,19 @@ function ViewAzim(){
 				data.push(new THREE.Vector2(x, y))
 			}
 		} else {
+			if(index >= 0){
+				for(var i = linesCount-1; i >= 0 ; i--) {
+					var row = lines[i];
 
-			for(var i = linesCount-1; i >= 0 ; i--) {
-				var row = lines[i];
+					var a = finish_angle * i/linesCount - Math.PI/2,
+						b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2)
 
-				var a = finish_angle * i/linesCount - Math.PI/2,
-					b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2)
+					var r_0 = row[index],
+						x = -r_0 * Math.cos(a),
+						y =  r_0 * Math.sin(a)
 
-				var r_0 = row[index],
-					x = -r_0 * Math.cos(a),
-					y =  r_0 * Math.sin(a)
-
-				data.push(new THREE.Vector2(x, y))
+					data.push(new THREE.Vector2(x, y))
+				}
 			}
 		}
 
@@ -118,7 +180,7 @@ function ViewAzim(){
 		var shape = new createjs.Shape();
 
 		var graphics = this.drawGrid(shape);
-		container.addChild(shape)
+		global_cont.addChild(shape)
 		stage.update();
 	};
 	this.drawGrid = function(shape, size){
@@ -181,11 +243,11 @@ function ViewAzim(){
 		return line
 	};
 	this.downCanvas = function(){
-		console.log('arrData',this.arrData)
+		// console.log('arrData',this.arrData)
 		var clone_canvas = dom.elem('canvas', '', false);
 		// canvas.id = 'canvas_azim';
-		clone_canvas.width = 600;
-		clone_canvas.height = 600;
+		clone_canvas.width = 2000;
+		clone_canvas.height = 2000;
 		clone_canvas.style.backgroundColor = '#ffffff';
 
 		var s = new createjs.Stage(clone_canvas);
@@ -202,7 +264,7 @@ function ViewAzim(){
 		s.addChild(cont)
 		var shape = new createjs.Shape();
 		shape.graphics.beginFill('#ffffff').drawRect(clone_canvas.width/2, clone_canvas.height/2, clone_canvas.width, clone_canvas.height)
-		var graphics = this.drawGrid(shape, 300);
+		var graphics = this.drawGrid(shape, clone_canvas.width/2);
 		cont.addChild(shape)
 		
 		var shape_1 = new createjs.Shape();
@@ -210,20 +272,24 @@ function ViewAzim(){
 
 		for(var i = 0 ; i < this.arrData.length; i++){
 			var itm = this.arrData[i];
-			this.drawLine(itm.data, shape_1, itm.color)
+			if(itm && itm.data && itm && itm.data.length){
+				this.drawLine(itm.data, shape_1, itm.color)
+			}
 		}
 
 		s.update();
 
 		var format_image = "image/jpeg";
 		var format = "jpg";
-
-		var file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
-		file_name = file_name.substr(0, file_name.length-4);
+		var file_name = '';
+		if(main.builder.viewFigure){
+			file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
+			file_name = file_name.substr(0, file_name.length-4);
+		}
 
 		var a = document.createElement('a');
 		a.href = clone_canvas.toDataURL(format_image);
-		a.download = 'thumbnails ' +file_name+'.' + format;
+		a.download = 'thumbnail ' +file_name+'.' + format;
 		a.click();
 
 	};

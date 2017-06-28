@@ -30,7 +30,7 @@ UI = f.unit(Block, {
 UI.DataInput = f.unit(Block, {
 	unitName: 'UI_DataInput',
 	ename: 'ui-data-input',
-	demo_file: '8663.IES',
+	demo_file: 'new.ies',
 	text_span: 'Upload *.ies File',
 
 	create: function() {
@@ -80,6 +80,7 @@ UI.DataInput = f.unit(Block, {
 
 		xhr.onreadystatechange = function(){
 			if (this.readyState == 4 && this.status == 200) {
+				// console.log(this)
 				onData(this.responseText)
 			}
 		};
@@ -111,6 +112,7 @@ UI.DataInput = f.unit(Block, {
 
 		if(!file) return
 		this.span.innerHTML = file.name;
+		// console.log('file',file)
 
 		this.reader.readAsText(file, 'cp1251')
 	},
