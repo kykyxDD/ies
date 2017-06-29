@@ -22,9 +22,7 @@ function ViewInfoIES(){
 		}
 		
 	});
-	// window.onclose = function(){
-	// 	main.view.renderer.setClearColor(main.view.background);
-	// }
+
 
 	this.init = function(){
 
@@ -47,7 +45,7 @@ function ViewInfoIES(){
 		this.obj_elem.lamp = createElemInfo('lamp');
 		this.obj_elem.other = createElemInfo('other');
 
-		// this.obj_elem.light_flow = createElemInfo('Light flow')
+		this.obj_elem.light_flow = createElemInfo('Light flow')
 
 		this.obj_elem.power = createElemInfo('power');
 		this.obj_elem.polar = createElemInfo('polar', 'Number of polar angles');
@@ -228,7 +226,6 @@ function ViewInfoIES(){
 	};
 
 	this.prepareFiles = function(){
-
 		var text = this.getNewInfoFile()
 		this.downloadFiles(text)
 	};
@@ -236,7 +233,7 @@ function ViewInfoIES(){
 
 		var arr = ['iesna', 'test', 'data', 'manufac', 'lumcat', 'luminaire', 'lampcat', 'lamp', 'other', 'more', 'tilt']
 
-		var data = main.info_ies.info_data
+		var data = main.info_ies.info_data;
 		var arr_data = [];
 
 		data.more = 'This file has been modified by IESVIEW.COM';
@@ -589,7 +586,7 @@ function ViewInfoIES(){
 			dom.text(obj.lampcat, data.lampcat );
 			dom.text(obj.lamp, data.lamp );
 			dom.text(obj.other, data.other );
-			// dom.text(obj.light_flow, data.light_flow );
+			dom.text(obj.light_flow, data.light_flow );
 			dom.text(obj.polar, data.polar)
 			dom.text(obj.azim, data.azim)
 			dom.text(obj.power, data.power )

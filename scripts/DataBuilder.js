@@ -173,7 +173,6 @@ DataBuilder.prototype = {
 		main.info_ies.maxY = maxY;
 
 		main.info_ies.data = data;
-		main.view_info_ies.updateInfo();
 
 		var height = maxY - minY
 
@@ -259,6 +258,9 @@ DataBuilder.prototype = {
 		main.view.toCenter()
 		dom.remclass(this.cont_preload, 'show');
 		this.viewFigure = true;
+		main.info_ies.info_data.light_flow = this.getLightFlow()
+
+		main.view_info_ies.updateInfo();
 
 		return {
 			object: this.root,
@@ -266,6 +268,66 @@ DataBuilder.prototype = {
 			meshRoot: this.meshRoot
 		}
 	},
+
+	getLightFlow: function(){
+		var info = main.info_ies
+		var lines = info.lines;
+		var l_i = lines.length;
+		var l_j = lines[0].length
+		console.log('l_i', l_i, info.polar.arr.length)
+		console.log('l_j', l_j, info.azim.arr.length)
+		var delt_c = (info.azim.arr[info.azim.arr.length-1] - info.azim.arr[0])/info.azim.arr.length;
+		var delt_p = (info.polar.arr[info.polar.arr.length-1] - info.polar.arr[0])/info.polar.arr.length;
+		console.log('delt_c', delt_c, delt_p)
+		var num_i = getNum(0,0)
+		var all_sum = 0
+		for(var i = 1; i < l_i-1; i++){
+			var sum = 0;
+			for(var j = 0; j < l_j; j++){
+				var num_itm = getNum(i,j)
+				sum += num_itm
+			}
+			// console.log('sum',sum)
+			all_sum +=sum
+		}
+		var res = 0;
+		console.log('all_sum',all_sum)
+		if(l_j == 1){
+			res = (all_sum + (getNum(0,0) + getNum(l_i-1,0))/2 )*(Math.PI*2)*delt_p
+		} else {
+			var path_f = (getNum(0, 0) + getNum(l_i-1, 0) + getNum(0, l_j-1) + getNum(l_i-1, l_j-1))/4
+			var sum_polar = 0;
+
+			for(var i = 1; i < l_i-1; i++ ){
+				var num = getNum(i, 0) + getNum(i, l_j-1)
+				sum_polar += num
+			}
+			var sum_azim = 0
+
+			for(var j = 1; j < l_j-1; j++ ){
+				var num = getNum(0, j) + getNum(l_i-1, j)
+				sum_azim += num
+			}
+			var path_sum = 0.5*(sum_azim + sum_polar)
+			var num = delt_c*delt_p*(path_f+path_sum + all_sum)
+			
+			num *= 360/info.azim.sum;
+			res = num
+		}
+		return Math.floor(res)
+
+		function getNum(i,j){
+			var a = info.polar.arr[i]/180;
+			var sin_i = Math.sin(Math.PI*a);
+			var n = lines[i][j];
+			var num = n*sin_i;
+			// console.log('n', n)
+			return num
+		}
+
+	},
+
+
 
 	radiusToVector: function(radius, index, height) {
 
@@ -547,7 +609,7 @@ DataBuilder.prototype = {
 		var arr_info_1 = this.delStr(data[1].split(' '))
 		var num_polar = parseFloat(arr_info[3]);
 		var num_azim = parseFloat(arr_info[4]);
-		main.info_ies.info_data.light_flow = parseFloat(arr_info[1]);
+		// main.info_ies.info_data.light_flow = parseFloat(arr_info[1]);
 		main.info_ies.info_data.polar = num_polar;
 		main.info_ies.info_data.azim = num_azim;
 		main.info_ies.info_data.power = parseFloat(arr_info_1[2]);
