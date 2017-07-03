@@ -36,16 +36,12 @@ function datinit() {
 
 	dom.append(main.ui.viewport, main.gui.domElement)
 
-
 	// main.gui.add(main.view, 'enableWire').name('Wireframe').onChange(v3redraw).listen()
 
 	// main.gui.add(main, 'linesOnly').name('Lines Only').onChange(onMaterial)
 	// main.gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
 
-// console.log('ui',main.ui.viewport )
-
 	var cont_change = dom.elem('div', 'dg main', main.ui.viewport);
-	// console.log('change',cont_change)
 
 	var cont_all = dom.elem('div', 'change cont_all', cont_change);
 	var input_all = dom.input('radio', 'input_change all', cont_all);

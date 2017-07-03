@@ -170,11 +170,12 @@ body {
 }
 .btn_openEdit:hover,
 .btn_down:hover,
-.load_demo:hover,
-.ui-data-input label.label_file_input:hover {
+.load_demo:hover {
 	background-color: #E4E4E4;
 }
-
+.ui-data-input label.label_file_input:hover {
+	background-color:#DADADA
+}
 .info_ies .popup {
 	position: fixed;
 	top: 0;
@@ -697,4 +698,22 @@ input[type=range]:focus::-ms-fill-upper {
 
 .info_footer a {
 	color: #fff;
+}
+
+
+
+.percent_div {
+	position: absolute;
+	top: 400px;
+	left: 100px;
+	width: 600px;
+	height: 20px;
+	border: 1px solid #DDDDDD;
+	background-color: #DDDDDD;
+	/*background: url('upload.gif');*/
+	background-position: -600px 0px;
+	background-repeat: no-repeat;
+	text-align: center;
+	margin-bottom: 1px;
+	font-family: Arial;
 }

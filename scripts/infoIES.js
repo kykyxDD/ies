@@ -45,7 +45,7 @@ function ViewInfoIES(){
 		this.obj_elem.lamp = createElemInfo('lamp');
 		this.obj_elem.other = createElemInfo('other');
 
-		this.obj_elem.light_flow = createElemInfo('Light flow')
+		this.obj_elem.light_flow = createElemInfo('light_flow','Light flow')
 
 		this.obj_elem.power = createElemInfo('power');
 		this.obj_elem.polar = createElemInfo('polar', 'Number of polar angles');
@@ -99,7 +99,10 @@ function ViewInfoIES(){
 
 		this.createInfoFooter();
 
+
+
 	};
+	
 
 
 	this.createInfoFooter = function(){
@@ -117,9 +120,9 @@ function ViewInfoIES(){
 		var ul = dom.elem('ol', 'authors', elem_text);
 
 		var autor_0 = dom.elem('li', 'itm_author', ul);
-		dom.html(autor_0, 'Anton Sharakshane,  Ph.D., Kotel&rsquo;nikov Institute of Radio-engineering and Electronics of Russian Academy of Sciences, anton.sharakshane@gmail.com, CV ' )
+		dom.html(autor_0, 'Anton Sharakshane,  Ph.D., Kotel&rsquo;nikov Institute of Radio-engineering and Electronics of Russian Academy of Sciences, <a href="mailto:anton.sharakshane@gmail.com">anton.sharakshane@gmail.com</a>  , <a href="https://hh.ru/applicant/resumes/view?resume=3d934453ff0089e6110039ed1f736563726574&print=true">CV</a> ' )
 		var autor_1 = dom.elem('li', 'itm_author', ul);
-		dom.html(autor_1, 'Sergey Gnedoy, gnedoy@gmail.com'); 
+		dom.html(autor_1, 'Sergey Gnedoy,  <a href="mailto:gnedoy@gmail.com">gnedoy@gmail.com</a> '); 
 
 		var close = dom.div('close', elem_text);
 		dom.text(close, 'close' )
@@ -132,21 +135,6 @@ function ViewInfoIES(){
 			dom.remclass(cont_author, 'show')
 		});
 
-		/*var elem_programs = dom.div("link_program", elem);
-		var name_programs = dom.div('name', elem_programs)
-		dom.text(name_programs, 'About the program:');
-		var val_programs = dom.div('val', elem_programs);
-		var link = dom.a('http://ies.sharakshane.com/', 'link', val_programs );
-		dom.text(link, 'http://ies.sharakshane.com/')
-
-		var elem_author = dom.div('list_author', elem);
-		var name_link = dom.div('name', elem_author);
-		dom.text(name_link, 'Authors:');
-		var val_author = dom.div('val', elem_author);
-		var autor_0 = dom.div('itm_author', val_author);
-		dom.html(autor_0, 'Anton Sharakshane,  Ph.D., Kotel&rsquo;nikov Institute of Radio-engineering and Electronics of Russian Academy of Sciences, anton.sharakshane@gmail.com, CV ' )
-		var autor_1 = dom.div('itm_author', val_author);
-		dom.html(autor_1, 'Sergey Gnedoy, gnedoy@gmail.com');*/
 	};
 
 	this.createPopup = function(cont, cont_info){
@@ -192,7 +180,7 @@ function ViewInfoIES(){
 		var obj_lampcat = itmElem('lampcat');
 		var obj_lamp = itmElem('lamp');
 		var obj_other = itmElem('other');
-		// var obj_light_flow = itmElem('light_flow');
+		var obj_light_flow = itmElem('light_flow', 'Light flow');
 
 		// var obj_polar = itmElem('polar');
 		// var obj_azim = itmElem('azim');
@@ -210,7 +198,7 @@ function ViewInfoIES(){
 		this.obj_elem.popup.lampcat = obj_lampcat
 		this.obj_elem.popup.lamp = obj_lamp;
 		this.obj_elem.popup.other = obj_other;
-		// this.obj_elem.popup.light_flow = obj_light_flow;
+		this.obj_elem.popup.light_flow = obj_light_flow;
 
 		function itmElem(val, text){
 			var elem = dom.elem('div', 'itm' ,par);
@@ -271,6 +259,7 @@ function ViewInfoIES(){
 		arr_data.push(main.info_ies.polar.arr.join(' '))
 		arr_data.push(main.info_ies.azim.arr.join(' '))
 		var str_data = this.getArrayData();
+		// console.log(str_data)
 		arr_data.push(str_data)
 		//var data_sould = arr_data.join(' \n')
 		var data_sould = arr_data[0];
@@ -284,15 +273,13 @@ function ViewInfoIES(){
 		var len_polar = main.info_ies.polar.arr.length;
 		var len_azim = main.info_ies.azim.arr.length;
 		var arr_data = [];
-		var minR = main.info_ies.minR;
 		var maxR = main.info_ies.maxR;
-		var diff = maxR - minR;
-
 		var lines = main.info_ies.lines;
 		for(var a = 0; a < len_azim; a++){
 			arr_data[a] = [];
-			for(var p = 0; p < len_polar; p++){	
-				var num = lines[p][a]*maxR
+
+			for(var p = 0; p < len_polar; p++){
+				var num = lines[p][a]*maxR;
 				var arr_num = (''+num).split('.')
 				if(arr_num[1] && arr_num[1].length > 4){
 					var fix = parseFloat(arr_num[1].substr(0, 4))
@@ -375,10 +362,10 @@ function ViewInfoIES(){
 			main.info_ies.info_data.other = elem_popup.other.value
 		}
 
-		// elem_popup.light_flow.value = data.light_flow ? data.light_flow : '';
-		// if(data.light_flow) {
-		// 	main.info_ies.info_data.light_flow = elem_popup.light_flow.value
-		// }
+		elem_popup.light_flow.value = data.light_flow ? data.light_flow : '';
+		if(data.light_flow) {
+			main.info_ies.info_data.light_flow = elem_popup.light_flow.value
+		}
 
 		// var obj_polar = itmElem();
 		// dom.text(obj_polar.name, 'polar');
@@ -408,6 +395,8 @@ function ViewInfoIES(){
 		var lampcat = elem_popup.lampcat.value;
 		var lamp = elem_popup.lamp.value;
 		var other = elem_popup.other.value;
+
+		var light_flow = elem_popup.light_flow.value
 		
 
 		var save = false;
@@ -469,10 +458,13 @@ function ViewInfoIES(){
 			main.info_ies.info_data.other = other
 			dom.text(obj.other, other)
 		}
-		// if(parseFloat(light_flow) != data.light_flow) {
-		// 	save = true
-		// 	console.log('light_flow')
-		// }
+		if(parseFloat(light_flow) != parseFloat(data.light_flow)) {
+			save = true
+			console.log('light_flow', parseFloat(light_flow))
+			
+			dom.text(obj.light_flow, light_flow)
+			main.builder.updateLightFlow(parseFloat(light_flow));
+		}
 
 		console.log('save', save)
 

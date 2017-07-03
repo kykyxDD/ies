@@ -171,18 +171,35 @@
 	cursor: pointer;
 	display: none;
 }
+.ui-data-input .dropzone {
+	width: 100%;
+	height: 85px;
+	font-size: 18px;
+	text-align: center;
+	padding: 10px 0 10px 0;
+	background-color: #BBBBBB;
+	border-radius: 5px;
+};
+.ui-data-input .dropzone:hover{
+	background-color: #fff;
+}
+.ui-data-input .dropzone.hover {
+	background-color: red;
+}
 
 .ui-data-input label.label_file_input {
-	width: 200px;
 	height: 24px;
-	padding: 20px 12px;
 	cursor: pointer;
 	display: block;
-	font-size: 18px;
-	/*text-align: center;*/
-	background-color: #bbb;
+	/*background-color: #bbb;*/
 	position: relative;
 	border-radius: 5px;
+	margin: 15px auto 0;
+	padding: 10px 8px;
+    width: 180px;
+    font-size: 15px;
+    background-color: #A9A9A9;
+    box-shadow: 0 0 10px rgb(103, 103, 103);
 }
 
 .ui-data-input .load_demo:before,
@@ -191,28 +208,34 @@
 	content: '';
 	top: 50%; 
 	margin-top: -13px;
-	left: 20px;
-	width: 27px;
-	height: 27px;
+	left: 15px;
+	
 	background-repeat: no-repeat;
 	background-position: center;
+	background-size: contain;
 }
 
 .ui-data-input .load_demo:before{
 	background-image: url(../images/icon_load_demo.png);
+	width: 27px;
+	height: 27px;
 }
 .ui-data-input label.label_file_input:before{
 	background-image: url(../images/icon_upload.png);
+	width: 22px;
+    height: 23px;    
+    margin-top: -12px;
+    left: 13px;
 }
 .ui-data-input label span{
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	display: block;
 	width: 100%;
-	text-indent: 50px;
+	text-indent: 40px;
 	white-space: nowrap;
 	overflow: hidden;
 	line-height: 25px;
-
+	text-align: left;
 	text-overflow: ellipsis;
 }

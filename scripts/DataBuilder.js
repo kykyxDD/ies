@@ -87,6 +87,8 @@ DataBuilder.prototype = {
 		this.verticals = Math.ceil(180/lines.length);
 
 		var normalR = 1 / maxR
+
+		// console.log('maxR',maxR)
 		for(var i = 0; i < lines.length; i++) {
 			var row = lines[i]
 
@@ -260,6 +262,9 @@ DataBuilder.prototype = {
 		this.viewFigure = true;
 		main.info_ies.info_data.light_flow = this.getLightFlow()
 
+		this.start_light_flow = main.info_ies.info_data.light_flow;
+		// console.log('flow',main.info_ies.info_data.light_flow)
+
 		main.view_info_ies.updateInfo();
 
 		return {
@@ -270,28 +275,30 @@ DataBuilder.prototype = {
 	},
 
 	getLightFlow: function(){
-		var info = main.info_ies
+		var info = main.info_ies;
 		var lines = info.lines;
-		var l_i = lines.length;
-		var l_j = lines[0].length
-		console.log('l_i', l_i, info.polar.arr.length)
-		console.log('l_j', l_j, info.azim.arr.length)
-		var delt_c = (info.azim.arr[info.azim.arr.length-1] - info.azim.arr[0])/info.azim.arr.length;
-		var delt_p = (info.polar.arr[info.polar.arr.length-1] - info.polar.arr[0])/info.polar.arr.length;
-		console.log('delt_c', delt_c, delt_p)
+		var l_i = info.polar.arr.length;
+		var l_j = info.azim.arr.length;
+
+		var delt_c = ((info.azim.sum/180)*Math.PI)/(l_j-1);
+		var delt_p = ((info.polar.sum/180)*Math.PI)/(l_i-1);
+
+		var s_j = l_j == 1 ? 0 : 1;
+		var f_j = l_j - s_j;
+
 		var num_i = getNum(0,0)
 		var all_sum = 0
 		for(var i = 1; i < l_i-1; i++){
 			var sum = 0;
-			for(var j = 0; j < l_j; j++){
+			for(var j = s_j; j < f_j; j++){
 				var num_itm = getNum(i,j)
 				sum += num_itm
 			}
-			// console.log('sum',sum)
-			all_sum +=sum
+
+			all_sum += sum
 		}
 		var res = 0;
-		console.log('all_sum',all_sum)
+
 		if(l_j == 1){
 			res = (all_sum + (getNum(0,0) + getNum(l_i-1,0))/2 )*(Math.PI*2)*delt_p
 		} else {
@@ -299,20 +306,18 @@ DataBuilder.prototype = {
 			var sum_polar = 0;
 
 			for(var i = 1; i < l_i-1; i++ ){
-				var num = getNum(i, 0) + getNum(i, l_j-1)
-				sum_polar += num
+				sum_polar += getNum(i, 0) + getNum(i, l_j-1)
 			}
 			var sum_azim = 0
 
 			for(var j = 1; j < l_j-1; j++ ){
-				var num = getNum(0, j) + getNum(l_i-1, j)
-				sum_azim += num
+				sum_azim += getNum(0, j) + getNum(l_i-1, j)
 			}
-			var path_sum = 0.5*(sum_azim + sum_polar)
-			var num = delt_c*delt_p*(path_f+path_sum + all_sum)
-			
-			num *= 360/info.azim.sum;
-			res = num
+			var path_sum = 0.5*(sum_azim + sum_polar);
+			var itm_num  = (path_f+path_sum + all_sum);
+			res = delt_c*delt_p*itm_num;
+
+			res *= 360/info.azim.sum;
 		}
 		return Math.floor(res)
 
@@ -320,14 +325,41 @@ DataBuilder.prototype = {
 			var a = info.polar.arr[i]/180;
 			var sin_i = Math.sin(Math.PI*a);
 			var n = lines[i][j];
-			var num = n*sin_i;
-			// console.log('n', n)
+			var num = (n*sin_i)*main.info_ies.maxR;
 			return num
 		}
 
 	},
 
+	updateLightFlow: function(light_flow){
+		var info = main.info_ies
+		var lines = info.lines;
+		var l_i = info.polar.arr.length;
+		var l_j = info.azim.arr.length;
 
+		var delt_c = (( info.azim.sum/180)*Math.PI)/(l_j-1);
+		var delt_p = ((info.polar.sum/180)*Math.PI)/(l_i-1);
+		var res = 0;
+		var path = light_flow/main.info_ies.info_data.light_flow;
+
+		var s = light_flow/this.start_light_flow;
+		// console.log('s',s)
+		this.root.scale.set(s,s,s)
+		main.view.toCenter()
+		main.view.needsRedraw = true;
+
+		// console.log('path', path)
+		var get_new_flow = main.info_ies.info_data.light_flow;
+
+		if(path != 1){
+			this.updateArrayData(path)
+			// this.updateFigure(path);
+			get_new_flow = this.getLightFlow();
+			// console.log('flow',get_new_flow)
+		}
+
+		main.info_ies.info_data.light_flow = get_new_flow
+	},
 
 	radiusToVector: function(radius, index, height) {
 
@@ -452,7 +484,48 @@ DataBuilder.prototype = {
 		main.view_azim.updateViewAzim(this.index_line, index_asim);
 
 	},
+	updateArrayData: function(path){
+		var lines = main.info_ies.lines;
 
+		for(var i = 0; i < lines.length; i++) {
+			var row = lines[i];
+			
+			for(var j = 0; j < row.length; j++) {
+				var r = row[j]
+				main.info_ies.lines[i][j] = r*path
+			}
+		}
+	},
+	updateFigure: function(path){
+		for(var l = 0; l < this.lineRoot.children.length; l++){
+			var line = this.lineRoot.children[l];
+			var pos = line.geometry.attributes.position.array
+			for(var p = 0; p < pos.length; p++){
+				pos[p] *= path;
+			}
+
+			//line.material.visible = visible;
+			line.geometry.attributes.position.needsUpdate = true;
+			line.material.needsUpdate = true
+		}
+
+		// console.log('data:',this.data)
+		for(var m = 0; m < this.meshRoot.children.length; m++){
+			var mesh = this.meshRoot.children[m];
+			// console.log('mesh',mesh)
+			var ver = mesh.geometry.vertices
+			for(var v = 0; v < ver.length; v++){
+				ver[v].x *= path;
+				ver[v].y *= path;
+				ver[v].z *= path;
+			}
+			mesh.geometry.verticesNeedUpdate = true;
+			// mesh.geometry.attributes.vertices.needsUpdate = true;
+			//mesh.material.visible = !main.linesOnly
+		}
+		main.view.needsRedraw = true;
+
+	},
 	createPlane: function(data, height) {
 		var vertices = []
 		,   colors   = []
@@ -565,7 +638,6 @@ DataBuilder.prototype = {
 			info_data: false
 		}
 		var info_data = {};
-		//lines.map(function(line){
 		for(var i = 0; i < lines.length; i++){
 			var line = lines[i];
 			// var arr_1 = line.split(':');

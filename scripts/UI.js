@@ -33,6 +33,7 @@ UI.DataInput = f.unit(Block, {
 	ename: 'ui-data-input',
 	demo_file: '8663.IES',
 	text_span: 'Upload *.ies File',
+	text_drod: 'Drag and drop *.ies file or',
 
 	create: function() {
 
@@ -41,7 +42,21 @@ UI.DataInput = f.unit(Block, {
 
 		dom.on('click', btn_load_demo, this.loadStartFile.bind(this));
 
-		var label = dom.elem('label', 'label_file_input', this.element);
+		this.createDragDrop();
+	},
+	createDragDrop: function(){
+		var self = this;
+
+		var elem = dom.div("dropzone", this.element);//'<div class="dropzone" id="dropzone">Перетащите файлы сюда</div>';
+		elem.id = "dropzone";
+		var span = dom.elem('span', 'text_dropzone', elem)
+		dom.text(span, this.text_drod);
+		this.dropzone_text = span;
+		this.dropzone = elem;
+		var elem_0 = dom.div('', this.element);
+		elem_0.id = "upload_overall";
+
+		var label = dom.elem('label', 'label_file_input', elem);
 		this.label = label;
 
 
@@ -51,10 +66,77 @@ UI.DataInput = f.unit(Block, {
 		this.input  = dom.input('file', 'file-input', label);
 		this.reader = new FileReader
 
-		dom.on('change', this.input,   this)
-		dom.on('load',   this.reader,  this)
+		dom.on('change', this.input,   this);
+		dom.on('load',   this.reader,  this);
+
+		elem.addEventListener('dragenter', self.dropenter.bind(self));
+		elem.addEventListener('dragover', self.dropenter.bind(self));
+		elem.addEventListener('dragleave', self.dropleave.bind(self));
+		elem.addEventListener('drop', function(e){
+			e.stopPropagation();
+			e.preventDefault();
+			self.dodrop(e)
+			return false;
+		});
+		
+	},
+	dodrop: function(e) {
+		//console.log('dodrop')
+		this.dropleave()
+		dom.remclass(this.dropzone, 'hover')
+		var dt = e.dataTransfer;
+		if(!dt && !dt.files) { return false ; }
+
+		// Получить список загружаемых файлов
+		var files = dt.files;
+
+		// Fix для Internet Explorer
+		dt.dropEffect="copy";
+
+		for (var i = 0; i < files.length; i++) {
+			this.ajax_upload(files[i]);
+		}
+
+		// Подавить событие перетаскивания файла
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
 	},
 
+	// AJAX-загрузчик файлов
+	ajax_upload: function(file) {
+		if (window.XMLHttpRequest) {
+			var http_request = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			try {
+				http_request = new ActiveXObject("Msxml2.XMLHTTP");
+			} catch (e) {
+				try {
+					http_request = new ActiveXObject("Microsoft.XMLHTTP");
+				} catch (e) {
+		 			return false;
+				}
+			}
+		} else {
+			return false;
+		}
+		var name = file.fileName || file.name;
+		this.input.files[0] = file;
+		this.onChange();
+	},
+	dropenter: function(e) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		this.dropzone.style.backgroundColor='#E4E4E4';
+		dom.text(this.dropzone_text, 'Drop your files here');
+	},
+
+	dropleave: function() {
+
+		this.dropzone.style.backgroundColor='#BBBBBB';
+		dom.text(this.dropzone_text, this.text_drod);
+	},
 	xmlhttp: function(){
 		var xmlhttp;
 		try {
@@ -108,6 +190,7 @@ UI.DataInput = f.unit(Block, {
 	},
 
 	onChange: function(e) {
+		main.dataSource = false
 		var file = this.input.files[0];
 
 		if(!file) return
@@ -115,6 +198,8 @@ UI.DataInput = f.unit(Block, {
 
 		this.reader.readAsText(file, this.charset) // utf-8 cp1251
 	},
+
+	
 
 	onLoad: function(e) {
 		var data = this.reader.result;
