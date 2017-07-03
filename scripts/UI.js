@@ -120,8 +120,12 @@ UI.DataInput = f.unit(Block, {
 		} else {
 			return false;
 		}
+
+		this.itm_file = file
 		var name = file.fileName || file.name;
+		this.input.value = '';
 		this.input.files[0] = file;
+		console.log(file)
 		this.onChange();
 	},
 	dropenter: function(e) {
@@ -191,9 +195,11 @@ UI.DataInput = f.unit(Block, {
 
 	onChange: function(e) {
 		main.dataSource = false
-		var file = this.input.files[0];
+		var file = this.input.files[0] || this.itm_file;
+		console.log('file',this.input.files.length)
 
 		if(!file) return
+		this.itm_file = file;
 		this.span.innerHTML = file.name;
 
 		this.reader.readAsText(file, this.charset) // utf-8 cp1251

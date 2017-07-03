@@ -360,6 +360,13 @@ DataBuilder.prototype = {
 
 		main.info_ies.info_data.light_flow = get_new_flow
 	},
+	updatePolar: function(polar){
+		var info = main.info_ies;
+		var lines = info.lines;
+		var info_polar = info.polar
+		var l_i = info_polar.arr.length;
+		console.log(polar, l_i)
+	},
 
 	radiusToVector: function(radius, index, height) {
 
