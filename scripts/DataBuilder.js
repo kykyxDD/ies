@@ -88,6 +88,8 @@ DataBuilder.prototype = {
 
 		var normalR = 1 / maxR
 
+		console.log(maxR)
+
 		// console.log('maxR',maxR)
 		for(var i = 0; i < lines.length; i++) {
 			var row = lines[i]
@@ -149,10 +151,11 @@ DataBuilder.prototype = {
 					row.splice(j + 1, 0, (b - a) * p + a)
 				}
 			}
+			
+			var a = finish_angle * i/linesCount - Math.PI/2;
 
 			for(var j = 0; j < row.length; j++) {
-				var a =   finish_angle * i/linesCount - Math.PI/2
-				,   b = (2*Math.PI   * j/totalCount + start_azim)%(Math.PI*2)
+				var b = (2*Math.PI   * j/totalCount + start_azim)%(Math.PI*2)
 
 				var r = row[j],
 				    x2 = r * Math.cos(a),
@@ -347,6 +350,10 @@ DataBuilder.prototype = {
 		this.root.scale.set(s,s,s)
 		main.view.toCenter()
 		main.view.needsRedraw = true;
+		var m = main.info_ies.info_data.line[0][2];
+		console.log(m)
+
+		var k = main.info_ies.maxR*m;
 
 		// console.log('path', path)
 		var get_new_flow = main.info_ies.info_data.light_flow;
@@ -365,7 +372,8 @@ DataBuilder.prototype = {
 		var lines = info.lines;
 		var info_polar = info.polar
 		var l_i = info_polar.arr.length;
-		console.log(polar, l_i)
+		console.log(info_polar.sum/(polar-1))
+		console.log(info_polar.sum/(l_i-1))
 	},
 
 	radiusToVector: function(radius, index, height) {
@@ -685,6 +693,10 @@ DataBuilder.prototype = {
 		var index_zero = [];
 		if(!data[0]) return [];
 		var arr_info = this.delStr(data[0].split(' '))
+
+		for(var i = 0; i < arr_info.length; i++){
+			arr_info[i] = parseFloat(arr_info[i]);
+		}
 		var arr_info_1 = this.delStr(data[1].split(' '))
 		var num_polar = parseFloat(arr_info[3]);
 		var num_azim = parseFloat(arr_info[4]);
@@ -726,14 +738,19 @@ DataBuilder.prototype = {
 		var min_azim = 10000;
 		var max_azim = 0;
 
+		console.log('polar:',polar.join(', '))
 
 		for(var i = 0; i < azim.length; i++){
 			azim[i] = parseFloat(azim[i])
 			min_azim = Math.min(min_azim, azim[i])
 			max_azim = Math.max(max_azim, azim[i])
 		}
+		
 		for(var i = 0; i < polar.length; i++){
 			polar[i] = parseFloat(polar[i])
+			if(i > 0){
+				console.log('step:',polar[i] - polar[i-1])
+			}
 		}
 
 		main.info_ies.azim = {
@@ -750,6 +767,7 @@ DataBuilder.prototype = {
 			max: last_angle_polar,
 			sum: sum_polar
 		}
+
 
 		for(var i = 0; i < polar.length; i++){
 			arr_data[i] = [];

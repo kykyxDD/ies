@@ -7,21 +7,34 @@ function ViewInfoIES(){
 
 	var mediaQueryList = window.matchMedia('print');
 	mediaQueryList.addListener(function(mql) {
+		mql.preventDefault();
+		mql.stopPropagation();
+		console.log('print',mql.matches)
 		if (mql.matches) {
-			mql.preventDefault();
-			mql.stopPropagation();
-			main.view.renderer.setClearColor(0xffffff);
-			window.onResize();
-			console.log('onResize matches width',main.view.element.offsetWidth, main.view.renderer.domElement.width)
-			console.log('onResize matches height',main.view.element.offsetHeight, main.view.renderer.domElement.height)
-			// window.print();
+			self.beforePrint()
 		} else {
-			main.view.renderer.setClearColor(main.view.background);
-			window.onResize();
-			console.log('onResize',main.view.element.offsetWidth, main.view.element.offsetHeight)
+			self.afterPrint()
 		}
 		
 	});
+
+	window.onbeforeprint = function() {
+		console.log('This will be called before the user prints.');
+		self.beforePrint();
+	};
+	window.onafterprint = function() {
+		console.log('This will be called after the user prints');   
+		self.afterPrint();
+	};
+
+	
+
+	this.beforePrint = function(){
+		main.view.updateImgCanvas();
+	};
+	this.afterPrint = function(){
+		main.view.clearImgCanvas();
+	};
 
 
 	this.init = function(){
@@ -199,6 +212,7 @@ function ViewInfoIES(){
 		this.obj_elem.popup.lamp = obj_lamp;
 		this.obj_elem.popup.other = obj_other;
 		this.obj_elem.popup.light_flow = obj_light_flow;
+		// this.obj_elem.popup.polar = obj_polar;
 
 		function itmElem(val, text){
 			var elem = dom.elem('div', 'itm' ,par);
@@ -253,18 +267,25 @@ function ViewInfoIES(){
 			}
 			arr_data.splice(-2, 0, str);
 		}
-		arr_data.push(data.line[0].join(' '))
-		arr_data.push(data.line[1].join(' '))
 
-		arr_data.push(main.info_ies.polar.arr.join(' '))
-		arr_data.push(main.info_ies.azim.arr.join(' '))
+		/*if(main.builder.root.scale.x != 1) {
+			var s = main.builder.root.scale.x;
+			var m = main.info_ies.info_data.line[0][2];
+
+			data.line[0][2] = (main.info_ies.maxR*m*s)/(main.info_ies.maxR)
+			console.log(s,data.line[0][2],m)
+		}*/
+		arr_data.push(data.line[0].join(' '));
+		arr_data.push(data.line[1].join(' '));
+
+		arr_data.push(main.info_ies.polar.arr.join(' '));
+		arr_data.push(main.info_ies.azim.arr.join(' '));
 		var str_data = this.getArrayData();
-		// console.log(str_data)
-		arr_data.push(str_data)
+		arr_data.push(str_data);
 		//var data_sould = arr_data.join(' \n')
 		var data_sould = arr_data[0];
 		for(var i = 1; i < arr_data.length; i++){
-			data_sould += '\r\n' + arr_data[i]
+			data_sould += '\r\n' + arr_data[i];
 		}
 		return data_sould
 	};
@@ -309,8 +330,7 @@ function ViewInfoIES(){
 		var element = document.createElement('a');
 		element.setAttribute('href', textFile);
 		element.setAttribute('download', 'new '+ file_name);
-		element.click()
-
+		element.click();
 	}
 
 	this.openEditPopup = function(){
@@ -367,6 +387,17 @@ function ViewInfoIES(){
 			main.info_ies.info_data.light_flow = elem_popup.light_flow.value
 		}
 
+		// elem_popup.polar.value = data.polar ? data.polar : '';
+		// if(data.polar) {
+		// 	main.info_ies.info_data.polar = elem_popup.polar.value
+		// }
+
+
+
+		// elem_popup.light_flow.value = data.light_flow ? data.light_flow : '';
+		// if(data.light_flow) {
+		// 	main.info_ies.info_data.light_flow = elem_popup.light_flow.value
+		// }
 		// var obj_polar = itmElem();
 		// dom.text(obj_polar.name, 'polar');
 		// obj_polar.input.value = data.polar ? data.polar : '';
@@ -397,6 +428,8 @@ function ViewInfoIES(){
 		var other = elem_popup.other.value;
 
 		var light_flow = elem_popup.light_flow.value
+
+		// var polar = elem_popup.polar.value
 		
 
 		var save = false;
@@ -465,6 +498,15 @@ function ViewInfoIES(){
 			dom.text(obj.light_flow, light_flow)
 			main.builder.updateLightFlow(parseFloat(light_flow));
 		}
+
+		// if(parseFloat(polar) != parseFloat(data.polar)) {
+		// 	save = true
+		// 	console.log('polar', parseFloat(polar))
+			
+		// 	dom.text(obj.polar, polar)
+		// 	main.builder.updatePolar(parseFloat(polar));
+		// }
+
 
 		console.log('save', save)
 

@@ -421,8 +421,13 @@ body {
 	left: 0px;
 	width: 230px;
 	height: 150px;
-	background: url(../images/logo-lamp.png) no-repeat center;
-	background-size: contain;
+	/*background-image: url(../images/logo-lamp.png);*/
+	/*background-image: url(../images/logo_kit_white.png) ;*/
+	background-image: url(../images/logo_kit.png);
+
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: auto 80%;
 }
 .cont_list_val {
 	width: 175px;
@@ -673,7 +678,7 @@ input[type=range]:focus::-ms-fill-upper {
 	display: table;
 	width: 100px;
 	height: 25px;
-	background-color: blue;
+	background-color: #3467CC;
 	border-radius: 5px;
 	text-align: center;
 	line-height: 25px;

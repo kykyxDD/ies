@@ -1,6 +1,12 @@
 function View3(root) {
 	this.element   = dom.div('view3')
-	this.renderer  = new THREE.WebGLRenderer
+
+	var img_logo = new Image();
+	img_logo.src = './images/logo_kit_white.png';
+	this.img_logo = img_logo;
+
+	this.img_canvas = dom.div('img_canvas', this.element);
+	this.renderer  = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 
 	this.object    = new THREE.Object3D
 	this.camera    = new THREE.PerspectiveCamera
@@ -61,6 +67,43 @@ View3.prototype = {
 
 	enableWire: false,
 	enableNormal: false,
+	updateImgCanvas: function(){
+
+		var logo = this.logo ? this.logo : document.querySelector('.viewport > .logo');
+		logo.style.backgroundImage = 'url('+this.img_logo.src+')';
+		if(!this.logo) {
+			this.logo = logo
+		}
+
+		document.title = 'IESVIEW.COM';
+		var w = this.element.offsetWidth
+		,   h = this.element.offsetHeight
+
+		this.renderer.setClearColor(0xffffff);
+		this.draw();
+
+		var canvas = this.renderer.getContext().canvas;
+		var format_image = "image/png";
+		
+		var img = new Image();
+		img.src = canvas.toDataURL(format_image);
+		img.backgroundColor = "#fff";
+		var size = this.renderer.getSize();
+		img.width  = size.width*1.3;
+		img.height = size.height*1.3;
+
+		this.img_canvas.style.backgroundImage = 'url('+img.src+')';
+
+		this.renderer.setClearColor(this.background);
+		this.needsRedraw = true;
+	},
+	clearImgCanvas: function(){
+		
+		this.logo.style.backgroundImage = '';
+
+		document.title = 'View and convert photometric data';
+		this.img_canvas.style.backgroundImage = '';
+	},
 
 	makeGrid: function() {
 		var size = 10
@@ -170,7 +213,7 @@ View3.prototype = {
 		var offset = this.camera.position.clone().sub(this.orbit.target).normalize()
 		var radius = 50
 		var scale = main.builder.root && main.builder.root.scale.y;
-		console.log(scale)
+		// console.log(scale)
 		if(!parseFloat(scale)) {
 			scale = 1
 		}
@@ -295,6 +338,7 @@ View3.prototype = {
 	},
 
 	onUpdate: function(dt) {
+		// console.log('onUpdate')
 		this.fpview.update(dt)
 		if(this.fpview.changed) {
 			this.fpview.changed = false
@@ -315,7 +359,9 @@ View3.prototype = {
 		}
 
 		if(this.needsRedraw) {
+			// console.log('needsRedraw')
 			this.needsRedraw = false
+			// this.updateImgCanvas()
 
 			this.draw()
 		}
