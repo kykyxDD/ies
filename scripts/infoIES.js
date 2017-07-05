@@ -4,6 +4,7 @@ function ViewInfoIES(){
 	this.obj_elem = {};
 	var index = 0;
 	var max_val = 0
+	var text_more = 'This file has been modified by IESKIT.COM';
 
 	var mediaQueryList = window.matchMedia('print');
 	mediaQueryList.addListener(function(mql) {
@@ -58,7 +59,7 @@ function ViewInfoIES(){
 		this.obj_elem.lamp = createElemInfo('lamp');
 		this.obj_elem.other = createElemInfo('other');
 
-		this.obj_elem.light_flow = createElemInfo('light_flow','Light flow')
+		this.obj_elem.light_flow = createElemInfo('light_flow','Luminous flux')
 
 		this.obj_elem.power = createElemInfo('power');
 		this.obj_elem.polar = createElemInfo('polar', 'Number of polar angles');
@@ -193,10 +194,10 @@ function ViewInfoIES(){
 		var obj_lampcat = itmElem('lampcat');
 		var obj_lamp = itmElem('lamp');
 		var obj_other = itmElem('other');
-		var obj_light_flow = itmElem('light_flow', 'Light flow');
+		var obj_light_flow = itmElem('light_flow', 'Luminous flux');
 
 		// var obj_polar = itmElem('polar');
-		// var obj_azim = itmElem('azim');
+		var obj_azim = itmNumElem('azim', "NUMBER OF POLAR ANGLES");
 		// var obj_power = itmElem('power');
 
 		this.obj_elem.popup = {};
@@ -213,6 +214,7 @@ function ViewInfoIES(){
 		this.obj_elem.popup.other = obj_other;
 		this.obj_elem.popup.light_flow = obj_light_flow;
 		// this.obj_elem.popup.polar = obj_polar;
+		this.obj_elem.popup.azim = obj_azim;
 
 		function itmElem(val, text){
 			var elem = dom.elem('div', 'itm' ,par);
@@ -224,7 +226,31 @@ function ViewInfoIES(){
 
 			return input
 		}
+		function itmNumElem(val, text){
+			var elem = dom.elem('div', 'itm ' + val ,par);
+			var elem_name = dom.elem('div', 'name', elem);
+			var elem_val = dom.elem('div', 'val', elem);
+			var cont_val = dom.elem('div', 'cont_val', elem_val);
+			var btn_minus = dom.elem('div', 'minus', cont_val);
+			var input = dom.input('text', '', cont_val)
+			dom.text(elem_name, text ? text : val);
+			input.setAttribute('name', val);
+			var btn_plus = dom.elem('div', 'plus', cont_val);
+			dom.text(btn_minus, '-')
+			dom.text(btn_plus, '+')
 
+			btn_minus.addEventListener('click', function(){
+				console.log('minus',input.value)
+				if(parseFloat(input.value) == 1) return
+				input.value = parseFloat(input.value) - 1
+			});
+			btn_plus.addEventListener('click', function(){
+				console.log('plus',input.value)
+				input.value = parseFloat(input.value) + 1
+			});
+
+			return input
+		}
 	};
 
 	this.prepareFiles = function(){
@@ -238,7 +264,7 @@ function ViewInfoIES(){
 		var data = main.info_ies.info_data;
 		var arr_data = [];
 
-		data.more = 'This file has been modified by IESVIEW.COM';
+		data.more = text_more;
 
 		for(var i = 0; i < arr.length; i++){
 			var key = arr[i];
@@ -275,6 +301,8 @@ function ViewInfoIES(){
 			data.line[0][2] = (main.info_ies.maxR*m*s)/(main.info_ies.maxR)
 			console.log(s,data.line[0][2],m)
 		}*/
+		data.line[0][3] = main.info_ies.polar.arr.length;
+		data.line[0][4] = main.info_ies.azim.arr.length;
 		arr_data.push(data.line[0].join(' '));
 		arr_data.push(data.line[1].join(' '));
 
@@ -387,6 +415,12 @@ function ViewInfoIES(){
 			main.info_ies.info_data.light_flow = elem_popup.light_flow.value
 		}
 
+		elem_popup.azim.value = data.azim ? data.azim : 0;
+		if(data.azim){
+			main.info_ies.info_data.azim = elem_popup.azim.value
+		}
+
+
 		// elem_popup.polar.value = data.polar ? data.polar : '';
 		// if(data.polar) {
 		// 	main.info_ies.info_data.polar = elem_popup.polar.value
@@ -402,10 +436,7 @@ function ViewInfoIES(){
 		// dom.text(obj_polar.name, 'polar');
 		// obj_polar.input.value = data.polar ? data.polar : '';
 		
-		// var obj_azim = itmElem();
-		// dom.text(obj_azim.name, 'azim');
-		// obj_azim.input.value = data.azim ? data.azim : '';
-		
+
 		// var obj_power = itmElem();
 		// dom.text(obj_power.name, 'power');
 		// obj_power.input.value = data.power ? data.power : '';
@@ -428,7 +459,7 @@ function ViewInfoIES(){
 		var other = elem_popup.other.value;
 
 		var light_flow = elem_popup.light_flow.value
-
+		var azim = elem_popup.azim.value
 		// var polar = elem_popup.polar.value
 		
 
@@ -499,6 +530,15 @@ function ViewInfoIES(){
 			main.builder.updateLightFlow(parseFloat(light_flow));
 		}
 
+
+		if(parseFloat(azim) != parseFloat(data.azim)) {
+			save = true
+			console.log('azim', parseFloat(azim))
+			
+			dom.text(obj.azim, azim)
+			main.info_ies.info_data.azim = azim
+			main.builder.updateAzim(parseFloat(azim));
+		}
 		// if(parseFloat(polar) != parseFloat(data.polar)) {
 		// 	save = true
 		// 	console.log('polar', parseFloat(polar))
@@ -626,13 +666,19 @@ function ViewInfoIES(){
 			dom.text(obj.power, data.power )
 		}
 
+		this.loadMiniView()
+
+		
+	};
+
+	this.loadMiniView = function(){
 		var len = main.info_ies.lines[0] ? main.info_ies.lines[0].length : 0;
 		max_val = main.info_ies.azim.arr.length -1//len
 
 		index = main.info_ies.azim.arr.indexOf(main.info_ies.azim.min_angle);
 
 
-		if(max_val <= 1) {
+		if(max_val == 0) {
 			var text = main.info_ies.azim.arr.length > 0 ? 'Axial symmetry' : '';
 			dom.text(this.obj_elem.text_azim, text);
 
@@ -644,8 +690,6 @@ function ViewInfoIES(){
 		}
 		this.setViewAzim()
 	};
-
-
 
 	this.hiddenPanel = function(){
 		dom.visible(this.obj_elem.btn_prev, false);

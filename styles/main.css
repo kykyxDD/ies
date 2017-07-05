@@ -190,9 +190,7 @@ body {
 }
 .info_ies .popup .content {
 	position: absolute;
-	width: 340px;
-	/*height: 350px;*/
-	
+	width: 355px;
 	top: 0;
 	bottom: 0;
 	left: 0;
@@ -246,12 +244,58 @@ body {
 	width: 100%;
 	margin-bottom: 7px;
 }
+.info_ies .popup .itm.azim .val {
+	height: 30px;
+	width: 200px;
+}
+.info_ies .popup .itm.azim .val .cont_val {
+	width: 100%;
+	display: table;
+}
+.info_ies .popup .itm.azim .val .minus,
+.info_ies .popup .itm.azim .val .plus,
+.info_ies .popup .itm.azim .val input{
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+}
+.info_ies .popup .itm.azim .val input {
+	width: 123px;
+    margin: 0 5px;
+}
+.info_ies .popup .itm.azim .val .minus {
+	line-height: 23px;
+}
+.info_ies .popup .itm.azim .val .plus {
+	line-height: 25px;
+}
+.info_ies .popup .itm.azim .val .minus,
+.info_ies .popup .itm.azim .val .plus {
+	width: 25px;
+	height: 25px;
+	background-color: #FDFDFD;
+	border-radius: 3px;
+	border: 1px solid #545454;
+	font-size: 16px;
+	font-weight: bold;
+	color: black;
+	cursor: pointer;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+
+
 .info_ies .popup .itm > div{
 	display: inline-block;
 }
 .info_ies .popup .itm .name {
 	width: 100px;
 	text-transform: uppercase;
+	margin-right: 10px;
 }
 .info_ies .popup .itm .val {
 	width: 190px;
