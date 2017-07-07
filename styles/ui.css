@@ -34,9 +34,10 @@
 }
 .dg.main .change {
 	display: inline-block;
-	width: 90px;
-	height: 90px;
+	width: 65px;
+	height: 65px;
 	margin-right: 10px;
+	position: relative;
 
 }
 .dg.main .change label {
@@ -62,7 +63,7 @@
 .dg.main .change input {
 	display: none;
 }
-.dg.main .change input:checked + label{
+.dg.main .change:not(.bg) input:checked + label{
 
 	border-color: #86eb13;
 }

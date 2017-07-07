@@ -34,7 +34,7 @@ function datinit() {
 		hideable: true
 	})
 
-	dom.append(main.ui.viewport, main.gui.domElement)
+	// dom.append(main.ui.viewport, main.gui.domElement)
 
 	// main.gui.add(main.view, 'enableWire').name('Wireframe').onChange(v3redraw).listen()
 
@@ -77,12 +77,7 @@ function datinit() {
 		onChangeFigure('line');
 	});
 
-	var cont_select_bg = dom.div('change_bg', main.ui.viewport)
-
-// 	<div class="slideThree">	
-// 	<input type="checkbox" value="None" id="slideThree" name="check" />
-// 	<label for="slideThree"></label>
-// </div>
+	var cont_select_bg = dom.div('change bg', cont_change)
 
 	var elem_slide = dom.div('slideThree', cont_select_bg);
 	var input_change = dom.input('checkbox', false, elem_slide)
