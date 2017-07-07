@@ -69,18 +69,18 @@ View3.prototype = {
 	enableNormal: false,
 	updateImgCanvas: function(){
 
-		var logo = this.logo ? this.logo : document.querySelector('.viewport > .logo');
-		logo.style.backgroundImage = 'url('+this.img_logo.src+')';
-		if(!this.logo) {
-			this.logo = logo
-		}
+		// var logo = this.logo ? this.logo : document.querySelector('.viewport > .logo');
+		// logo.style.backgroundImage = 'url('+this.img_logo.src+')';
+		// if(!this.logo) {
+		// 	this.logo = logo
+		// }
 
 		document.title = 'IESVIEW.COM';
 		var w = this.element.offsetWidth
 		,   h = this.element.offsetHeight
 
-		this.renderer.setClearColor(0xffffff);
-		this.draw();
+		// this.renderer.setClearColor(0xffffff);
+		// this.draw();
 
 		var canvas = this.renderer.getContext().canvas;
 		var format_image = "image/png";
@@ -94,12 +94,36 @@ View3.prototype = {
 
 		this.img_canvas.style.backgroundImage = 'url('+img.src+')';
 
-		this.renderer.setClearColor(this.background);
-		this.needsRedraw = true;
+		// this.renderer.setClearColor(this.background);
+		// this.needsRedraw = true;
 	},
+
+	changeBG: function(checked){
+		console.log('changeBG', checked);
+		// var logo = this.logo ? this.logo : document.querySelector('.viewport > .logo');
+		// if(!this.logo) {
+		// 	this.logo = logo
+		// }
+		var body = document.body;
+
+		if(checked){
+			// logo.style.backgroundImage = 'url('+this.img_logo.src+')';
+			this.renderer.setClearColor(0xffffff);
+			dom.addclass(body, 'day')
+		} else {
+			// logo.style.backgroundImage = '';
+
+			this.renderer.setClearColor(this.background);
+			dom.remclass(body, 'day')
+		}
+
+		this.needsRedraw = true;
+
+	},
+
 	clearImgCanvas: function(){
 		
-		this.logo.style.backgroundImage = '';
+		// this.logo.style.backgroundImage = '';
 
 		document.title = 'View and convert photometric data';
 		this.img_canvas.style.backgroundImage = '';

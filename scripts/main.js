@@ -77,6 +77,26 @@ function datinit() {
 		onChangeFigure('line');
 	});
 
+	var cont_select_bg = dom.div('change_bg', main.ui.viewport)
+
+// 	<div class="slideThree">	
+// 	<input type="checkbox" value="None" id="slideThree" name="check" />
+// 	<label for="slideThree"></label>
+// </div>
+
+	var elem_slide = dom.div('slideThree', cont_select_bg);
+	var input_change = dom.input('checkbox', false, elem_slide)
+	input_change.id = 'slideThree';
+	input_change.setAttribute('name', "check");
+
+	var label = dom.elem('label', false, elem_slide);
+	label.setAttribute('for', 'slideThree');
+
+	dom.on('change', input_change, function(){
+		main.view.changeBG(this.checked)
+	})
+
+
 
 
 	// main.gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)

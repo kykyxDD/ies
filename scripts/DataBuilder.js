@@ -86,7 +86,7 @@ DataBuilder.prototype = {
 
 		var normalR = 1 / maxR;
 
-		console.log(maxR)
+		// console.log(maxR)
 
 		// console.log('maxR',maxR)
 		for(var i = 0; i < lines.length; i++) {
@@ -293,8 +293,9 @@ DataBuilder.prototype = {
 
 		this.index_zero.itm = index_zero;
 		this.index_zero.sim = (Math.floor(this.lineRoot.children.length/2) + index_zero)%this.lineRoot.children.length;
-		this.index_perp.itm = index_perp;
-		this.index_perp.sim = (Math.floor(this.lineRoot.children.length/2) + index_perp)%this.lineRoot.children.length;
+
+		this.index_perp.itm = index_perp >= 0 ?  index_perp : undefined ;
+		this.index_perp.sim = index_perp >= 0 ?  (Math.floor(this.lineRoot.children.length/2) + index_perp)%this.lineRoot.children.length : undefined ;
 
 	},
 
@@ -398,9 +399,7 @@ DataBuilder.prototype = {
 		var lines = info.lines;
 		var info_azim = info.azim
 		var l_i = info_azim.arr.length;
-		
-		// console.log(info_azim.sum/(azim-1))
-		// console.log(info_azim.sum/(l_i-1))
+
 		var sum = l_i > 1 ? info_azim.sum : this.max_azim_data;
 		var path = sum/(azim-1);
 		var new_arr = [info_azim.min];
@@ -414,8 +413,7 @@ DataBuilder.prototype = {
 			}
 			new_arr.push(parseFloat((angle).toFixed(2)));
 		}
-		// main.info_ies.info_data.azim = 
-		// console.log('arr:',new_arr)
+
 		this.createNewDataAzim(new_arr)
 
 	},
@@ -812,7 +810,13 @@ DataBuilder.prototype = {
 				info_data['iesna'] = line.replace('IESNA:LM-63-', '');
 			}
 			if(key && val){
-				info_data[key.toLowerCase()] = val
+				key = key.toLowerCase();
+				if(info_data[key]){
+					info_data[key] += ' ' + val ;
+				} else {
+					info_data[key] = val;
+				}
+				
 			}
 		}
 		main.info_ies.info_data = info_data;
@@ -904,8 +908,6 @@ DataBuilder.prototype = {
 
 		var min = 10000;
 		var max = 0;
-
-		// console.log('polar:',polar.join(', '))
 
 		for(var i = 0; i < arr.length; i++){
 			arr[i] = parseFloat(arr[i])

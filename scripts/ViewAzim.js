@@ -55,9 +55,12 @@ function ViewAzim(){
 		this.arrData.push({data:data, color: '#ff0000'});
 		var draw_figure = this.drawLine(data, shape, '#ff0000'); //this.drawFigure(data, '#ff0000');
 
-		var data = this.getCoor(index_perp.itm, index_perp.sim)
-		this.arrData.push({data:data, color: '#0000ff'});
-		var draw_figure = this.drawLine(data, shape, '#0000ff'); //this.drawFigure(data, '#0000ff');
+		if(index_perp.itm != undefined && index_perp.sim != undefined){
+			var data = this.getCoor(index_perp.itm, index_perp.sim)
+			this.arrData.push({data:data, color: '#0000ff'});
+			var draw_figure = this.drawLine(data, shape, '#0000ff'); //this.drawFigure(data, '#0000ff');
+		}
+		
 
 		stage.update();
 	}
@@ -78,13 +81,20 @@ function ViewAzim(){
 				this.arrData[2] = {data:data, color: '#00ff00'};
 				var draw_figure = this.drawFigure(data);
 			} else {
-				if(index == zero.itm || index == zero.sim ||
-					index == perp.itm || index == perp.sim){
-					index = undefined
-				} 
-				if(index_sim == zero.itm || index_sim == zero.sim ||
-					index_sim == perp.itm || index_sim == perp.sim){
-					index_sim = undefined
+				if((index != zero.sim && index_sim != zero.itm) &&
+				   (index != perp.sim && index_sim != perp.itm)){
+					if((index == zero.itm && index != zero.sim) ||
+					   (index != zero.itm && index == zero.sim) ||
+					   (index == perp.itm && index != perp.sim) || 
+					   (index != perp.itm && index == perp.sim)){
+						index = undefined
+					} 
+					if((index_sim != zero.itm && index_sim == zero.sim) ||
+					   (index_sim == zero.itm && index_sim != zero.sim) ||
+					   (index_sim != perp.itm && index_sim == perp.sim) ||
+					   (index_sim == perp.itm && index_sim != perp.sim)){
+						index_sim = undefined
+					}
 				}
 
 				if(index >= 0 || index_sim >= 0){
@@ -192,10 +202,10 @@ function ViewAzim(){
 		
 		g.beginStroke( '#000000' );
 		for(var i = 1; i < 15; i++){			
-			g.arc(0,0,(s/10)*i, 0, Math.PI*2)
+			g.arc(0,0,(s/5)*i, 0, Math.PI*2)
 		}
-		for(var i = 1; i < 10; i++){
-			var a = Math.PI*(i/10);
+		for(var i = 1; i < 12; i++){
+			var a = Math.PI*(i/12);
 			g.moveTo(-s*1.5*Math.cos(a),  s*1.5*Math.sin(a));
 			g.lineTo( s*1.5*Math.cos(a), -s*1.5*Math.sin(a));
 			
@@ -283,7 +293,8 @@ function ViewAzim(){
 		var format = "jpg";
 		var file_name = '';
 		if(main.builder.viewFigure){
-			file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
+			//file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
+			file_name = main.ui.dataInput.itm_file ? main.ui.dataInput.itm_file.name :  main.ui.dataInput.demo_file;
 			file_name = file_name.substr(0, file_name.length-4);
 		}
 

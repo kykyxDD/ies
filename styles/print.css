@@ -4,7 +4,7 @@
 		display: none !important; ;
 	}
 	.dg.main {
-	    bottom: 80px;
+	    /*bottom: 80px;*/
 	    width: 245px;
 	}
 	.dg.main .change {
@@ -23,13 +23,13 @@
 		background-color: #fff;
 	}
 	.info_ies {
-		background-color: #fff;
+		/*background-color: #fff;*/
 		font-size: 8px;
 		width: 205px;
-		color: #000;
-		background-color: #fff;
-		border-left: 1px solid;
-		border-bottom: 1px solid;
+		/*color: #000;*/
+		/*background-color: #fff;*/
+		/*border-left: 1px solid;*/
+		/*border-bottom: 1px solid;*/
 	}
 	.info_ies .vis_azim .cont_switch {
 		padding: 5px;
@@ -37,7 +37,8 @@
 	.info_ies .vis_azim .cont_switch .angle {
 		display: none;
 	}
-
+	.change_bg,
+	.btn_down,
 	.info_ies .vis_azim .save_canvas {
 		display: none !important;
 	}

@@ -294,13 +294,13 @@ function ViewInfoIES(){
 			arr_data.splice(-2, 0, str);
 		}
 
-		/*if(main.builder.root.scale.x != 1) {
-			var s = main.builder.root.scale.x;
-			var m = main.info_ies.info_data.line[0][2];
-
-			data.line[0][2] = (main.info_ies.maxR*m*s)/(main.info_ies.maxR)
-			console.log(s,data.line[0][2],m)
-		}*/
+		if(main.builder.root.scale.x != 1) {
+			// var s = main.builder.root.scale.x;
+			// var m = main.info_ies.info_data.line[0][2];
+			data.line[0][1] = -1
+			data.line[0][2] = 1
+			// console.log(s,data.line[0][2],m)
+		}
 		data.line[0][3] = main.info_ies.polar.arr.length;
 		data.line[0][4] = main.info_ies.azim.arr.length;
 		arr_data.push(data.line[0].join(' '));
@@ -351,14 +351,26 @@ function ViewInfoIES(){
 	};
 
 	this.downloadFiles = function(text){
-		var file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
 
-		var data = new Blob([text], {type: 'text/plain;charset=utf-8,'});
-		var textFile = window.URL.createObjectURL(data)
-		var element = document.createElement('a');
-		element.setAttribute('href', textFile);
-		element.setAttribute('download', 'new '+ file_name);
-		element.click();
+		var blob = new Blob([text]); // windows-1251
+		
+		var reader = new FileReader();
+		this.charset = 'utf-8';//'cp1251';//'ISO-8859-1' //'ASCII' // 'utf-16'
+		var self = this;
+
+		reader.onload = function(e){
+			var file_name = main.ui.dataInput.itm_file ? main.ui.dataInput.itm_file.name :  main.ui.dataInput.demo_file;
+			var textFile = 'data:text/plain;charset='+self.charset+',' + encodeURIComponent(e.target.result)
+			var element = document.createElement('a');
+			element.setAttribute('href', textFile);
+			element.setAttribute('download', 'new '+ file_name);
+			element.click();
+		}
+		reader.readAsText(blob, this.charset);
+
+
+
+
 	}
 
 	this.openEditPopup = function(){

@@ -31,7 +31,7 @@ UI.DataInput = f.unit(Block, {
 	charset: 'utf-8' , 
 	unitName: 'UI_DataInput',
 	ename: 'ui-data-input',
-	demo_file: '2111.IES',//'8663.IES',
+	demo_file: '8663.IES',
 	text_span: 'Upload *.ies File',
 	text_drod: 'Drag and drop *.ies file or',
 
@@ -125,7 +125,6 @@ UI.DataInput = f.unit(Block, {
 		var name = file.fileName || file.name;
 		this.input.value = '';
 		this.input.files[0] = file;
-		console.log(file)
 		this.onChange();
 	},
 	dropenter: function(e) {
@@ -138,7 +137,7 @@ UI.DataInput = f.unit(Block, {
 
 	dropleave: function() {
 
-		this.dropzone.style.backgroundColor='#BBBBBB';
+		this.dropzone.style.backgroundColor='';
 		dom.text(this.dropzone_text, this.text_drod);
 	},
 	xmlhttp: function(){
@@ -196,7 +195,6 @@ UI.DataInput = f.unit(Block, {
 	onChange: function(e) {
 		main.dataSource = false
 		var file = this.input.files[0] || this.itm_file;
-		console.log('file',this.input.files.length)
 
 		if(!file) return
 		this.itm_file = file;
@@ -204,8 +202,6 @@ UI.DataInput = f.unit(Block, {
 
 		this.reader.readAsText(file, this.charset) // utf-8 cp1251
 	},
-
-	
 
 	onLoad: function(e) {
 		var data = this.reader.result;
