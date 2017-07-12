@@ -240,12 +240,12 @@ function ViewInfoIES(){
 			dom.text(btn_plus, '+')
 
 			btn_minus.addEventListener('click', function(){
-				console.log('minus',input.value)
+				// console.log('minus',input.value)
 				if(parseFloat(input.value) == 1) return
 				input.value = parseFloat(input.value) - 1
 			});
 			btn_plus.addEventListener('click', function(){
-				console.log('plus',input.value)
+				// console.log('plus',input.value)
 				input.value = parseFloat(input.value) + 1
 			});
 

@@ -164,7 +164,7 @@ UI.DataInput = f.unit(Block, {
 		return xmlhttp;
 	},
 	createBtnFile: function(txt){
-		console.log('createBtnFile')
+		// console.log('createBtnFile')
 		this.itm_edit = false
 
 		this.prevFileList();
@@ -196,13 +196,10 @@ UI.DataInput = f.unit(Block, {
 		this.checkListFile()
 	},
 	remFileList: function(id){
+		if(id == -1) return
 
-		if(id >= 0){
-			var obj = this.arrList.splice(id, 1)[0];
-			this.list_file.removeChild(obj.elem);
-		} else {
-			console.log('no search')
-		}
+		var obj = this.arrList.splice(id, 1)[0];
+		this.list_file.removeChild(obj.elem);
 
 		this.checkListFile()
 
@@ -214,7 +211,6 @@ UI.DataInput = f.unit(Block, {
 			this.itm_file = false;
 			this.itm_file_name = false;
 			this.input.value = '';
-			// this.span.innerHTML = this.text_span;
 		}
 	},
 	changeFileList: function (obj) {
@@ -224,7 +220,7 @@ UI.DataInput = f.unit(Block, {
 		var data = obj.data;
 		this.itm_file_name = obj.name
 		if(obj.data){
-			console.log('edit',obj.edit)
+			// console.log('edit',obj.edit)
 			this.itm_edit = obj.edit;
 			onData(data)
 			// dom.visible(main.view_info_ies.obj_elem.btn_down, obj.edit)
@@ -267,9 +263,11 @@ UI.DataInput = f.unit(Block, {
 		}
 
 		if(this.max_files <= this.arrList.length){
-			dom.display(this.dropzone, false)
+			dom.addclass(this.dropzone, 'disabled')
+			// console.log('disabled')
 		} else {
-			dom.display(this.dropzone, true)
+			dom.remclass(this.dropzone, 'disabled')
+			// console.log('no disabled')
 		}
 	},
 	loadStartFile: function(){
