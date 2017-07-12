@@ -106,15 +106,21 @@ View3.prototype = {
 		// }
 		var body = document.body;
 
-		if(checked){
-			// logo.style.backgroundImage = 'url('+this.img_logo.src+')';
+		if(checked == 'white'){
 			this.renderer.setClearColor(0xffffff);
-			dom.addclass(body, 'day')
-		} else {
-			// logo.style.backgroundImage = '';
-
+			dom.addclass(body, 'white');
+			dom.remclass(body, 'black');
+			dom.remclass(body, 'grey');
+		} else if(checked == 'black') {
 			this.renderer.setClearColor(this.background);
-			dom.remclass(body, 'day')
+			dom.addclass(body, 'black');
+			dom.remclass(body, 'white');
+			dom.remclass(body, 'grey');
+		} else if(checked == 'grey') {
+			this.renderer.setClearColor(0x575757);
+			dom.addclass(body, 'grey');
+			dom.remclass(body, 'white');
+			dom.remclass(body, 'black');
 		}
 
 		this.needsRedraw = true;

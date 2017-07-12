@@ -204,8 +204,8 @@ function ViewAzim(){
 		for(var i = 1; i < 15; i++){			
 			g.arc(0,0,(s/5)*i, 0, Math.PI*2)
 		}
-		for(var i = 1; i < 12; i++){
-			var a = Math.PI*(i/12);
+		for(var i = 1; i < 18; i++){
+			var a = Math.PI*(i/18);
 			g.moveTo(-s*1.5*Math.cos(a),  s*1.5*Math.sin(a));
 			g.lineTo( s*1.5*Math.cos(a), -s*1.5*Math.sin(a));
 			

@@ -41,9 +41,11 @@ function datinit() {
 	// main.gui.add(main, 'linesOnly').name('Lines Only').onChange(onMaterial)
 	// main.gui.add(main, 'linesVisible').name('Lines Visible').onChange(onMaterial)
 
-	var cont_change = dom.elem('div', 'dg main', main.ui.viewport);
+	var cont_change = dom.div('dg main', main.ui.viewport);
 
-	var cont_all = dom.elem('div', 'change cont_all', cont_change);
+	var cont_view_figure = dom.div('change_view_figure' , cont_change)
+
+	var cont_all = dom.div('change cont_all', cont_view_figure);
 	var input_all = dom.input('radio', 'input_change all', cont_all);
 	input_all.setAttribute('name', 'figure');
 	input_all.id = 'change_all';
@@ -55,7 +57,7 @@ function datinit() {
 		onChangeFigure('all');
 	});
 
-	var cont_figure = dom.elem('div', 'change cont_figure', cont_change);
+	var cont_figure = dom.div('change cont_figure', cont_view_figure);
 	var input_figure = dom.input('radio', 'input_change figure', cont_figure);
 	input_figure.setAttribute('name', 'figure');
 	input_figure.id = 'change_figure';
@@ -66,7 +68,7 @@ function datinit() {
 		onChangeFigure('figure');
 	});
 
-	var cont_line = dom.elem('div', 'change cont_line', cont_change);
+	var cont_line = dom.div('change cont_line', cont_view_figure);
 	var input_line = dom.input('radio', 'input_change line', cont_line);
 	input_line.setAttribute('name', 'figure');
 	input_line.id = 'change_line';
@@ -77,26 +79,49 @@ function datinit() {
 		onChangeFigure('line');
 	});
 
-	var cont_select_bg = dom.div('change bg', cont_change)
+	var change_bg = dom.div('cont_change_bg', cont_change);
 
+	var cont_select_bg = dom.div('change bg_white', change_bg);
 	var elem_slide = dom.div('slideThree', cont_select_bg);
-	var input_change = dom.input('checkbox', false, elem_slide)
-	input_change.id = 'slideThree';
+	var input_change = dom.input('radio', false, elem_slide);
+	input_change.id = 'bg_white';
 	input_change.setAttribute('name', "check");
 
 	var label = dom.elem('label', false, elem_slide);
-	label.setAttribute('for', 'slideThree');
+	label.setAttribute('for', 'bg_white');
 
 	dom.on('change', input_change, function(){
-		main.view.changeBG(this.checked)
+		main.view.changeBG('white')
+	})
+
+	var cont_select_bg = dom.div('change bg_black', change_bg);
+	var elem_slide = dom.div('slideThree', cont_select_bg);
+	var input_change = dom.input('radio', false, elem_slide);
+	input_change.id = 'bg_black';
+	input_change.checked = true
+	input_change.setAttribute('name', "check");
+
+	var label = dom.elem('label', false, elem_slide);
+	label.setAttribute('for', 'bg_black');
+
+
+	dom.on('change', input_change, function(){
+		main.view.changeBG('black')
 	})
 
 
+	var cont_select_bg = dom.div('change bg_grey', change_bg);
+	var elem_slide = dom.div('slideThree', cont_select_bg);
+	var input_change = dom.input('radio', false, elem_slide);
+	input_change.id = 'bg_grey';
+	input_change.setAttribute('name', "check");
 
+	var label = dom.elem('label', false, elem_slide);
+	label.setAttribute('for', 'bg_grey');
 
-	// main.gui.add(main.builder, 'heights').min(0).max(16).step(1).name('Heights').onChange(rebuild)
-	// main.gui.add(main.builder, 'verticals').min(1).max(8).step(1).name('Verticals').onChange(rebuild)
-	// main.gui.add(main.builder, 'subdivisions').min(0).max(32).step(1).name('Subdivisions').onChange(rebuild)
+	dom.on('change', input_change, function(){
+		main.view.changeBG('grey')
+	})
 
 	function v3redraw() {
 		main.view.needsRedraw = true

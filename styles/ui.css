@@ -30,21 +30,23 @@
 
 
 .dg.main  {
-	width: 300px;
+	width: 450px;
 }
 .dg.main .change {
 	display: inline-block;
-	width: 65px;
-	height: 65px;
-	margin-right: 10px;
+	width: 69px;
+	height: 69px;
+	margin-right: 5px;
 	position: relative;
-
+}
+.dg.main .change:last-child {
+	margin-right: 0;
 }
 .dg.main .change label {
 	display: block;
-	width: 100%;
-	height: 100%;
-	background-color: #000;
+	width: 65px;
+	height: 65px;
+	/*background-color: #000;*/
 	border: 2px solid #909090;
 	background-position: center;
 	background-repeat:  no-repeat;

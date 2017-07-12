@@ -791,13 +791,21 @@ input[type=range]:focus::-ms-fill-upper {
 	-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
 	box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);*/
 }
-.day .slideThree {
+.white .slideThree {
 	background: #9A9A9A;
 }
-.day .ui-data-input label.label_file_input{
+.white .ui-data-input label.label_file_input{
 	/*background-color: #CCCCCC*/
 }
-.dg.main .change.cont_figure:before{
+.dg.main .change_view_figure,
+.dg.main .cont_change_bg {
+	position: relative;
+	display: inline-block;
+}
+.dg.main .change_view_figure {
+	margin-right: 10px;
+}
+.dg.main .change_view_figure:after{
 	content: 'views styles';
 	top: -15px;
 	left: 50%;
@@ -812,133 +820,165 @@ input[type=range]:focus::-ms-fill-upper {
     width: 85px;
     text-align: center;
 }
+.dg.main .change_view_figure:after,
+.dg.main .cont_change_bg:after{
+	background: black;
+	text-shadow: none;
+}
 
+.grey .dg.main .change_view_figure:after,
+.grey .dg.main .cont_change_bg:after{
+	background: #575757;
+}
+.white .dg.main .change_view_figure:after,
+.white .dg.main .cont_change_bg:after{
+	background: #fff;
+}
+.dg.main .change_view_figure:before,
+.dg.main .cont_change_bg:before {
+	position: absolute;
+	content: '';
+	top: -10px;
+	left: 0;
+	height: 1px;
+	width: 100%;
+	background-color: #676767;
+}
+
+
+
+.slideThree:after,
 .slideThree:before {
 	content: '';
 	top: 50%;
 	left: 50%;
-	margin-top: -19px;
-	margin-left: -18px;
+	margin-top: -21px;
+	margin-left: -20px;
 	width: 42px;
 	height: 42px;
 	border-radius: 50%;
-	font: 12px/26px Arial, sans-serif;
-	color: #00bf00;
+	font: 9px Arial;
 	position: absolute;
 	z-index: 0;
-	font-weight: bold;
-	background-color: white;
+	/* font-weight: bold; */
+	text-shadow: none;
 	pointer-events: none;
+	text-align: center;
+	line-height: 42px;
+	text-transform: uppercase;
 }
-.day .dg.main .change.cont_figure:before,
-.day .slideThree:after  {
+.bg_white .slideThree:before {
+	background-color: white;
+}
+
+.bg_black .slideThree:before {
+	background-color: #141414;
+}
+
+.bg_grey .slideThree:before {
+	background-color: #4C4C4C;
+}
+.bg_white .slideThree:after {
+	content: 'white';
+	color: black;
+}
+.bg_black .slideThree:after {
+	content: 'black';
+	color: white;
+}
+.bg_grey .slideThree:after {
+	content: 'grey';
+	color: white;
+}
+
+.white .dg.main .change.cont_figure:before,
+.white .slideThree:after  {
 	color: #909090;
     text-shadow: initial;
 }
-.slideThree:after {
+.dg.main .cont_change_bg:after {
 	content: 'background';
-	top: -15px;
-	left: 50%;
-	font: 11px Arial, sans-serif;
-	color: #909090;
-	position: absolute;
-	z-index: 0;
-	font-weight: bold;
-	pointer-events: none;
-	margin-left: -34px;
-	text-transform: uppercase;
+    top: -15px;
+    left: 50%;
+    font: 11px Arial, sans-serif;
+    color: #909090;
+    position: absolute;
+    z-index: 0;
+    font-weight: bold;
+    pointer-events: none;
+    margin-left: -42px;
+    text-transform: uppercase;
+    background-color: black;
+    width: 84px;
+    text-align: center;
 }
-.day .slideThree:before {
-	background-color: black;
-}
+
 .slideThree label {
 	display: block;
-	/*width: 34px;
-	height: 20px;
-
-	-webkit-border-radius: 50px;
-	-moz-border-radius: 50px;
-	border-radius: 50px;
-
-	-webkit-transition: all .4s ease;
-	-moz-transition: all .4s ease;
-	-o-transition: all .4s ease;
-	-ms-transition: all .4s ease;
-	transition: all .4s ease;*/
 	cursor: pointer;
-/*	position: absolute;
-	top: 3px;
-	left: 3px;*/
-	z-index: 1;
-
-	-webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
-	-moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
-	box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
-	/*background: #fcfff4;*/
-
-	
+	z-index: 1;	
 }
 
 .slideThree input[type=checkbox]:checked + label {
 	left: 33px;
 }
 
-.day .logo {
+.white .logo {
 	background-image: url(../images/logo_kit_white.png);
 }
-.day .dg.main .change label ,
-.day .info_ies,
-.day .info_ies .popup .itm_popup {
+.white .dg.main .change label ,
+.white .info_ies,
+.white .info_ies .popup .itm_popup {
 	background-color: white;
 }
-.day .info_ies {
+.white .info_ies {
 	color: black;
 }
 
-.day .info_ies {
+.white .info_ies {
 	border-left: 1px solid #BBBBBB;
 	border-bottom: 1px solid #BBBBBB;
 }
-.day .info_ies .info{
+.white .info_ies .info{
 	border-color: #BBBBBB;
 
 }
-.day .cont_list_val:after,
-.day .cont_list_val:before{
+.white .cont_list_val:after,
+.white .cont_list_val:before{
 
 }
 
-.day .cont_list_val:before  {
+.white .cont_list_val:before  {
 	background: -moz-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(125,185,232,0) 100%); /* FF3.6-15 */
 	background: -webkit-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(125,185,232,0) 100%); /* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(125,185,232,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#007db9e8',GradientType=1 ); /* IE6-9 */
 }
-.day .cont_list_val:after  {
+.white .cont_list_val:after  {
 	background: -moz-linear-gradient(left, rgba(125,185,232,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
 	background: -webkit-linear-gradient(left, rgba(125,185,232,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(to right, rgba(125,185,232,0) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#007db9e8', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
 }
-.day .info_footer .content,
-.day .info_ies .popup,
-.day .cont_preload{
+.white .info_footer .content,
+.white .info_ies .popup,
+.white .cont_preload{
 	background-color: rgba(0,0,0,0.2);
 }
-.day .load_demo,
-.day .ui-data-input .dropzone,
-.day .info_ies .vis_azim .angle .icon ,
-.day .btn_openEdit {
+.white .load_demo,
+.white .ui-data-input .dropzone,
+.white .info_ies .vis_azim .angle .icon ,
+.white .btn_openEdit {
 	background-color: #d4d4d4;
 }
-.day .info_ies .popup .itm_popup{
+.white .info_ies .popup .itm_popup{
 	box-shadow: 0 0 10px #2D2D2D;
 }
 
-.day .info_ies .popup .cont_btn{
+.white .info_ies .popup .cont_btn{
 	color: white;
 }
-.day .info_ies .vis_azim .canvas_azim{
+.white .info_ies .vis_azim .canvas_azim{
 	border: 1px solid #E8E8E8;
 	margin-top: 10px;
 }

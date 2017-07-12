@@ -5,11 +5,11 @@
 	}
 	.dg.main {
 	    /*bottom: 80px;*/
-	    width: 245px;
+	    /*width: 245px;*/
 	}
 	.dg.main .change {
-		width: 70px;
-		height: 70px;
+/*		width: 70px;
+		height: 70px*/;
 	}
 	.info_footer {
 		display: none;
@@ -86,8 +86,6 @@
 	.btn_openEdit {
 		display: none !important;
 	}
-	.dg.main .change label {
-		background-color: inherit !important;
-	}
+	
 
 }

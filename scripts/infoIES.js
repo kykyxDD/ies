@@ -197,7 +197,7 @@ function ViewInfoIES(){
 		var obj_light_flow = itmElem('light_flow', 'Luminous flux');
 
 		// var obj_polar = itmElem('polar');
-		var obj_azim = itmNumElem('azim', "NUMBER OF POLAR ANGLES");
+		var obj_azim = itmNumElem('azim', "NUMBER OF AZIMUTH ANGLES");
 		// var obj_power = itmElem('power');
 
 		this.obj_elem.popup = {};
