@@ -167,6 +167,68 @@
 	background-color: #888;
 }
 
+.list_file {
+
+}
+.list_file .itm {
+	margin-bottom: 10px;
+	position: relative;
+}
+.list_file .itm.change:before {
+	position: absolute;
+	content: '';
+	top: -5px;
+	left: -5px;
+	border-radius: 5px;
+	border: 2px solid #47e800;
+	width: 257px;
+	height: 37px;
+}
+.list_file .itm > div{
+	display: inline-block;
+	vertical-align: top;
+}
+.list_file .itm .name{
+    height: 30px;
+    width: 195px;
+    display: inline-block;
+    background-color: #BBBBBB;
+    line-height: 30px;
+    padding: 0 10px;
+    color: black;
+    margin-right: 5px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+.list_file .itm .del{
+	cursor: pointer;
+	width: 30px;
+    height: 30px;
+    background-color: red;
+    border-radius: 3px;
+    color: white;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+}
+.list_file .itm .del:before,
+.list_file .itm .del:after {
+	content: '';
+	width: 20px;
+	height: 1px;
+	background-color: white;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -10px;
+}
+.list_file .itm .del:before {
+	transform: rotate(45deg);
+}
+.list_file .itm .del:after {
+	transform: rotate(-45deg);
+}
+
 .load_demo {
 	display: block;
 	height: 64px;

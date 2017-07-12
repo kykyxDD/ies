@@ -41,8 +41,10 @@ function ViewAzim(){
 	};
 
 	this.clearAllContainer = function(){
+		this.arrData = [];
 		container.removeAllChildren();
 		cont_axis.removeAllChildren();
+		stage.update();
 	}
 
 	this.loadNewFigure = function(index_zero, index_perp){
@@ -294,7 +296,7 @@ function ViewAzim(){
 		var file_name = '';
 		if(main.builder.viewFigure){
 			//file_name = main.ui.dataInput.input.files.length ? main.ui.dataInput.input.files[0].name :  main.ui.dataInput.demo_file;
-			file_name = main.ui.dataInput.itm_file ? main.ui.dataInput.itm_file.name :  main.ui.dataInput.demo_file;
+			file_name = main.ui.dataInput.itm_file_name ? main.ui.dataInput.itm_file_name :  main.ui.dataInput.demo_file;
 			file_name = file_name.substr(0, file_name.length-4);
 		}
 

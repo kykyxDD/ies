@@ -257,6 +257,14 @@ function ViewInfoIES(){
 		var text = this.getNewInfoFile()
 		this.downloadFiles(text)
 	};
+	this.getInfo = function(){
+
+		return {
+			data: this.getNewInfoFile(),
+			edit: this.obj_elem.btn_down.style.visibility != "hidden"
+		}
+
+	};
 	this.getNewInfoFile = function(){
 
 		var arr = ['iesna', 'test', 'data', 'manufac', 'lumcat', 'luminaire', 'lampcat', 'lamp', 'other', 'more', 'tilt']
@@ -359,7 +367,7 @@ function ViewInfoIES(){
 		var self = this;
 
 		reader.onload = function(e){
-			var file_name = main.ui.dataInput.itm_file ? main.ui.dataInput.itm_file.name :  main.ui.dataInput.demo_file;
+			var file_name = file_name = main.ui.dataInput.itm_file_name ? main.ui.dataInput.itm_file_name :  main.ui.dataInput.demo_file;// main.ui.dataInput.itm_file ? main.ui.dataInput.itm_file.name :  main.ui.dataInput.demo_file;
 			var textFile = 'data:text/plain;charset='+self.charset+',' + encodeURIComponent(e.target.result)
 			var element = document.createElement('a');
 			element.setAttribute('href', textFile);
@@ -367,10 +375,6 @@ function ViewInfoIES(){
 			element.click();
 		}
 		reader.readAsText(blob, this.charset);
-
-
-
-
 	}
 
 	this.openEditPopup = function(){
@@ -655,7 +659,7 @@ function ViewInfoIES(){
 		var data = main.info_ies.info_data
 		var obj = this.obj_elem
 
-		dom.visible(this.obj_elem.btn_down, false)
+		dom.visible(this.obj_elem.btn_down, main.ui.dataInput.itm_edit);
 
 		if(!data) {
 			dom.display(this.obj_elem.cont_info, false)
@@ -679,8 +683,6 @@ function ViewInfoIES(){
 		}
 
 		this.loadMiniView()
-
-		
 	};
 
 	this.loadMiniView = function(){
@@ -739,6 +741,29 @@ function ViewInfoIES(){
 			elem_list.removeChild(elem_list.firstChild);
 		}
 	};
+
+	this.destroy = function(argument) {
+		this.removeAllVal();
+		dom.text(this.obj_elem.text_azim, '');
+		this.hiddenPanel();
+		var obj = this.obj_elem
+
+		dom.display(this.obj_elem.cont_info, true)
+		dom.display(this.obj_elem.btn_edit, false)
+
+		dom.text(obj.test, '');
+		dom.text(obj.data, '');
+		dom.text(obj.manufac, '');
+		dom.text(obj.lumcat, '');
+		dom.text(obj.luminaire, '');
+		dom.text(obj.lampcat, '');
+		dom.text(obj.lamp, '');
+		dom.text(obj.other, '');
+		dom.text(obj.light_flow, '');
+		dom.text(obj.polar, '');
+		dom.text(obj.azim, '');
+		dom.text(obj.power, '');
+	}
 
 	this.updateListVal = function(w){
 		var arr = main.info_ies.azim.arr;
