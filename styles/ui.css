@@ -202,6 +202,7 @@
     margin-right: 5px;
     border-radius: 3px;
     font-size: 12px;
+    cursor: pointer;
 }
 .list_file .itm .del{
 	cursor: pointer;
