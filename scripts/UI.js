@@ -34,7 +34,7 @@ UI.DataInput = f.unit(Block, {
 	unitName: 'UI_DataInput',
 	ename: 'ui-data-input',
 
-	demo_file: '2113.IES',//'8663.IES',
+	demo_file: '8663.IES',
 	itm_file_name: this.demo_file,
 	text_span: 'Upload *.ies File',
 	text_drod: 'Drag and drop *.ies file or',
