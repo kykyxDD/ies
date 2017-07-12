@@ -211,6 +211,8 @@ UI.DataInput = f.unit(Block, {
 			this.itm_file = false;
 			this.itm_file_name = false;
 			this.input.value = '';
+			main.view.setTree();
+			main.view.toCenter();
 		}
 	},
 	changeFileList: function (obj) {

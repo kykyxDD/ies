@@ -159,7 +159,7 @@
 	position: absolute;
 	left: 20px;
 	top: 150px;
-	
+	min-width: 250px ;
 	z-index: 1;
 }
 .ui-data-input .load_demo:hover,
@@ -173,6 +173,9 @@
 .list_file .itm {
 	margin-bottom: 10px;
 	position: relative;
+}
+.list_file > div:last-child{
+	margin-bottom: 20px;
 }
 .list_file .itm.change:before {
 	position: absolute;
