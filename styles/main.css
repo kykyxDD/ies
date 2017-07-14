@@ -773,8 +773,8 @@ input[type=range]:focus::-ms-fill-upper {
 	height: 50px;
 	/*background: rgba(255,255,255,0.5);*/
 	position: absolute;
-    bottom: 15px;
-    right: 20px;
+	bottom: 15px;
+	right: 20px;
 }
 
 .slideThree  input[type=checkbox] {
@@ -784,12 +784,7 @@ input[type=range]:focus::-ms-fill-upper {
 .slideThree {
 	width: 100%;
 	height: 100%;
-	/*background: #545454;*/
 	position: relative;
-
-	/*-webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
-	-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
-	box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);*/
 }
 .white .slideThree {
 	background: #9A9A9A;
@@ -815,10 +810,10 @@ input[type=range]:focus::-ms-fill-upper {
 	z-index: 0;
 	font-weight: bold;
 	pointer-events: none;
-    margin-left: -40px;
-    text-transform: uppercase;
-    width: 85px;
-    text-align: center;
+	margin-left: -40px;
+	text-transform: uppercase;
+	width: 85px;
+	text-align: center;
 }
 .dg.main .change_view_figure:after,
 .dg.main .cont_change_bg:after{
@@ -828,11 +823,18 @@ input[type=range]:focus::-ms-fill-upper {
 
 .grey .dg.main .change_view_figure:after,
 .grey .dg.main .cont_change_bg:after{
-	background: #575757;
+	/*background: #575757;*/
 }
 .white .dg.main .change_view_figure:after,
 .white .dg.main .cont_change_bg:after{
 	background: #fff;
+}
+
+.white .dg.main{
+	border-left: 1px solid #BBBBBB;
+	border-right: 1px solid #BBBBBB;
+	border-top: 1px solid #BBBBBB;
+	background-color: white;
 }
 .dg.main .change_view_figure:before,
 .dg.main .cont_change_bg:before {
@@ -869,6 +871,7 @@ input[type=range]:focus::-ms-fill-upper {
 }
 .bg_white .slideThree:before {
 	background-color: white;
+	box-shadow: 0 0 10px rgba(128,128,128,0.7);
 }
 
 .bg_black .slideThree:before {
@@ -894,23 +897,23 @@ input[type=range]:focus::-ms-fill-upper {
 .white .dg.main .change.cont_figure:before,
 .white .slideThree:after  {
 	color: #909090;
-    text-shadow: initial;
+	text-shadow: initial;
 }
 .dg.main .cont_change_bg:after {
 	content: 'background';
-    top: -15px;
-    left: 50%;
-    font: 11px Arial, sans-serif;
-    color: #909090;
-    position: absolute;
-    z-index: 0;
-    font-weight: bold;
-    pointer-events: none;
-    margin-left: -42px;
-    text-transform: uppercase;
-    background-color: black;
-    width: 84px;
-    text-align: center;
+	top: -15px;
+	left: 50%;
+	font: 11px Arial, sans-serif;
+	color: #909090;
+	position: absolute;
+	z-index: 0;
+	font-weight: bold;
+	pointer-events: none;
+	margin-left: -42px;
+	text-transform: uppercase;
+	background-color: black;
+	width: 84px;
+	text-align: center;
 }
 
 .slideThree label {

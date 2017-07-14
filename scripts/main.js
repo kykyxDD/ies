@@ -16,7 +16,8 @@ function init() {
 	main.builder = new DataBuilder
 	main.view_azim = new ViewAzim()
 	main.view_info_ies = new ViewInfoIES()
-
+	main.initData = new initData()
+	main.createDataSum = new CreateDataSum()
 
 	run()
 }
@@ -196,7 +197,7 @@ function onChangeFigure(val){
 
 function rebuild() {
 	if(!main.dataSource) return
-	main.tree = main.builder.buildFromSource(main.dataSource)
+	main.tree = main.builder.buildFromSource(main.dataSource, true)
 	// main.view.setTree(main.tree)
 }
 

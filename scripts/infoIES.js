@@ -3,8 +3,7 @@ function ViewInfoIES(){
 	//var parent = main.ui.viewport
 	this.obj_elem = {};
 	var index = 0;
-	var max_val = 0
-	var text_more = 'This file has been modified by IESKIT.COM';
+	var max_val = 0	
 
 	var mediaQueryList = window.matchMedia('print');
 	mediaQueryList.addListener(function(mql) {
@@ -113,10 +112,7 @@ function ViewInfoIES(){
 
 		this.createInfoFooter();
 
-
-
 	};
-	
 
 
 	this.createInfoFooter = function(){
@@ -198,6 +194,7 @@ function ViewInfoIES(){
 
 		// var obj_polar = itmElem('polar');
 		var obj_azim = itmNumElem('azim', "NUMBER OF AZIMUTH ANGLES");
+		// var obj_polar = itmNumElem('polar', "Number of polar angles");
 		// var obj_power = itmElem('power');
 
 		this.obj_elem.popup = {};
@@ -254,109 +251,10 @@ function ViewInfoIES(){
 	};
 
 	this.prepareFiles = function(){
-		var text = this.getNewInfoFile()
+		var text = main.initData.stringify(main.info_ies)
 		this.downloadFiles(text)
 	};
-	this.getInfo = function(){
 
-		return {
-			data: this.getNewInfoFile(),
-			edit: this.obj_elem.btn_down.style.visibility != "hidden"
-		}
-
-	};
-	this.getNewInfoFile = function(){
-
-		var arr = ['iesna', 'test', 'data', 'manufac', 'lumcat', 'luminaire', 'lampcat', 'lamp', 'other', 'more', 'tilt']
-
-		var data = main.info_ies.info_data;
-		var arr_data = [];
-
-		data.more = text_more;
-
-		for(var i = 0; i < arr.length; i++){
-			var key = arr[i];
-			if(data[key] == undefined || (key == 'data' && data['date'])) continue
-			if(key == 'iesna') {
-				str = ['IESNA:LM-63-', data[key]].join('')
-			} else if(key != 'tilt'){
-				str = ['['+key.toUpperCase()+']', data[key]].join(' ');
-			} else {
-				str = [ key.toUpperCase(), data[key]].join('=');
-			}
-			arr_data.push(str);
-		}
-
-		for(var key in data){
-			if(key == 'line' || key == 'light_flow' || key == 'power' || key == 'azim' || key == 'polar') continue
-			if(arr.indexOf(key) >= 0) continue
-			var str = '';
-			
-			if(key == 'iesna') {
-				str = ['IESNA:LM-63-', data[key]].join('')
-			} else if(key != 'tilt'){
-				str = ['['+key.toUpperCase()+']', data[key]].join(' ');
-			} else {
-				str = [ key.toUpperCase(), data[key]].join('=');
-			}
-			arr_data.splice(-2, 0, str);
-		}
-
-		if(main.builder.root.scale.x != 1) {
-			// var s = main.builder.root.scale.x;
-			// var m = main.info_ies.info_data.line[0][2];
-			data.line[0][1] = -1
-			data.line[0][2] = 1
-			// console.log(s,data.line[0][2],m)
-		}
-		data.line[0][3] = main.info_ies.polar.arr.length;
-		data.line[0][4] = main.info_ies.azim.arr.length;
-		arr_data.push(data.line[0].join(' '));
-		arr_data.push(data.line[1].join(' '));
-
-		arr_data.push(main.info_ies.polar.arr.join(' '));
-		arr_data.push(main.info_ies.azim.arr.join(' '));
-		var str_data = this.getArrayData();
-		arr_data.push(str_data);
-		//var data_sould = arr_data.join(' \n')
-		var data_sould = arr_data[0];
-		for(var i = 1; i < arr_data.length; i++){
-			data_sould += '\r\n' + arr_data[i];
-		}
-		return data_sould
-	};
-
-	this.getArrayData = function(){
-		var len_polar = main.info_ies.polar.arr.length;
-		var len_azim = main.info_ies.azim.arr.length;
-		var arr_data = [];
-		var maxR = main.info_ies.maxR;
-		var lines = main.info_ies.lines;
-		for(var a = 0; a < len_azim; a++){
-			arr_data[a] = [];
-
-			for(var p = 0; p < len_polar; p++){
-				var num = lines[p][a]*maxR;
-				var arr_num = (''+num).split('.')
-				if(arr_num[1] && arr_num[1].length > 4){
-					var fix = parseFloat(arr_num[1].substr(0, 4))
-					if(fix){
-						if((10000 - fix) > 1){
-							num = num.toFixed(4);
-						} else {
-							num = Math.ceil(num);
-						}
-					} else {
-						num = Math.floor(num);
-					}
-				}
-
-				arr_data[a][p] = num;
-			}
-			arr_data[a] = arr_data[a].join(' ');
-		}
-		return arr_data.join('\n')
-	};
 
 	this.downloadFiles = function(text){
 
@@ -367,7 +265,7 @@ function ViewInfoIES(){
 		var self = this;
 
 		reader.onload = function(e){
-			var file_name = file_name = main.ui.dataInput.itm_file_name ? main.ui.dataInput.itm_file_name :  main.ui.dataInput.demo_file;// main.ui.dataInput.itm_file ? main.ui.dataInput.itm_file.name :  main.ui.dataInput.demo_file;
+			var file_name = main.ui.dataInput.itm_file_name ? main.ui.dataInput.itm_file_name :  main.ui.dataInput.demo_file;// main.ui.dataInput.itm_file ? main.ui.dataInput.itm_file.name :  main.ui.dataInput.demo_file;
 			var textFile = 'data:text/plain;charset='+self.charset+',' + encodeURIComponent(e.target.result)
 			var element = document.createElement('a');
 			element.setAttribute('href', textFile);
@@ -546,10 +444,10 @@ function ViewInfoIES(){
 			main.builder.updateLightFlow(parseFloat(light_flow));
 		}
 
-
-		if(parseFloat(azim) != parseFloat(data.azim)) {
+		var azim = Math.max(parseFloat(azim), 1)
+		if(azim != parseFloat(data.azim)) {
 			save = true
-			console.log('azim', parseFloat(azim))
+			console.log('azim', azim)
 			
 			dom.text(obj.azim, azim)
 			main.info_ies.info_data.azim = azim

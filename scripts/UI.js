@@ -30,21 +30,55 @@ UI = f.unit(Block, {
 UI.DataInput = f.unit(Block, {
 	max_files: 3,
 	itm_edit: false,
-	charset: 'utf-8' , 
+	charset: 'utf-8', 
+	file_sum: 'sum.ies',
 	unitName: 'UI_DataInput',
 	ename: 'ui-data-input',
 
-	demo_file: '8663.IES',
+	demo_file: '2113.IES',//'8663.IES',
 	itm_file_name: this.demo_file,
 	text_span: 'Upload *.ies File',
 	text_drod: 'Drag and drop *.ies file or',
 
 	create: function() {
+		var self = this;
 
-		this.arrList = []
+		this.arrList = [];
 
-		var cont_list_file = dom.div('list_file', this.element)
-		this.list_file = cont_list_file;
+		var cont_list_file = dom.div('list_file', this.element);
+		var list_file = dom.div('cont_list_file', cont_list_file);
+		this.list_file = list_file;
+
+		var cont_btn_sum = dom.div('cont_btn_sum', cont_list_file);
+		dom.display(cont_btn_sum, false);
+		this.cont_btn_sum = cont_btn_sum;
+
+		var btn_calc_sum = dom.div('calc_sum', cont_btn_sum);
+		btn_calc_sum.innerHTML = 'calculate summary';
+
+
+		dom.on('click', btn_calc_sum, function(){
+			self.createIESSum()
+		});
+
+		var btn_ies_sum = dom.div('ies_sum', cont_btn_sum);
+		var text_ies_sum =  dom.div('text_sum', btn_ies_sum);
+		text_ies_sum.innerHTML = 'calculate summary';
+		var close_sum = dom.div('del', btn_ies_sum);
+
+		dom.on('click', text_ies_sum, function(){
+			if(!self.check_sum){
+				self.prevFileList();
+				self.check_sum = true
+				self.changeFileList(self.data_sum)
+				dom.addclass(self.cont_btn_sum, 'change');
+			}
+		});
+
+		dom.on('click',close_sum, function(){
+			
+			self.creatDataSum()
+		});
 
 		var btn_load_demo = dom.elem('span', 'load_demo', this.element)
 		dom.text(btn_load_demo, 'Load Demo File');
@@ -54,6 +88,7 @@ UI.DataInput = f.unit(Block, {
 
 		this.createDragDrop();
 	},
+
 	createDragDrop: function(){
 		var self = this;
 
@@ -89,6 +124,20 @@ UI.DataInput = f.unit(Block, {
 			return false;
 		});
 		
+	},
+	creatDataSum: function(){
+
+		var check_sum = this.check_sum;
+
+		dom.remclass(this.cont_btn_sum, 'sum');
+		this.itm_edit = false;
+		this.data_sum = false;
+		this.check_sum = false;
+
+		if( dom.hasclass(this.cont_btn_sum, 'change')){
+			this.changeFileList(this.arrList[0])
+			dom.remclass(this.cont_btn_sum, 'change')
+		}
 	},
 	dodrop: function(e) {
 		this.dropleave()
@@ -164,18 +213,26 @@ UI.DataInput = f.unit(Block, {
 		return xmlhttp;
 	},
 	createBtnFile: function(txt){
-		// console.log('createBtnFile')
 		this.itm_edit = false
 
 		this.prevFileList();
-		// console.log('prev', prev_change)
 		var elem = dom.div('itm change', this.list_file);
 		var name = dom.div('name', elem)
-		name.innerHTML = txt;
+
+		var span = dom.elem('span', "text", name)
+		span.innerHTML = txt;
+
+		if(span.offsetWidth > name.offsetWidth - 20){
+			var text = span.innerHTML.substr(0, span.innerHTML.length-4)
+			span.innerHTML = text+'...';
+			while(span.offsetWidth > name.offsetWidth - 20){
+				var text = span.innerHTML.substr(0, span.innerHTML.length-4)
+				span.innerHTML = text+'...';
+			}
+		}
 
 
 		var btn_close = dom.div('del', elem);
-		// btn_close.innerHTML = '&#10006;'
 		var obj = {
 			elem: elem,
 			name: txt
@@ -199,12 +256,16 @@ UI.DataInput = f.unit(Block, {
 		if(id == -1) return
 
 		var obj = this.arrList.splice(id, 1)[0];
+
+		var has = dom.hasclass(obj.elem, 'change')
 		this.list_file.removeChild(obj.elem);
 
 		this.checkListFile()
 
 		if(this.arrList.length){
-			this.changeFileList(this.arrList[0]);
+			if(has){
+				this.changeFileList(this.arrList[0]);
+			}
 		} else {
 			main.view_azim.clearAllContainer();
 			main.view_info_ies.destroy()
@@ -216,16 +277,18 @@ UI.DataInput = f.unit(Block, {
 		}
 	},
 	changeFileList: function (obj) {
-		this.prevFileList();
-		
+		if(this.check_sum){
+			this.saveDataSum()
+		} else {
+			this.prevFileList();
+		}
+
 		dom.addclass(obj.elem, 'change');
 		var data = obj.data;
 		this.itm_file_name = obj.name
 		if(obj.data){
-			// console.log('edit',obj.edit)
 			this.itm_edit = obj.edit;
 			onData(data)
-			// dom.visible(main.view_info_ies.obj_elem.btn_down, obj.edit)
 		}
 	},
 
@@ -242,12 +305,25 @@ UI.DataInput = f.unit(Block, {
 			}
 		}
 		if(id >= 0){
-			
-			var info = main.view_info_ies.getInfo();
-			
+
+			var info = main.initData.getInfo(main.info_ies);
+
 			this.arrList[id].data = info.data;
 			this.arrList[id].edit = info.edit;
 		}
+	},
+	saveDataSum: function(){
+
+		dom.remclass(this.cont_btn_sum, 'change');
+		var info = main.initData.getInfo(main.info_ies);
+
+		this.data_sum = {
+			data: info.data,
+			name: 'sum.ies',
+			edit: true
+		};
+
+		this.check_sum = false
 	},
 	checkListFile: function() {
 		var res = false;
@@ -259,17 +335,21 @@ UI.DataInput = f.unit(Block, {
 			}
 		}
 		if(res){
-			dom.display(this.btn_load_demo, false)
+			dom.display(this.btn_load_demo, false);
 		} else {
-			dom.display(this.btn_load_demo, true)
+			dom.display(this.btn_load_demo, true);
 		}
 
 		if(this.max_files <= this.arrList.length){
-			dom.addclass(this.dropzone, 'disabled')
-			// console.log('disabled')
+			dom.addclass(this.dropzone, 'disabled');
 		} else {
-			dom.remclass(this.dropzone, 'disabled')
-			// console.log('no disabled')
+			dom.remclass(this.dropzone, 'disabled');
+		}
+
+		if(this.arrList.length > 1) {
+			dom.display(this.cont_btn_sum, true)
+		} else {
+			dom.display(this.cont_btn_sum, false)
 		}
 	},
 	loadStartFile: function(){
@@ -287,6 +367,29 @@ UI.DataInput = f.unit(Block, {
 			}
 		};
 		xhr.send();
+	},
+
+	createIESSum: function(){
+		this.prevFileList();
+
+		this.check_sum = true;
+
+		this.itm_file_name = this.file_sum
+
+		dom.addclass(this.cont_btn_sum, 'sum');
+		dom.addclass(this.cont_btn_sum, 'change');
+		this.itm_edit = true;
+		var arr = [];
+
+		for(var i = 0; i < this.arrList.length; i++){
+			if(this.arrList[i].data){
+				arr.push(this.arrList[i].data)
+			}
+		};
+
+		if(arr.length){
+			main.createDataSum.create(arr)
+		};
 	},
 
 	handleEvent: function(e) {
@@ -316,9 +419,8 @@ UI.DataInput = f.unit(Block, {
 		if(!file) return
 		this.itm_file = file;
 		this.itm_file_name = file.name;
-		// this.span.innerHTML = file.name;
 
-		this.reader.readAsText(file, this.charset) // utf-8 cp1251
+		this.reader.readAsText(file, this.charset); // utf-8 cp1251
 	},
 
 	onLoad: function(e) {
@@ -328,9 +430,10 @@ UI.DataInput = f.unit(Block, {
 		if(this.charset == 'utf-8' && !ts.test(data)){
 			this.charset = 'cp1251';
 
-			this.createBtnFile(this.itm_file.name)
+			
 			this.onChange()
 		} else {
+			this.createBtnFile(this.itm_file.name)
 			this.events.emit('data_input', data)
 			this.charset = 'utf-8';
 		}

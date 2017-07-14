@@ -20,9 +20,13 @@
 	position: absolute;
 	left: 0;
 	right: 0;
-	bottom: 8px;
+	bottom: 0px;
 	margin: auto;
-	/*z-index: 2;*/
+	/* z-index: 2; */
+	padding-left: 5px;
+	padding-top: 20px;
+	padding-bottom: 5px;
+	background-color: black;
 }
 .dg .close-button {
 	display: none;
@@ -177,6 +181,7 @@
 .list_file > div:last-child{
 	margin-bottom: 20px;
 }
+.list_file .cont_btn_sum.change .ies_sum:before,
 .list_file .itm.change:before {
 	position: absolute;
 	content: '';
@@ -186,35 +191,43 @@
 	border: 2px solid #47e800;
 	width: 257px;
 	height: 37px;
+	pointer-events: none;
 }
+.list_file .ies_sum > div,
 .list_file .itm > div{
 	display: inline-block;
 	vertical-align: top;
 }
+.list_file .ies_sum .name,
 .list_file .itm .name{
-    height: 30px;
-    width: 195px;
-    display: inline-block;
-    background-color: #BBBBBB;
-    line-height: 30px;
-    padding: 0 10px;
-    color: black;
-    margin-right: 5px;
-    border-radius: 3px;
-    font-size: 12px;
-    cursor: pointer;
+	height: 30px;
+	width: 195px;
+	display: inline-block;
+	background-color: #BBBBBB;
+	line-height: 30px;
+	padding: 0 10px;
+	color: black;
+	margin-right: 5px;
+	border-radius: 3px;
+	font-size: 12px;
+	cursor: pointer;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
+.list_file .ies_sum .del,
 .list_file .itm .del{
 	cursor: pointer;
 	width: 30px;
-    height: 30px;
-    background-color: red;
-    border-radius: 3px;
-    color: white;
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
+	height: 30px;
+	background-color: red;
+	border-radius: 3px;
+	color: white;
+	display: inline-block;
+	vertical-align: top;
+	position: relative;
 }
+.list_file .ies_sum .del:before,
+.list_file .ies_sum .del:after,
 .list_file .itm .del:before,
 .list_file .itm .del:after {
 	content: '';
@@ -226,11 +239,43 @@
 	left: 50%;
 	margin-left: -10px;
 }
+.list_file .ies_sum .del:before ,
 .list_file .itm .del:before {
 	transform: rotate(45deg);
 }
+.list_file .ies_sum .del:after,
 .list_file .itm .del:after {
 	transform: rotate(-45deg);
+}
+.list_file .calc_sum, 
+.list_file .ies_sum .text_sum {
+	height: 30px;
+	color: white;
+	line-height: 30px;
+	text-transform: uppercase;
+	background-color: #f08b00;
+	font-size: 14px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.list_file .calc_sum{
+	width: 100%;
+	text-align: center;
+}
+
+.list_file .ies_sum,
+.list_file .cont_btn_sum.sum .calc_sum {
+	display: none;
+	position: relative;
+
+}
+.list_file .cont_btn_sum.sum .ies_sum {
+	display: block;
+}
+.list_file .ies_sum .text_sum{
+	margin-right: 5px;
+	width: 215px;
+	text-indent: 10px;
 }
 
 .load_demo {
@@ -284,10 +329,10 @@
 	border-radius: 5px;
 	margin: 15px auto 0;
 	padding: 10px 8px;
-    width: 180px;
-    font-size: 15px;
-    background-color: #A9A9A9;
-    box-shadow: 0 0 10px rgb(103, 103, 103);
+	width: 180px;
+	font-size: 15px;
+	background-color: #A9A9A9;
+	box-shadow: 0 0 10px rgb(103, 103, 103);
 }
 
 .ui-data-input .load_demo:before,
@@ -311,9 +356,9 @@
 .ui-data-input label.label_file_input:before{
 	background-image: url(../images/icon_upload.png);
 	width: 22px;
-    height: 23px;    
-    margin-top: -12px;
-    left: 13px;
+	height: 23px;
+	margin-top: -12px;
+	left: 13px;
 }
 .ui-data-input label span{
 	white-space: nowrap;
