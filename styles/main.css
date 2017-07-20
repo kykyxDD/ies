@@ -244,33 +244,33 @@ body {
 	width: 100%;
 	margin-bottom: 7px;
 }
-.info_ies .popup .itm.azim .val {
+.info_ies .popup .itm.angle .val {
 	height: 30px;
 	width: 200px;
 }
-.info_ies .popup .itm.azim .val .cont_val {
+.info_ies .popup .itm.angle .val .cont_val {
 	width: 100%;
 	display: table;
 }
-.info_ies .popup .itm.azim .val .minus,
-.info_ies .popup .itm.azim .val .plus,
-.info_ies .popup .itm.azim .val input{
+.info_ies .popup .itm.angle .val .minus,
+.info_ies .popup .itm.angle .val .plus,
+.info_ies .popup .itm.angle .val input{
 	display: inline-block;
 	vertical-align: middle;
 	text-align: center;
 }
-.info_ies .popup .itm.azim .val input {
+.info_ies .popup .itm.angle .val input {
 	width: 123px;
     margin: 0 5px;
 }
-.info_ies .popup .itm.azim .val .minus {
+.info_ies .popup .itm.angle .val .minus {
 	line-height: 23px;
 }
-.info_ies .popup .itm.azim .val .plus {
+.info_ies .popup .itm.angle .val .plus {
 	line-height: 25px;
 }
-.info_ies .popup .itm.azim .val .minus,
-.info_ies .popup .itm.azim .val .plus {
+.info_ies .popup .itm.angle .val .minus,
+.info_ies .popup .itm.angle .val .plus {
 	width: 25px;
 	height: 25px;
 	background-color: #FDFDFD;

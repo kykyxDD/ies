@@ -184,6 +184,7 @@ function initData(){
 		info_ies.info_data.polar = num_polar;
 		info_ies.info_data.azim = num_azim;
 		info_ies.info_data.power = parseFloat(arr_info_1[2]);
+		info_ies.info_data.default_light_flow = parseFloat(arr_info[1]);
 		info_ies.info_data.line = [
 			arr_info, arr_info_1
 		]
@@ -256,7 +257,7 @@ function initData(){
 						var rever_arr = arr[i].slice().reverse();
 						var new_path = arr[i].slice().concat(rever_arr.slice(1,-1));
 						var l = path/2;
-						// if(rever_arr.length == 2) l = 1
+
 						for(var p = 0; p < l; p++){
 							new_arr = new_arr.concat(new_path)
 						}	

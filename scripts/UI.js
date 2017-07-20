@@ -3,14 +3,14 @@ UI = f.unit(Block, {
 	ename: 'ui',
 
 	create: function() {
-		this.header   = dom.div('header',   this.element)
-		this.viewport = dom.div('viewport', this.element)
-		this.footer   = dom.div('footer',   this.element)
+		this.header   = dom.div('header',   this.element);
+		this.viewport = dom.div('viewport', this.element);
+		this.footer   = dom.div('footer',   this.element);
 
 		this.dataInput = new UI.DataInput({
 			events: this.events,
 			eroot: this.viewport
-		})
+		});
 	},
 
 	onblur: function() {
@@ -69,9 +69,10 @@ UI.DataInput = f.unit(Block, {
 		dom.on('click', text_ies_sum, function(){
 			if(!self.check_sum){
 				self.prevFileList();
-				self.check_sum = true
+				
 				self.changeFileList(self.data_sum)
 				dom.addclass(self.cont_btn_sum, 'change');
+				self.check_sum = true
 			}
 		});
 
@@ -127,8 +128,6 @@ UI.DataInput = f.unit(Block, {
 	},
 	creatDataSum: function(){
 
-		var check_sum = this.check_sum;
-
 		dom.remclass(this.cont_btn_sum, 'sum');
 		this.itm_edit = false;
 		this.data_sum = false;
@@ -136,8 +135,8 @@ UI.DataInput = f.unit(Block, {
 
 		if( dom.hasclass(this.cont_btn_sum, 'change')){
 			this.changeFileList(this.arrList[0])
-			dom.remclass(this.cont_btn_sum, 'change')
 		}
+		dom.remclass(this.cont_btn_sum, 'change')
 	},
 	dodrop: function(e) {
 		this.dropleave()
@@ -176,7 +175,7 @@ UI.DataInput = f.unit(Block, {
 			return false;
 		}
 
-		this.itm_file = file
+		this.itm_file = file;
 		this.itm_file_name = file.name;
 		var name = file.fileName || file.name;
 		this.input.value = '';
@@ -213,20 +212,27 @@ UI.DataInput = f.unit(Block, {
 		return xmlhttp;
 	},
 	createBtnFile: function(txt){
-		this.itm_edit = false
+		this.itm_edit = false;
+		var add = true;
+
+		for(var i = 0; i < this.arrList.length; i++ ){
+			if(this.arrList[i].name == txt) add = false
+		}
+
+		if(!add) return false
 
 		this.prevFileList();
 		var elem = dom.div('itm change', this.list_file);
-		var name = dom.div('name', elem)
+		var name = dom.div('name', elem);
 
-		var span = dom.elem('span', "text", name)
+		var span = dom.elem('span', "text", name);
 		span.innerHTML = txt;
 
 		if(span.offsetWidth > name.offsetWidth - 20){
-			var text = span.innerHTML.substr(0, span.innerHTML.length-4)
+			var text = span.innerHTML.substr(0, span.innerHTML.length-4);
 			span.innerHTML = text+'...';
 			while(span.offsetWidth > name.offsetWidth - 20){
-				var text = span.innerHTML.substr(0, span.innerHTML.length-4)
+				var text = span.innerHTML.substr(0, span.innerHTML.length-4);
 				span.innerHTML = text+'...';
 			}
 		}
@@ -236,31 +242,33 @@ UI.DataInput = f.unit(Block, {
 		var obj = {
 			elem: elem,
 			name: txt
-		}
-		this.arrList.push(obj)
-		var self = this
+		};
+
+		this.change_file = txt;
+		this.arrList.push(obj);
+		var self = this;
 
 		dom.on('click',name, function(){
-			var id = self.arrList.indexOf(obj)
+			var id = self.arrList.indexOf(obj);
 			if(id >= 0){
-				self.changeFileList(self.arrList[id])
+				self.changeFileList(self.arrList[id]);
 			}
 		})
 		dom.on('click',btn_close, function() {
-			self.remFileList(self.arrList.indexOf(obj))
+			self.remFileList(self.arrList.indexOf(obj));
 		});
 
-		this.checkListFile()
+		this.checkListFile();
 	},
 	remFileList: function(id){
 		if(id == -1) return
 
 		var obj = this.arrList.splice(id, 1)[0];
 
-		var has = dom.hasclass(obj.elem, 'change')
+		var has = dom.hasclass(obj.elem, 'change');
 		this.list_file.removeChild(obj.elem);
 
-		this.checkListFile()
+		this.checkListFile();
 
 		if(this.arrList.length){
 			if(has){
@@ -268,7 +276,7 @@ UI.DataInput = f.unit(Block, {
 			}
 		} else {
 			main.view_azim.clearAllContainer();
-			main.view_info_ies.destroy()
+			main.view_info_ies.destroy();
 			this.itm_file = false;
 			this.itm_file_name = false;
 			this.input.value = '';
@@ -277,6 +285,7 @@ UI.DataInput = f.unit(Block, {
 		}
 	},
 	changeFileList: function (obj) {
+		console.log('check_sum',this.check_sum)
 		if(this.check_sum){
 			this.saveDataSum()
 		} else {
@@ -286,6 +295,7 @@ UI.DataInput = f.unit(Block, {
 		dom.addclass(obj.elem, 'change');
 		var data = obj.data;
 		this.itm_file_name = obj.name
+		this.change_file = obj.name;
 		if(obj.data){
 			this.itm_edit = obj.edit;
 			onData(data)
@@ -297,7 +307,7 @@ UI.DataInput = f.unit(Block, {
 		var prev_change = document.querySelector('.list_file .itm.change');
 		if(prev_change) {
 			dom.remclass(prev_change, 'change')
-			var name = prev_change.querySelector('.name').innerHTML;
+			var name = this.change_file;
 			for(var i = 0; i < this.arrList.length; i++){
 				if(this.arrList[i].name == name){
 					id = i
@@ -310,18 +320,23 @@ UI.DataInput = f.unit(Block, {
 
 			this.arrList[id].data = info.data;
 			this.arrList[id].edit = info.edit;
+			this.change_file = false
+
 		}
 	},
 	saveDataSum: function(){
 
 		dom.remclass(this.cont_btn_sum, 'change');
-		var info = main.initData.getInfo(main.info_ies);
 
-		this.data_sum = {
-			data: info.data,
-			name: 'sum.ies',
-			edit: true
-		};
+		if(!this.data_sum || (this.data_sum && !this.data_sum.data)){
+			var info = main.initData.getInfo(main.info_ies);
+
+			this.data_sum = {
+				data: info.data,
+				name: 'sum.ies',
+				edit: true
+			};
+		}
 
 		this.check_sum = false
 	},
@@ -370,16 +385,11 @@ UI.DataInput = f.unit(Block, {
 	},
 
 	createIESSum: function(){
-		this.prevFileList();
+		console.log('createIESSum')
 
-		this.check_sum = true;
-
-		this.itm_file_name = this.file_sum
-
-		dom.addclass(this.cont_btn_sum, 'sum');
-		dom.addclass(this.cont_btn_sum, 'change');
 		this.itm_edit = true;
 		var arr = [];
+		this.prevFileList();
 
 		for(var i = 0; i < this.arrList.length; i++){
 			if(this.arrList[i].data){
@@ -389,6 +399,14 @@ UI.DataInput = f.unit(Block, {
 
 		if(arr.length){
 			main.createDataSum.create(arr)
+			
+
+			this.check_sum = true;
+
+			this.itm_file_name = this.file_sum;
+
+			dom.addclass(this.cont_btn_sum, 'sum');
+			dom.addclass(this.cont_btn_sum, 'change');
 		};
 	},
 

@@ -62,7 +62,7 @@ function ViewInfoIES(){
 
 		this.obj_elem.power = createElemInfo('power');
 		this.obj_elem.polar = createElemInfo('polar', 'Number of polar angles');
-		this.obj_elem.azim =  createElemInfo('polar', 'Number of azimuth angles');
+		this.obj_elem.azim =  createElemInfo('azim', 'Number of azimuth angles');
 
 		var cont_vis_azim = dom.elem('div', 'vis_azim', cont);
 		var cont_btn = dom.elem('div', 'cont_switch', cont_vis_azim);
@@ -192,9 +192,8 @@ function ViewInfoIES(){
 		var obj_other = itmElem('other');
 		var obj_light_flow = itmElem('light_flow', 'Luminous flux');
 
-		// var obj_polar = itmElem('polar');
+		var obj_polar = itmNumElem('polar', "Number of polar angles");
 		var obj_azim = itmNumElem('azim', "NUMBER OF AZIMUTH ANGLES");
-		// var obj_polar = itmNumElem('polar', "Number of polar angles");
 		// var obj_power = itmElem('power');
 
 		this.obj_elem.popup = {};
@@ -210,8 +209,8 @@ function ViewInfoIES(){
 		this.obj_elem.popup.lamp = obj_lamp;
 		this.obj_elem.popup.other = obj_other;
 		this.obj_elem.popup.light_flow = obj_light_flow;
-		// this.obj_elem.popup.polar = obj_polar;
 		this.obj_elem.popup.azim = obj_azim;
+		this.obj_elem.popup.polar = obj_polar;
 
 		function itmElem(val, text){
 			var elem = dom.elem('div', 'itm' ,par);
@@ -224,7 +223,7 @@ function ViewInfoIES(){
 			return input
 		}
 		function itmNumElem(val, text){
-			var elem = dom.elem('div', 'itm ' + val ,par);
+			var elem = dom.elem('div', 'itm angle' ,par);
 			var elem_name = dom.elem('div', 'name', elem);
 			var elem_val = dom.elem('div', 'val', elem);
 			var cont_val = dom.elem('div', 'cont_val', elem_val);
@@ -329,16 +328,15 @@ function ViewInfoIES(){
 			main.info_ies.info_data.light_flow = elem_popup.light_flow.value
 		}
 
-		elem_popup.azim.value = data.azim ? data.azim : 0;
+		elem_popup.azim.value = data.azim ? data.azim : 1;
 		if(data.azim){
 			main.info_ies.info_data.azim = elem_popup.azim.value
 		}
 
-
-		// elem_popup.polar.value = data.polar ? data.polar : '';
-		// if(data.polar) {
-		// 	main.info_ies.info_data.polar = elem_popup.polar.value
-		// }
+		elem_popup.polar.value = data.polar ? data.polar : 2;
+		if(data.polar){
+			main.info_ies.info_data.polar = elem_popup.polar.value
+		}
 
 
 
@@ -346,10 +344,7 @@ function ViewInfoIES(){
 		// if(data.light_flow) {
 		// 	main.info_ies.info_data.light_flow = elem_popup.light_flow.value
 		// }
-		// var obj_polar = itmElem();
-		// dom.text(obj_polar.name, 'polar');
-		// obj_polar.input.value = data.polar ? data.polar : '';
-		
+
 
 		// var obj_power = itmElem();
 		// dom.text(obj_power.name, 'power');
@@ -374,6 +369,7 @@ function ViewInfoIES(){
 
 		var light_flow = elem_popup.light_flow.value
 		var azim = elem_popup.azim.value
+		var polar = elem_popup.polar.value
 		// var polar = elem_popup.polar.value
 		
 
@@ -412,54 +408,62 @@ function ViewInfoIES(){
 		}
 
 		if(this.checkVal(data.luminaire, luminaire)) {
-			console.log('luminaire')
-			save = true
-			main.info_ies.info_data.luminaire = luminaire
-			dom.text(obj.luminaire, luminaire)
+			console.log('luminaire');
+			save = true;
+			main.info_ies.info_data.luminaire = luminaire;
+			dom.text(obj.luminaire, luminaire);
 		}
 
 		if(this.checkVal(data.lampcat, lampcat)){
-			save = true
-			main.info_ies.info_data.lampcat = lampcat
-			dom.text(obj.lampcat, lampcat)
+			save = true;
+			main.info_ies.info_data.lampcat = lampcat;
+			dom.text(obj.lampcat, lampcat);
 		}
 
 		if(this.checkVal(data.lamp, lamp)) {
 			console.log('lamp')
-			save = true
-			main.info_ies.info_data.lamp = lamp
-			dom.text(obj.lamp, lamp)
+			save = true;
+			main.info_ies.info_data.lamp = lamp;
+			dom.text(obj.lamp, lamp);
 		}
 		if(this.checkVal(data.other, other)) {
 			console.log('other')
-			save = true
-			main.info_ies.info_data.other = other
-			dom.text(obj.other, other)
+			save = true;
+			main.info_ies.info_data.other = other;
+			dom.text(obj.other, other);
 		}
 		if(parseFloat(light_flow) != parseFloat(data.light_flow)) {
-			save = true
-			console.log('light_flow', parseFloat(light_flow))
+			save = true;
 			
-			dom.text(obj.light_flow, light_flow)
+			dom.text(obj.light_flow, light_flow);
 			main.builder.updateLightFlow(parseFloat(light_flow));
 		}
 
 		var azim = Math.max(parseFloat(azim), 1)
 		if(azim != parseFloat(data.azim)) {
-			save = true
-			console.log('azim', azim)
+			save = true;
+
+			if(azim > 3) {
+				azim = Math.floor(azim/4)*4 + 1
+			}
 			
-			dom.text(obj.azim, azim)
-			main.info_ies.info_data.azim = azim
-			main.builder.updateAzim(parseFloat(azim));
+			dom.text(obj.azim, azim);
+			main.info_ies.info_data.azim = azim;
+			main.builder.updateAzim(azim);
 		}
-		// if(parseFloat(polar) != parseFloat(data.polar)) {
-		// 	save = true
-		// 	console.log('polar', parseFloat(polar))
+
+		var polar = Math.max(parseFloat(polar), 2)
+		if(polar != parseFloat(data.polar)) {
+			save = true;
+			if(polar > 3) {
+				polar = Math.floor(polar/4)*4 + 1;
+			}
 			
-		// 	dom.text(obj.polar, polar)
-		// 	main.builder.updatePolar(parseFloat(polar));
-		// }
+			dom.text(obj.polar, polar);
+			main.info_ies.info_data.polar = polar;
+			main.builder.updatePolar(polar);
+		}
+
 
 
 		console.log('save', save)

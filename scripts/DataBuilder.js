@@ -2,6 +2,7 @@ function DataBuilder() {
 
 	this.viewFigure = false;
 	this.max_azim_data = 90;
+	this.max_polar_data = 90;
 
 	this.lineMaterial = new THREE.LineBasicMaterial({
 		vertexColors: THREE.VertexColors
@@ -110,7 +111,7 @@ DataBuilder.prototype = {
 	createData: function(lines, no_update){
 		this.subdivisions = Math.max(8, Math.ceil(64/lines[0].length));
 		this.verticals = Math.ceil(180/lines.length);
-		console.log('verticals:',this.verticals)
+		// console.log('verticals:',this.verticals)
 
 		var linesCount = lines.length;
 		var data = [];
@@ -135,7 +136,8 @@ DataBuilder.prototype = {
 				var row = []
 
 				for(var k = 0; k < a.length; k++) {
-					row.push(this.cubicInterpolate(p, a[k], b[k], c[k], d[k]))
+					var num = this.cubicInterpolate(p, a[k], b[k], c[k], d[k]);
+					row.push(num);
 				}
 
 				linesInterpolated.push(row)
@@ -163,12 +165,12 @@ DataBuilder.prototype = {
 
 			for(var j = row.length -1; j >= 0; j--) {
 				var a = row[j],
-				    b = row[(j+1)%row.length]
+				    b = row[(j+1)%row.length];
 
 				for(var k = this.subdivisions -1; k >= 0; k--) {
-					var p = k / this.subdivisions
+					var p = k / this.subdivisions;
 
-					row.splice(j + 1, 0, (b - a) * p + a)
+					row.splice(j + 1, 0, (b - a) * p + a);
 				}
 			}
 			
@@ -204,17 +206,17 @@ DataBuilder.prototype = {
 		    lineRoot = new THREE.Object3D,
 		    meshRoot = new THREE.Object3D,
 		    lradRoot = new THREE.Object3D
-		this.lineRoot = lineRoot
-		this.meshRoot = meshRoot
-		this.root = root
+		this.lineRoot = lineRoot;
+		this.meshRoot = meshRoot;
+		this.root = root;
 
-		var planesCount = data.length
-		this.planesCount = planesCount
+		var planesCount = data.length;
+		this.planesCount = planesCount;
 		var index = 0;
 		var self = this;
-		this.data = data
+		this.data = data;
 		this.index = 0;
-		this.height = height
+		this.height = height;
 
 		return this.loadFigure();
 	},
@@ -296,13 +298,65 @@ DataBuilder.prototype = {
 		var mean = min_azim == 0 ? 90 : 45;
 		var index_zero = main.info_ies.azim.arr.indexOf(min_azim);
 		var index_perp  = main.info_ies.azim.arr.indexOf(min_azim + mean);
+		var data = this.data
 
 		this.index_zero.itm = index_zero;
 		this.index_zero.sim = (Math.floor(this.lineRoot.children.length/2) + index_zero)%this.lineRoot.children.length;
+		// this.index_zero.data = [];
+		var data_itm = []; // this.data[this.index_zero.itm].slice()
+		var arr = data[index_zero*this.verticals].slice();
+
+		for(var i = 0; i < arr.length; i++){
+			data_itm.push({
+				x: arr[i].x,
+				y: arr[i].y
+			})
+		}
+		// console.log(this.index_zero.itm , this.index_zero.sim)
+		var path = [];
+		var arr = data[this.index_zero.sim*this.verticals].slice().reverse();
+		
+		for(var i = 0; i < arr.length; i++){
+			data_itm.push({
+				x: -arr[i].x,
+				y: arr[i].y
+			})
+		}
+		this.index_zero.data = data_itm//arr_index.concat(path.reverse())
+
 
 		this.index_perp.itm = index_perp >= 0 ?  index_perp : undefined ;
 		this.index_perp.sim = index_perp >= 0 ?  (Math.floor(this.lineRoot.children.length/2) + index_perp)%this.lineRoot.children.length : undefined ;
 
+
+		this.index_perp.data = [];
+
+		var data_prev = []; // this.data[this.index_zero.itm].slice()
+		
+		if(this.index_perp.itm >= 0){
+			//this.index_perp.data = this.index_perp.data.concat(this.data[this.index_perp.itm].slice())
+			var arr = data[this.index_perp.itm*this.verticals].slice();
+			for(var i = 0; i < arr.length; i++){
+				data_prev.push({
+					x: arr[i].x,
+					y: arr[i].y
+				})
+			}
+		}
+
+		var path = [];
+		
+
+		if(this.index_perp.sim >= 0){
+			var arr = data[this.index_perp.sim*this.verticals].slice().reverse();
+			for(var i = 0; i < arr.length; i++){
+				data_prev.push({
+					x: -arr[i].x,
+					y: arr[i].y
+				})
+			}
+		}
+		this.index_perp.data = data_prev //arr_index.concat(path.reverse())
 	},
 
 	getLightFlow: function(){
@@ -397,8 +451,18 @@ DataBuilder.prototype = {
 		var lines = info.lines;
 		var info_polar = info.polar
 		var l_i = info_polar.arr.length;
-		console.log(info_polar.sum/(polar-1))
-		console.log(info_polar.sum/(l_i-1))
+
+		var sum = l_i > 1 ? info_polar.sum : this.max_polar_data;
+		var path = sum/(polar-1);
+		var new_arr = [info_polar.min];
+
+		for(var i = 1; i < polar; i++){
+			var angle = info_polar.min + path*i
+			new_arr.push(parseFloat((angle).toFixed(2)));
+		}
+		console.log(new_arr)
+		this.createNewDataPolar(new_arr);
+
 	},
 	updateAzim: function(azim){
 		var info = main.info_ies;
@@ -424,13 +488,89 @@ DataBuilder.prototype = {
 
 	},
 
+	createNewDataPolar: function(new_polar){
+		var info = main.info_ies;
+		var lines = this.start_lines;
+
+		var arr_polar = this.start_polar;
+		var arr_azim = this.start_azim;
+		var new_lines = [];
+		var arr_info = [];
+		var l_p = info.polar.arr.length;
+		this.showPreload();
+		for(var i = 0; i < new_polar.length; i++){
+			var a = new_polar[i];
+			var obj = {};
+
+			obj.itm = a;
+
+			var p = 0;
+			var n = 180;
+			for(var j = 0; j < arr_polar.length; j++){
+				if(a >= arr_polar[j]){
+					p = Math.max(p, arr_polar[j]);
+				}
+				if(a <= arr_polar[j]){
+					n = Math.min(n, arr_polar[j]);
+				}
+			}
+
+			obj.prev    = p;
+			obj.prev_id = arr_polar.indexOf(p);
+			obj.next = arr_polar.length > 1 ? n : 0;
+			obj.next_id = arr_polar.length > 1 ? arr_polar.indexOf(n) : 0;
+
+			arr_info.push(obj)
+		}
+		console.log('new',new_polar.join(', '))
+		console.log('prev',arr_polar.join(', '))
+		console.log(arr_info)
+		var linesCount = arr_polar.length
+
+		for(var l = 0; l < new_polar.length; l++){
+			var d = arr_info[l];
+			var row = [];
+			if(d.prev_id == d.next_id){
+				row = lines[d.prev_id].slice(0, arr_azim.length);
+			} else {
+				var p_id = d.prev_id;
+				var p_a = d.prev
+				var n_id = d.next_id;
+				var n_a = d.next
+				var diff = n_a - p_a;
+				var p = (new_polar[l] - d.prev)/diff
+				// var row = []
+
+				var a = p_id ? lines[p_id - 1] : lines[0],
+					b = lines[p_id],
+					c = p_id + 1 < linesCount ? lines[p_id+1] : b,
+					d = p_id + 2 < linesCount ? lines[p_id+2] : c
+
+				for(var k = 0; k < arr_azim.length; k++) {
+					var num = this.cubicInterpolate(p, a[k], b[k], c[k], d[k]);
+					row.push(Math.abs(num));
+				}
+
+			}
+			new_lines[l] = row
+		}
+
+		var update_info_polar = main.initData.getInfoAngle(new_polar)
+
+		new_lines = main.initData.arrReverse(new_lines, main.info_ies.azim.sum);
+
+
+		main.info_ies.lines = new_lines;
+		main.info_ies.polar = update_info_polar;
+
+		this.createData(new_lines)
+	},
+
 	createNewDataAzim: function(new_azim){
 		var info = main.info_ies;
 		var lines = this.start_lines;
-		var info_azim = info.azim;
 
 		var arr_azim = this.start_azim;
-		// console.log(arr_azim.join(', '))
 		var new_lines = [];
 		var arr_info = [];
 		var l_p = info.polar.arr.length;
@@ -475,19 +615,16 @@ DataBuilder.prototype = {
 
 				p = isFinite(p) ? p : 0
 				var a = row[p_id],
-				    b = row[n_id];
+					b = row[n_id];
 
 				var val = (b - a) * p + a;
 
 				arr[j] = val
 			}
-			// console.log(arr, row.slice(0, arr_azim.length) )
+
 			new_lines[l] = arr
 		}
 
-		var first_angle_azim = parseFloat(new_azim[0]);
-		var last_angle_azim = parseFloat(new_azim[new_azim.length-1]);
-		var sum_azim = last_angle_azim + (360 - first_angle_azim)%360;
 		var update_info_azim = main.initData.getInfoAngle(new_azim)
 
 		new_lines = main.initData.arrReverse(new_lines, update_info_azim.sum);
@@ -496,13 +633,7 @@ DataBuilder.prototype = {
 		main.info_ies.lines = new_lines;
 		main.info_ies.azim = update_info_azim;
 
-		// console.log('new_lines',new_lines)
 		this.createData(new_lines)
-
-		// main.view_info_ies.loadMiniView();
-
-		// this.updateLineRoom();
-
 	},
 
 	radiusToVector: function(radius, index, height) {
@@ -621,7 +752,66 @@ DataBuilder.prototype = {
 			var mesh = this.meshRoot.children[m];
 			mesh.material.visible = !main.linesOnly
 		}
+		var index = this.index_line;
+		/*var data = []
+		if(main.info_ies.azim.arr.length >= 1 ){
 
+			if((index != zero.itm && index != zero.sim) &&
+			(index != perp.itm && index != perp.sim) && 
+			(index_asim != zero.itm && index_asim != zero.sim) &&
+			(index_asim != perp.itm && index_asim != perp.sim)){
+
+				data = this.data[index].concat(this.data[index_asim].reverse())
+
+			} else {
+				if((index != zero.sim && index_asim != zero.itm) &&
+				   (index != perp.sim && index_asim != perp.itm)){
+					if((index == zero.itm && index != zero.sim) ||
+					   (index != zero.itm && index == zero.sim) ||
+					   (index == perp.itm && index != perp.sim) || 
+					   (index != perp.itm && index == perp.sim)){
+						index = undefined
+					} 
+					if((index_asim != zero.itm && index_asim == zero.sim) ||
+					   (index_asim == zero.itm && index_asim != zero.sim) ||
+					   (index_asim != perp.itm && index_asim == perp.sim) ||
+					   (index_asim == perp.itm && index_asim != perp.sim)){
+						index_asim = undefined
+					}
+				}
+
+				if(index >= 0 || index_asim >= 0){
+
+					var arr_index = [];
+					if(index >=0 ){
+						var arr = this.data[index*this.verticals].slice();
+
+						for(var i = 0; i < arr.length; i++){
+							arr_index[i] = {
+								x: arr[i].x,
+								y: arr[i].y
+							}
+						}
+					}
+					
+					var path = [];
+					if(index_asim >= 0){
+						var arr = this.data[index_asim*this.verticals].slice();
+						
+						for(var i = 0; i < arr.length; i++){
+							path[i] = {
+								x: -arr[i].x,
+								y: arr[i].y
+							}
+						}
+					}
+					data = arr_index.concat(path.reverse())
+				}
+			}
+		}
+		// main.view_azim.updateViewAzim(data);
+		*/
+		// console.log(data)
 		main.view.needsRedraw = true;
 
 		main.view_azim.updateViewAzim(this.index_line, index_asim);

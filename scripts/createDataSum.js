@@ -181,13 +181,14 @@ function CreateDataSum(){
 		for(var i = 0; i < arr.length; i++){
 			var data = arr[i];
 			console.log(data)
-			arr[i].lines = this.updateAzim(data, arr_azim);
+			
 			var lines = this.updatePolar(data, polar);
 			if(lines && lines.length){
 				arr[i].lines = this.updatePolar(data, polar);	
 			} else {
 				stop = true
 			}
+			arr[i].lines = this.updateAzim(data, arr_azim);
 			// arr[i].lines = this.updatePolar(data, polar);
 		}
 		return {
@@ -200,6 +201,27 @@ function CreateDataSum(){
 		var new_data = [];
 		var arr_polar = polar.arr;
 		var item_polar = data.info_ies.polar;
+		var arr_azim = data.info_ies.azim.arr
+
+		if(polar.sum == 180 && item_polar.sum == 90){
+			var rever = lines.slice().reverse()
+			console.log(rever)
+			rever = rever.slice(0, -1)
+			data.lines = rever.concat(lines.slice())
+			var path = item_polar.arr.map(function(num){
+				return num - 90
+			}) 
+			path = path.concat(item_polar.arr.slice(1))
+
+			var new_polar = path.map(function(num){
+				return num + 90
+			})
+
+			console.log(new_polar)
+			data.info_ies.polar = main.initData.getInfoAngle(new_polar)
+			item_polar = data.info_ies.polar
+
+		}
 
 		var update = true;
 		if(arr_polar.length == item_polar.arr.length){
@@ -212,33 +234,94 @@ function CreateDataSum(){
 			update = false
 		}
 
+
 		var new_data = [];
 		var stop = false
 
 		if(update) {
 			new_data = lines
 		} else {
-			for(var p = 0; p < arr_polar.length; p++){
-				var itm_ang = arr_polar[p]
+
+			// var info = main.info_ies;
+			// var lines = this.start_lines;
+
+			var new_lines = [];
+			var arr_info = [];
+			// var l_p = info_ies.polar.arr.length;
+			// this.showPreload();
+			for(var i = 0; i < arr_polar.length; i++){
+				var a = arr_polar[i];
+				var obj = {};
+
+				obj.itm = a;
+
+				var p = 0;
+				var n = 180;
+				var k = a
+				if(a > item_polar.max){
+					var k =  item_polar.max - (a - item_polar.max)
+				}
+				for(var j = 0; j < item_polar.arr.length; j++){
+					if(a >= item_polar.arr[j]){
+						p = Math.max(p, item_polar.arr[j]);
+					}
+					if(a <= item_polar.arr[j]){
+						n = Math.min(n, item_polar.arr[j]);
+					}
+				}
+
+				obj.prev    = p;
+				obj.prev_id = item_polar.arr.indexOf(p);
+				obj.next = item_polar.arr.length > 1 ? n : 0;
+				obj.next_id = item_polar.arr.length > 1 ? item_polar.arr.indexOf(n) : 0;
+
+				arr_info.push(obj)
+			}
+
+
+			var linesCount = item_polar.arr.length
+			for(var l = 0; l < arr_polar.length; l++){
+				var itm_ang = arr_polar[l]
 				var id = item_polar.arr.indexOf(itm_ang)
 				var id_0 = id;
+				var row 
 				if(itm_ang > item_polar.max){
 					var k =  item_polar.max - (itm_ang - item_polar.max)
 					id_0 = item_polar.arr.indexOf(k)
 				}
+
+
+				var d = arr_info[l];
 				if(id >= 0 || id_0 >= 0){
 					if(id >= 0){
-						new_data[p] = lines[id];
+						row = lines[id].slice(0, arr_azim.length);
 					} else {
-						new_data[p] = lines[id_0];
+						row = lines[id_0].slice(0, arr_azim.length);
 					}
 				} else {
-					stop = true
+					//stop = true
+					var p_id = d.prev_id;
+					var p_a = d.prev;
+					var n_id = d.next_id;
+					var n_a = d.next;
+					var diff = n_a - p_a;
+					var p = (arr_polar[l] - d.prev)/diff;
+
+					var a = p_id ? lines[p_id - 1] : lines[0],
+						b = lines[p_id],
+						c = p_id + 1 < linesCount ? lines[p_id+1] : b,
+						d = p_id + 2 < linesCount ? lines[p_id+2] : c
+
+					for(var k = 0; k < arr_azim.length; k++) {
+						var num = main.builder.cubicInterpolate(p, a[k], b[k], c[k], d[k]);
+						row.push(Math.abs(num));
+					}
 				}
+				new_data[l] = row
 			}
 		}
 
-		return !stop ? new_data : true
+		return new_data 
 	};
 	this.updateAzim = function(data, azim){
 		var lines = data.lines;
