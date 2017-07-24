@@ -68,9 +68,6 @@ DataBuilder.prototype = {
 				this.start_azim = main.info_ies.azim.arr;
 				this.start_polar = main.info_ies.polar.arr;	
 			}
-
-			
-
 		} else {
 			lines = this.parseText(text);
 			// main.info_ies = false;

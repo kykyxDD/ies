@@ -35,7 +35,7 @@ UI.DataInput = f.unit(Block, {
 	unitName: 'UI_DataInput',
 	ename: 'ui-data-input',
 
-	demo_file: '2113.IES',//'8663.IES',
+	demo_file: '8663.IES',
 	itm_file_name: this.demo_file,
 	text_span: 'Upload *.ies File',
 	text_drod: 'Drag and drop *.ies file or',
@@ -128,15 +128,19 @@ UI.DataInput = f.unit(Block, {
 	},
 	creatDataSum: function(){
 
-		dom.remclass(this.cont_btn_sum, 'sum');
+		this.remDataSum();
 		this.itm_edit = false;
-		this.data_sum = false;
-		this.check_sum = false;
 
 		if( dom.hasclass(this.cont_btn_sum, 'change')){
 			this.changeFileList(this.arrList[0])
 		}
 		dom.remclass(this.cont_btn_sum, 'change')
+	},
+	remDataSum: function(){
+		dom.remclass(this.cont_btn_sum, 'sum');
+		// this.itm_edit = false;
+		this.data_sum = false;
+		this.check_sum = false;
 	},
 	dodrop: function(e) {
 		this.dropleave()
@@ -365,7 +369,11 @@ UI.DataInput = f.unit(Block, {
 			dom.display(this.cont_btn_sum, true)
 		} else {
 			dom.display(this.cont_btn_sum, false)
+			this.remDataSum();
 		}
+	},
+	disabledDataSum: function(){
+
 	},
 	loadStartFile: function(){
 		this.input.value = '';

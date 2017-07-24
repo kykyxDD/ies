@@ -26,7 +26,6 @@ function CreateDataSum(){
 				data.info_ies.azim.sum = 180;
 
 				var lines = data.lines;
-				// console.log(lines)
 
 				var path_l_0 = lines.slice(a_0, data.info_ies.azim.arr.length);
 				var path_l_1 = lines.slice(1, a_0+1);
@@ -159,7 +158,7 @@ function CreateDataSum(){
 
 		if(!update_data.stop){
 
-			var data_info = this.sumFigure(arr_data, sum_polar, sum_azim)
+			var data_info = this.sumFigure(update_data.arr, sum_polar, sum_azim)
 			var obj = {
 				info_data : info_data,
 				lines : data_info.lines,
@@ -180,16 +179,14 @@ function CreateDataSum(){
 		var stop = false
 		for(var i = 0; i < arr.length; i++){
 			var data = arr[i];
-			console.log(data)
-			
 			var lines = this.updatePolar(data, polar);
 			if(lines && lines.length){
-				arr[i].lines = this.updatePolar(data, polar);	
+				arr[i].lines = lines // this.updatePolar(data, polar);
 			} else {
 				stop = true
 			}
 			arr[i].lines = this.updateAzim(data, arr_azim);
-			// arr[i].lines = this.updatePolar(data, polar);
+
 		}
 		return {
 			'arr': arr,
@@ -204,22 +201,34 @@ function CreateDataSum(){
 		var arr_azim = data.info_ies.azim.arr
 
 		if(polar.sum == 180 && item_polar.sum == 90){
-			var rever = lines.slice().reverse()
-			console.log(rever)
-			rever = rever.slice(0, -1)
-			data.lines = rever.concat(lines.slice())
+
+			var p = item_polar.arr.length;
+			var a = arr_azim.length;
+
 			var path = item_polar.arr.map(function(num){
 				return num - 90
-			}) 
-			path = path.concat(item_polar.arr.slice(1))
+			});
+			path = path.concat(item_polar.arr.slice(1));
 
 			var new_polar = path.map(function(num){
 				return num + 90
-			})
+			});
 
-			console.log(new_polar)
+			// console.log(new_polar)
+			var new_line = [];
+			var len = lines[0].length;
+			for(var i = 0; i < len; i++){
+				new_line.push(0);
+			}
+			// console.log(new_line)
+
+			while(lines.length < new_polar.length){
+				lines.push(new_line);
+			}
+
 			data.info_ies.polar = main.initData.getInfoAngle(new_polar)
 			item_polar = data.info_ies.polar
+			data.lines = lines
 
 		}
 
@@ -251,16 +260,18 @@ function CreateDataSum(){
 			// this.showPreload();
 			for(var i = 0; i < arr_polar.length; i++){
 				var a = arr_polar[i];
-				var obj = {};
-
-				obj.itm = a;
+				var obj = {
+					itm: a
+				};
+				
 
 				var p = 0;
 				var n = 180;
 				var k = a
-				if(a > item_polar.max){
-					var k =  item_polar.max - (a - item_polar.max)
-				}
+
+				// if(a > item_polar.max){
+				// 	a =  Math.abs(item_polar.max - (a - item_polar.max))
+				// }
 				for(var j = 0; j < item_polar.arr.length; j++){
 					if(a >= item_polar.arr[j]){
 						p = Math.max(p, item_polar.arr[j]);
@@ -269,7 +280,7 @@ function CreateDataSum(){
 						n = Math.min(n, item_polar.arr[j]);
 					}
 				}
-
+				obj.new_angle =  a//k;
 				obj.prev    = p;
 				obj.prev_id = item_polar.arr.indexOf(p);
 				obj.next = item_polar.arr.length > 1 ? n : 0;
@@ -281,23 +292,17 @@ function CreateDataSum(){
 
 			var linesCount = item_polar.arr.length
 			for(var l = 0; l < arr_polar.length; l++){
-				var itm_ang = arr_polar[l]
-				var id = item_polar.arr.indexOf(itm_ang)
-				var id_0 = id;
-				var row 
-				if(itm_ang > item_polar.max){
-					var k =  item_polar.max - (itm_ang - item_polar.max)
-					id_0 = item_polar.arr.indexOf(k)
-				}
-
-
+				var row;
 				var d = arr_info[l];
-				if(id >= 0 || id_0 >= 0){
+				/*if(id >= 0 || id_0 >= 0){
 					if(id >= 0){
 						row = lines[id].slice(0, arr_azim.length);
 					} else {
 						row = lines[id_0].slice(0, arr_azim.length);
-					}
+					}*/
+
+				if(d.prev_id == d.next_id){
+					row = lines[d.prev_id].slice(0, arr_azim.length);
 				} else {
 					//stop = true
 					var p_id = d.prev_id;
@@ -305,7 +310,7 @@ function CreateDataSum(){
 					var n_id = d.next_id;
 					var n_a = d.next;
 					var diff = n_a - p_a;
-					var p = (arr_polar[l] - d.prev)/diff;
+					var p = (d.new_angle - d.prev)/diff;
 
 					var a = p_id ? lines[p_id - 1] : lines[0],
 						b = lines[p_id],
@@ -314,12 +319,13 @@ function CreateDataSum(){
 
 					for(var k = 0; k < arr_azim.length; k++) {
 						var num = main.builder.cubicInterpolate(p, a[k], b[k], c[k], d[k]);
-						row.push(Math.abs(num));
+						row.push((num));
 					}
 				}
 				new_data[l] = row
 			}
 		}
+		data.info_ies.polar = polar
 
 		return new_data 
 	};
@@ -342,11 +348,11 @@ function CreateDataSum(){
 		
 		console.log('update',update)
 
-		var id = azim.indexOf(item_azim.max)
+		// var id = azim.indexOf(item_azim.max)
 
-		if(id == -1 ) return false
-		var new_azim = azim.slice(0, id+1)
-		console.log('new_path', new_azim)
+		// if(id == -1 ) return false
+		// var new_azim = azim.slice(0, id+1)
+		// console.log('new_path', new_azim)
 		var arr_info = []
 		if(update) {
 			for(var p = 0 ; p < lines.length; p++){
@@ -354,14 +360,17 @@ function CreateDataSum(){
 			}
 		} else {
 			if(item_azim.arr.length > 1){
-				for(var i = 0; i < new_azim.length; i++){
-					var a = new_azim[i];
+				for(var i = 0; i < azim.length; i++){
+					var a = azim[i];
 					var obj = {};
 
 					obj.itm = a;
 
 					var p = 0;
 					var n = 360;
+					if(a > item_azim.max){
+						a =  Math.abs(item_azim.max - (a - item_azim.max))%item_azim.max
+					}
 					for(var j = 0; j < item_azim.arr.length; j++){
 						if(a >= item_azim.arr[j]){
 							p = Math.max(p, item_azim.arr[j]);
@@ -372,6 +381,7 @@ function CreateDataSum(){
 					}
 
 					obj.prev    = p;
+					obj.new_angle = a;
 					obj.prev_id = item_azim.arr.indexOf(p);
 					obj.next = item_azim.arr.length > 1 ? n : 0;
 					obj.next_id = item_azim.arr.length > 1 ? item_azim.arr.indexOf(n) : 0;
@@ -380,7 +390,6 @@ function CreateDataSum(){
 				}
 			}
 
-			// console.time('start')
 			for(var p = 0 ; p < lines.length; p++){
 				new_data[p] = [];
 				
@@ -391,40 +400,19 @@ function CreateDataSum(){
 					if(line.length == 1) {
 						arr[j] = line[0];
 					} else {
-
 						var ang = j;
 						var itm_ang = azim[j]
 						var id = item_azim.arr.indexOf(azim[j])
 						var id_0 = id;
-						if(azim[j] > item_azim.max){
-							if(item_azim.max == 90){
-								var k =  item_azim.max - (azim[j] - item_azim.max)
-								id_0 = item_azim.arr.indexOf(k)	
-							} else {
-								var k =  item_azim.max - azim[j]
-								id_0 = item_azim.arr.indexOf(k)	
-							}
-						}
-						
 
-						if(id == -1 && id_0 == -1) {
-							if(azim[j] > item_azim.max){
-								var k =  item_azim.max - (azim[j] - item_azim.max)
-								var a_1 = new_azim.indexOf(k)
-								if(a_1 == -1){
-									console.log('stop')
-								} else {
-									ang = a_1
-								}
-
-							}
+						if(arr_info[ang].prev_id != arr_info[ang].next_id){
 
 							var p_id = arr_info[ang].prev_id;
 							var p_a = arr_info[ang].prev
 							var n_id = arr_info[ang].next_id;
 							var n_a = arr_info[ang].next
 							var diff = n_a - p_a;
-							var percent = (azim[ang] - arr_info[ang].prev)/diff
+							var percent = (arr_info[ang].new_angle - arr_info[ang].prev)/diff
 
 							percent = isFinite(percent) ? percent : 0
 							var a = line[p_id],
@@ -433,21 +421,15 @@ function CreateDataSum(){
 							var val = (b - a) * percent + a;
 							arr[j] = val
 						} else {
-							if(id >= 0){
-								arr[j] = line[id]
-							} else {
-								arr[j] = line[id_0]
-							}
+
+							arr[j] = line[arr_info[ang].prev_id];
 						}
 					}
 				}
 				new_data[p] = arr;
-
 			}
 		}
 		return new_data
-		// console.timeEnd('start')
-
 	}
 
 	this.sumFigure = function(arr_data, polar, azim){
@@ -467,7 +449,6 @@ function CreateDataSum(){
 					max_R = Math.max(max_R, num)
 					arr_num.push(d_i.lines[p][a])
 				}
-				// console.log('0',p,a,'[', arr_num.join(', ') , ']')
 				
 				new_arr[p][a] = num
 			}
