@@ -56,6 +56,9 @@ function ViewAzim(){
 		var data = this.getCoor(index_zero.itm, index_zero.sim)
 		this.arrData.push({data:data, color: '#ff0000'});
 		var draw_figure = this.drawLine(data, shape, '#ff0000'); //this.drawFigure(data, '#ff0000');
+		console.log('zero_data',index_zero.data)
+		console.log('perp_data',index_perp.data)
+
 
 		if(index_perp.itm != undefined && index_perp.sim != undefined){
 			var data = this.getCoor(index_perp.itm, index_perp.sim)
@@ -120,7 +123,7 @@ function ViewAzim(){
 
 	this.getCoor = function(index, index_sim){
 		// console.log('getCoor',index,index_sim);
-		var data = [];
+		var data = [[],[]];
 		var lines = main.info_ies.lines;
 
 		var planesCount = lines[0] ? lines[0].length : 0;
@@ -135,16 +138,7 @@ function ViewAzim(){
 		var start_azim = (Math.PI*2)*(parseFloat(main.info_ies.azim.arr[0])/360);
 		if(index >= 0){
 			for(var i = 0; i < linesCount; i++) {
-				var row = lines[i];
-
-				var a = finish_angle * i/linesCount - Math.PI/2,
-					b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2);
-
-				var r_0 = row[index],
-					x = r_0 * Math.cos(a),
-					y = r_0 * Math.sin(a);
-
-				data.push(new THREE.Vector2(x, y))
+				data[0].push(lines[i][index])
 			}
 		}
 		if(main.info_ies.azim.sum >= 180){
@@ -154,39 +148,71 @@ function ViewAzim(){
 			} else {
 				new_index = (Math.floor(planesCount/2) + index)%(planesCount)	
 			}
-			
-			
-			// console.log('index',new_index)
-			for(var i = linesCount-1; i >= 0 ; i--) {
+			index_sim = new_index
+
+			for(var i = 0; i < linesCount; i++) {
 				var row = lines[i]
 
-				var a = finish_angle * i/linesCount - Math.PI/2,
-				    b = (2*Math.PI   * new_index/totalCount + start_azim)%(Math.PI*2)//2*Math.PI   * new_index/totalCount
-
-				var r_0 = row[new_index],
-					x = -r_0 * Math.cos(a),
-					y =  r_0 * Math.sin(a);
-
-				data.push(new THREE.Vector2(x, y))
+				data[1].push(lines[i][new_index])
 			}
 		} else {
 			if(index >= 0){
-				for(var i = linesCount-1; i >= 0 ; i--) {
+				for(var i =  0; i < linesCount; i++) {
 					var row = lines[i];
-
-					var a = finish_angle * i/linesCount - Math.PI/2,
-						b = (2*Math.PI   * index/totalCount + start_azim)%(Math.PI*2)
-
-					var r_0 = row[index],
-						x = -r_0 * Math.cos(a),
-						y =  r_0 * Math.sin(a)
-
-					data.push(new THREE.Vector2(x, y))
+					data[1].push(row[index])
 				}
 			}
 		}
 
-		return data
+		var verticals = main.builder.verticals;
+		var cubicInterpolate = main.builder.cubicInterpolate
+		for(var k = 0; k < data.length; k++){
+			var new_arr = [];
+			for(var i = 0; i < data[k].length; i++){
+				var a = i ? data[k][i - 1] : data[k][0],
+					b = data[k][i],
+					c = i + 1 < linesCount ? data[k][i+1] : b,
+					d = i + 2 < linesCount ? data[k][i+2] : c
+				var row = [];
+				for(var j = 0; j < verticals; j++) {
+					var p = j / verticals;
+
+					var num = cubicInterpolate(p, a, b, c, d);
+					new_arr.push(num)
+				}
+
+			}
+			data[k] = new_arr
+		}
+
+		for(var k = 0; k < data.length;k++){
+			var len = data[k].length;
+			if(k == 0){
+				
+				for(var i = 0; i < len; i++){
+					var a = finish_angle * i/len - Math.PI/2;
+
+					var r_0 = data[k][i],
+						x = r_0 * Math.cos(a),
+						y = r_0 * Math.sin(a);
+
+					data[k][i] = new THREE.Vector2(x, y)
+				}
+			} else {
+				for(var i = len - 1; i >= 0 ; i--) {
+
+					var a = finish_angle * i/len - Math.PI/2;
+
+					var r_0 = data[k][i],
+						x = -r_0 * Math.cos(a),
+						y =  r_0 * Math.sin(a)
+					data[k][i] = new THREE.Vector2(x, y)
+				}
+			}
+		}
+
+
+		return data[0].concat(data[1].reverse())
 	};
 	this.drawLines = function(){
 		var shape = new createjs.Shape();

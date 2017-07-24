@@ -58,7 +58,7 @@ function CreateDataSum(){
 			arr_lines.push(data.lines.slice())
 			arr_data.push(data);
 		}
-		console.log('arr_data',arr_data)
+		// console.log('arr_data',arr_data)
 		var info_data = main.initData.zero()
 
 		var max_azim = arr_azim[0].sum;
@@ -74,7 +74,7 @@ function CreateDataSum(){
 			for(var a = 0; a < arr_azim.length; a++){
 				var info = arr_azim[a];
 				var new_arr = info.arr.slice();
-				console.log(new_arr)
+				// console.log(new_arr)
 				if(info.sum > 0){
 					var p = max_azim/info.sum;
 					for(var i = 1; i < p; i++){
@@ -107,7 +107,7 @@ function CreateDataSum(){
 			for(var a = 0; a < arr_polar.length; a++){
 				var info = arr_polar[a];
 				var new_arr = info.arr.slice();
-				console.log(new_arr)
+				// console.log(new_arr)
 				if(info.sum){
 					var p = max_polar/info.sum;
 					for(var i = 1; i < p; i++){
@@ -128,8 +128,8 @@ function CreateDataSum(){
 				}
 			}
 		}
-		console.log('sum',sum_azim)
-		console.log('sum',sum_polar)
+		// console.log('sum',sum_azim)
+		// console.log('sum',sum_polar)
 
 		
 		var num_light = 1;
@@ -346,7 +346,7 @@ function CreateDataSum(){
 			update = false
 		}
 		
-		console.log('update',update)
+		// console.log('update',update)
 
 		// var id = azim.indexOf(item_azim.max)
 
@@ -453,7 +453,7 @@ function CreateDataSum(){
 				new_arr[p][a] = num
 			}
 		}
-		console.log(max_R, new_arr)
+		// console.log(max_R, new_arr)
 
 		return {
 			max_R : max_R,

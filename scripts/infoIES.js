@@ -652,6 +652,7 @@ function ViewInfoIES(){
 
 		dom.display(this.obj_elem.cont_info, true)
 		dom.display(this.obj_elem.btn_edit, false)
+		dom.visible(this.obj_elem.btn_down, false)
 
 		dom.text(obj.test, '');
 		dom.text(obj.data, '');

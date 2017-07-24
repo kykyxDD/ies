@@ -262,18 +262,19 @@ DataBuilder.prototype = {
 			meshRoot: this.meshRoot
 		};
 
-		this.createIndexLines()
+		this.createIndexLines();
 		
-		main.view_azim.loadNewFigure(this.index_zero, this.index_perp)
+		main.view_azim.loadNewFigure(this.index_zero, this.index_perp);
 
 		main.view.setTree(obj)
 		onMaterial()
 		main.view.toCenter()
 		dom.remclass(this.cont_preload, 'show');
 		this.viewFigure = true;
-		main.info_ies.info_data.light_flow = this.getLightFlow()
-
-		this.start_light_flow = main.info_ies.info_data.light_flow;
+		var info_data = main.info_ies.info_data
+		main.info_ies.info_data.light_flow = info_data.default_light_flow >= 0 ? info_data.default_light_flow : this.getLightFlow();
+		main.info_ies.info_data.light_flow_formula = this.getLightFlow();
+		this.start_light_flow = info_data.light_flow;
 
 		if(this.update_all){
 			main.view_info_ies.updateInfo();
@@ -295,65 +296,15 @@ DataBuilder.prototype = {
 		var mean = min_azim == 0 ? 90 : 45;
 		var index_zero = main.info_ies.azim.arr.indexOf(min_azim);
 		var index_perp  = main.info_ies.azim.arr.indexOf(min_azim + mean);
-		var data = this.data
+		var data = this.data;
+		console.log(data)
 
 		this.index_zero.itm = index_zero;
 		this.index_zero.sim = (Math.floor(this.lineRoot.children.length/2) + index_zero)%this.lineRoot.children.length;
-		// this.index_zero.data = [];
-		var data_itm = []; // this.data[this.index_zero.itm].slice()
-		var arr = data[index_zero*this.verticals].slice();
-
-		for(var i = 0; i < arr.length; i++){
-			data_itm.push({
-				x: arr[i].x,
-				y: arr[i].y
-			})
-		}
-		// console.log(this.index_zero.itm , this.index_zero.sim)
-		var path = [];
-		var arr = data[this.index_zero.sim*this.verticals].slice().reverse();
 		
-		for(var i = 0; i < arr.length; i++){
-			data_itm.push({
-				x: -arr[i].x,
-				y: arr[i].y
-			})
-		}
-		this.index_zero.data = data_itm//arr_index.concat(path.reverse())
-
-
 		this.index_perp.itm = index_perp >= 0 ?  index_perp : undefined ;
 		this.index_perp.sim = index_perp >= 0 ?  (Math.floor(this.lineRoot.children.length/2) + index_perp)%this.lineRoot.children.length : undefined ;
 
-
-		this.index_perp.data = [];
-
-		var data_prev = []; // this.data[this.index_zero.itm].slice()
-		
-		if(this.index_perp.itm >= 0){
-			//this.index_perp.data = this.index_perp.data.concat(this.data[this.index_perp.itm].slice())
-			var arr = data[this.index_perp.itm*this.verticals].slice();
-			for(var i = 0; i < arr.length; i++){
-				data_prev.push({
-					x: arr[i].x,
-					y: arr[i].y
-				})
-			}
-		}
-
-		var path = [];
-		
-
-		if(this.index_perp.sim >= 0){
-			var arr = data[this.index_perp.sim*this.verticals].slice().reverse();
-			for(var i = 0; i < arr.length; i++){
-				data_prev.push({
-					x: -arr[i].x,
-					y: arr[i].y
-				})
-			}
-		}
-		this.index_perp.data = data_prev //arr_index.concat(path.reverse())
 	},
 
 	getLightFlow: function(){
@@ -422,7 +373,8 @@ DataBuilder.prototype = {
 		var delt_c = (( info.azim.sum/180)*Math.PI)/(l_j-1);
 		var delt_p = ((info.polar.sum/180)*Math.PI)/(l_i-1);
 		var res = 0;
-		var path = light_flow/main.info_ies.info_data.light_flow;
+		var info_data = main.info_ies.info_data
+		var path = light_flow/info_data.light_flow_formula;
 
 		var s = light_flow/this.start_light_flow;
 		this.root.scale.set(s,s,s)
@@ -432,7 +384,7 @@ DataBuilder.prototype = {
 		// console.log(m)
 
 		// var k = main.info_ies.maxR*m;
-		var get_new_flow = main.info_ies.info_data.light_flow;
+		var get_new_flow = info_data.light_flow;
 
 		if(path != 1){
 			this.updateArrayData(path)

@@ -243,14 +243,13 @@ View3.prototype = {
 		var offset = this.camera.position.clone().sub(this.orbit.target).normalize()
 		var radius = 50
 		var scale = main.builder.root && main.builder.root.scale.y;
-		// console.log(scale)
+
 		if(!parseFloat(scale)) {
 			scale = 1
 		}
 
-		if(box.isEmpty()) {
+		if(box.isEmpty() || box.getSize().length() == 0) {
 			this.orbit.target.set(0, 0, 0)
-
 		} else {
 			radius = box.getSize().length()
 			box.getCenter(this.orbit.target)
