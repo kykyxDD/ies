@@ -432,13 +432,6 @@ function ViewInfoIES(){
 			main.info_ies.info_data.other = other;
 			dom.text(obj.other, other);
 		}
-		if(parseFloat(light_flow) != parseFloat(data.light_flow)) {
-			save = true;
-			
-			dom.text(obj.light_flow, light_flow);
-			main.builder.updateLightFlow(parseFloat(light_flow));
-		}
-
 		var azim = Math.max(parseFloat(azim), 1)
 		if(azim != parseFloat(data.azim)) {
 			save = true;
@@ -465,6 +458,12 @@ function ViewInfoIES(){
 		}
 
 
+		if(parseFloat(light_flow) != parseFloat(data.light_flow)) {
+			save = true;
+			
+			dom.text(obj.light_flow, light_flow);
+			main.builder.updateLightFlow(parseFloat(light_flow));
+		}
 
 		console.log('save', save)
 

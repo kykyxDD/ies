@@ -31,7 +31,10 @@ function initData(){
 		}
 
 		for(var key in data){
-			if(key == 'line' || key == 'light_flow' || key == 'power' || key == 'azim' || key == 'polar') continue
+			if(key == 'line' || key == 'light_flow' || 
+				key == 'power' || key == 'azim' || key == 'polar' || 
+				key == 'default_light_flow' || key == 'start_light_flow' || 
+				key == 'light_flow_formula'	) continue
 			if(arr.indexOf(key) >= 0) continue
 			var str = '';
 			
@@ -45,9 +48,11 @@ function initData(){
 			arr_data.splice(-2, 0, str);
 		}
 
-		if(main.builder.root.scale.x != 1) {
+		//if( main.builder.root.scale.x != 1) {
+		if(data.start_light_flow != data.light_flow){
 			data.line[0][1] = -1;
 			data.line[0][2] = 1;
+			// main.builder.root.scale.set(1,1,1)
 		}
 		var lines = info.lines, 
 			polar = info.polar.arr, 
@@ -185,6 +190,11 @@ function initData(){
 		info_ies.info_data.azim = num_azim;
 		info_ies.info_data.power = parseFloat(arr_info_1[2]);
 		info_ies.info_data.default_light_flow = parseFloat(arr_info[1]);
+//
+
+
+
+
 		info_ies.info_data.line = [
 			arr_info, arr_info_1
 		]

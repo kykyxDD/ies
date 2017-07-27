@@ -68,16 +68,16 @@ UI.DataInput = f.unit(Block, {
 
 		dom.on('click', text_ies_sum, function(){
 			if(!self.check_sum){
-				self.prevFileList();
+				// self.prevFileList();
 				
-				self.changeFileList(self.data_sum)
+				//self.changeFileList(self.data_sum)
+				self.createIESSum()
 				dom.addclass(self.cont_btn_sum, 'change');
 				self.check_sum = true
 			}
 		});
 
 		dom.on('click',close_sum, function(){
-			
 			self.creatDataSum()
 		});
 
@@ -217,6 +217,12 @@ UI.DataInput = f.unit(Block, {
 	},
 	createBtnFile: function(txt){
 		this.itm_edit = false;
+
+		if(this.check_sum){
+			this.saveDataSum()
+		} else {
+			this.prevFileList();
+		}
 		var add = true;
 
 		for(var i = 0; i < this.arrList.length; i++ ){
@@ -326,6 +332,8 @@ UI.DataInput = f.unit(Block, {
 			this.arrList[id].edit = info.edit;
 			this.change_file = false
 
+		} else {
+			// console.log(id)
 		}
 	},
 	saveDataSum: function(){
@@ -406,8 +414,7 @@ UI.DataInput = f.unit(Block, {
 		};
 
 		if(arr.length){
-			main.createDataSum.create(arr)
-			
+			main.createDataSum.create(arr);			
 
 			this.check_sum = true;
 

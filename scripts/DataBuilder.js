@@ -108,7 +108,6 @@ DataBuilder.prototype = {
 	createData: function(lines, no_update){
 		this.subdivisions = Math.max(8, Math.ceil(64/lines[0].length));
 		this.verticals = Math.ceil(180/lines.length);
-		// console.log('verticals:',this.verticals)
 
 		var linesCount = lines.length;
 		var data = [];
@@ -271,10 +270,14 @@ DataBuilder.prototype = {
 		main.view.toCenter()
 		dom.remclass(this.cont_preload, 'show');
 		this.viewFigure = true;
+		var light_flow_formula = this.getLightFlow(main.info_ies);
 		var info_data = main.info_ies.info_data
-		main.info_ies.info_data.light_flow = info_data.default_light_flow >= 0 ? info_data.default_light_flow : this.getLightFlow();
-		main.info_ies.info_data.light_flow_formula = this.getLightFlow();
+		main.info_ies.info_data.light_flow = info_data.default_light_flow >= 0 ? info_data.default_light_flow : light_flow_formula
+		main.info_ies.info_data.light_flow_formula = light_flow_formula
 		this.start_light_flow = info_data.light_flow;
+		main.info_ies.info_data.start_light_flow = this.start_light_flow;
+
+		// console.log(main.info_ies.info_data.light_flow, main.info_ies.info_data.light_flow_formula)
 
 		if(this.update_all){
 			main.view_info_ies.updateInfo();
@@ -297,7 +300,6 @@ DataBuilder.prototype = {
 		var index_zero = main.info_ies.azim.arr.indexOf(min_azim);
 		var index_perp  = main.info_ies.azim.arr.indexOf(min_azim + mean);
 		var data = this.data;
-		console.log(data)
 
 		this.index_zero.itm = index_zero;
 		this.index_zero.sim = (Math.floor(this.lineRoot.children.length/2) + index_zero)%this.lineRoot.children.length;
@@ -307,11 +309,12 @@ DataBuilder.prototype = {
 
 	},
 
-	getLightFlow: function(){
-		var info = main.info_ies;
+	getLightFlow: function(info){
+		// var info = main.info_ies;
 		var lines = info.lines;
 		var l_i = info.polar.arr.length;
 		var l_j = info.azim.arr.length;
+		var maxR = info.maxR ? info.maxR : 1;
 
 		var delt_c = ((info.azim.sum/180)*Math.PI)/(l_j-1);
 		var delt_p = ((info.polar.sum/180)*Math.PI)/(l_i-1);
@@ -358,7 +361,7 @@ DataBuilder.prototype = {
 			var a = info.polar.arr[i]/180;
 			var sin_i = Math.sin(Math.PI*a);
 			var n = lines[i][j];
-			var num = (n*sin_i)*main.info_ies.maxR;
+			var num = (n*sin_i)*maxR;
 			return num
 		}
 
@@ -384,16 +387,16 @@ DataBuilder.prototype = {
 		// console.log(m)
 
 		// var k = main.info_ies.maxR*m;
-		var get_new_flow = info_data.light_flow;
+		// var get_new_flow = light_flow;
 
 		if(path != 1){
-			this.updateArrayData(path)
+			main.info_ies.lines = this.updateArrayData(path)
 			// this.updateFigure(path);
-			get_new_flow = this.getLightFlow();
+			get_new_flow = this.getLightFlow(main.info_ies);
 			// console.log('flow',get_new_flow)
 		}
 
-		main.info_ies.info_data.light_flow = get_new_flow
+		main.info_ies.info_data.light_flow = light_flow
 	},
 	updatePolar: function(polar){
 		var info = main.info_ies;
@@ -409,7 +412,7 @@ DataBuilder.prototype = {
 			var angle = info_polar.min + path*i
 			new_arr.push(parseFloat((angle).toFixed(2)));
 		}
-		console.log(new_arr)
+		// console.log(new_arr)
 		this.createNewDataPolar(new_arr);
 
 	},
@@ -471,9 +474,9 @@ DataBuilder.prototype = {
 
 			arr_info.push(obj)
 		}
-		console.log('new',new_polar.join(', '))
-		console.log('prev',arr_polar.join(', '))
-		console.log(arr_info)
+		// console.log('new',new_polar.join(', '))
+		// console.log('prev',arr_polar.join(', '))
+		// console.log(arr_info)
 		var linesCount = arr_polar.length
 
 		for(var l = 0; l < new_polar.length; l++){
@@ -511,6 +514,13 @@ DataBuilder.prototype = {
 
 		main.info_ies.lines = new_lines;
 		main.info_ies.polar = update_info_polar;
+
+
+		if(this.start_light_flow == main.info_ies.info_data.light_flow ){
+			main.info_ies.info_data.default_light_flow = -1
+			main.info_ies.info_data.line[0][1] = -1
+			main.info_ies.info_data.line[0][2] = 1
+		}
 
 		this.createData(new_lines)
 	},
@@ -581,6 +591,16 @@ DataBuilder.prototype = {
 
 		main.info_ies.lines = new_lines;
 		main.info_ies.azim = update_info_azim;
+
+		if(this.start_light_flow == main.info_ies.info_data.light_flow ){
+			main.info_ies.info_data.default_light_flow = -1
+			main.info_ies.info_data.line[0][1] = -1
+			main.info_ies.info_data.line[0][2] = 1
+		}
+		// main.info_ies.info_data.light_flow = info_data.default_light_flow >= 0 ? info_data.default_light_flow : light_flow_formula
+		// main.info_ies.info_data.light_flow_formula = light_flow_formula
+		// this.start_light_flow = info_data.light_flow;
+		// main.info_ies.info_data.start_light_flow = this.start_light_flow;
 
 		this.createData(new_lines)
 	},
@@ -766,17 +786,18 @@ DataBuilder.prototype = {
 		main.view_azim.updateViewAzim(this.index_line, index_asim);
 
 	},
-	updateArrayData: function(path){
-		var lines = main.info_ies.lines;
+	updateArrayData: function(path, data){
+		var lines = data ? data.lines : main.info_ies.lines ;
 
 		for(var i = 0; i < lines.length; i++) {
 			var row = lines[i];
 			
 			for(var j = 0; j < row.length; j++) {
 				var r = row[j]
-				main.info_ies.lines[i][j] = r*path
+				lines[i][j] = r*path
 			}
 		}
+		return lines
 	},
 	updateFigure: function(path){
 		for(var l = 0; l < this.lineRoot.children.length; l++){
@@ -791,10 +812,8 @@ DataBuilder.prototype = {
 			line.material.needsUpdate = true
 		}
 
-		// console.log('data:',this.data)
 		for(var m = 0; m < this.meshRoot.children.length; m++){
 			var mesh = this.meshRoot.children[m];
-			// console.log('mesh',mesh)
 			var ver = mesh.geometry.vertices
 			for(var v = 0; v < ver.length; v++){
 				ver[v].x *= path;
@@ -897,10 +916,4 @@ DataBuilder.prototype = {
 
 		return data*/
 	}
-	
-	
-
-	
-	
-	
 }

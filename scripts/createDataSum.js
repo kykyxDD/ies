@@ -8,6 +8,14 @@ function CreateDataSum(){
 		for(var i = 0; i < arr.length; i++){
 			var data = main.initData.parse(arr[i]);
 			var azim = {}, polar = {}
+			var info_data = data.info_ies.info_data
+			data.info_ies.lines = data.lines
+			var light_flow_formula = main.builder.getLightFlow(data.info_ies);
+
+			if(parseFloat(info_data.default_light_flow) >= 0 && parseFloat(info_data.default_light_flow) !== light_flow_formula){
+				var path = parseFloat(info_data.default_light_flow)/light_flow_formula;
+				data.lines = main.builder.updateArrayData(path, data)
+			}
 
 			if(data.info_ies.azim.min == 270 && data.info_ies.azim.max == 90){
 				

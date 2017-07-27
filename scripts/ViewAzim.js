@@ -56,8 +56,8 @@ function ViewAzim(){
 		var data = this.getCoor(index_zero.itm, index_zero.sim)
 		this.arrData.push({data:data, color: '#ff0000'});
 		var draw_figure = this.drawLine(data, shape, '#ff0000'); //this.drawFigure(data, '#ff0000');
-		console.log('zero_data',index_zero.data)
-		console.log('perp_data',index_perp.data)
+		// console.log('zero_data',index_zero.data)
+		// console.log('perp_data',index_perp.data)
 
 
 		if(index_perp.itm != undefined && index_perp.sim != undefined){
