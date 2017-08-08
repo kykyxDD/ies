@@ -18,26 +18,11 @@ function CreateDataSum(){
 			}
 
 			if(data.info_ies.azim.min == 270 && data.info_ies.azim.max == 90){
-				
-				var a_0 = data.info_ies.azim.arr.indexOf(0);
-				var path_0 = data.info_ies.azim.arr.slice(a_0)
-				var path_1 = data.info_ies.azim.arr.slice(1, a_0).map(function(num){
-					return (num+180)%360
+
+				var path_0 = data.info_ies.azim.arr.slice().map(function(num){
+					return (num+90)%360
 				});
-				path_1.push(180);
-
-				data.info_ies.azim.min_angle = 0;
-				data.info_ies.azim.max_angle = 180;
-				data.info_ies.azim.min = 0;
-				data.info_ies.azim.arr = path_0.concat(path_1);
-				data.info_ies.azim.max = 180;
-				data.info_ies.azim.sum = 180;
-
-				var lines = data.lines;
-
-				var path_l_0 = lines.slice(a_0, data.info_ies.azim.arr.length);
-				var path_l_1 = lines.slice(1, a_0+1);
-				data.lines = path_l_0.concat(path_l_1)
+				data.info_ies.azim = main.initData.getInfoAngle( path_0);
 
 			}
 
@@ -47,13 +32,15 @@ function CreateDataSum(){
 				var new_azim =  data.info_ies.azim.arr.map(function(num){
 					return (num - min)*2
 				});
+				// console.log(new_azim)
+				data.info_ies.azim = main.initData.getInfoAngle( new_azim);
 
-				data.info_ies.azim.min_angle = 0;
+				/*data.info_ies.azim.min_angle = 0;
 				data.info_ies.azim.max_angle = 360;
 				data.info_ies.azim.min = 0;
 				data.info_ies.azim.arr = new_azim;//path_0.concat(path_1);
 				data.info_ies.azim.max = 360;
-				data.info_ies.azim.sum = 360;
+				data.info_ies.azim.sum = 360;*/
 			}
 			for(var k in data.info_ies.azim){
 				azim[k] = data.info_ies.azim[k];
@@ -446,22 +433,22 @@ function CreateDataSum(){
 		for(var p = 0; p < polar.length; p++){
 			new_arr[p] = []
 			for(var a = 0; a < azim.length; a++){
-				var d_0 = arr_data[0]
-				var num = d_0.lines[p][a]
+				var d_0 = arr_data[0];
+				var num = d_0.lines[p][a];
 
-				var arr_num = [num]
+				// var arr_num = [num]
 				for(var i = 1; i < arr_data.length; i++){
 					var d_i = arr_data[i]
 					
-					num = Math.max(num, d_i.lines[p][a])
+					// num = Math.max(num, d_i.lines[p][a])
+					num += d_i.lines[p][a]
 					max_R = Math.max(max_R, num)
-					arr_num.push(d_i.lines[p][a])
+					// arr_num.push(d_i.lines[p][a])
 				}
 				
 				new_arr[p][a] = num
 			}
 		}
-		// console.log(max_R, new_arr)
 
 		return {
 			max_R : max_R,
