@@ -101,6 +101,7 @@ DataBuilder.prototype = {
 		}
 		main.info_ies.minR = minR;
 		main.info_ies.maxR = maxR;
+		main.info_ies.start_maxR = maxR;
 
 		return this.createData(lines);
 	},
@@ -214,6 +215,8 @@ DataBuilder.prototype = {
 		this.index = 0;
 		this.height = height;
 
+		main.info_ies.start_maxR = main.info_ies.maxR;
+
 		return this.loadFigure();
 	},
 
@@ -242,7 +245,7 @@ DataBuilder.prototype = {
 
 		if(i < this.planesCount-1){
 			return setTimeout(this.loadFigure.bind(this),0)
-		} else {			
+		} else {
 			return this.completeFigure()
 		}
 	},
@@ -253,7 +256,7 @@ DataBuilder.prototype = {
 		this.root.add(this.lineRoot)
 		this.root.add(this.meshRoot)
 
-		var s = 1.002
+		var s = 1.00
 		this.lineRoot.scale.set(s, s, s)
 		var obj = {
 			object: this.root,
@@ -277,7 +280,8 @@ DataBuilder.prototype = {
 		this.start_light_flow = info_data.light_flow;
 		main.info_ies.info_data.start_light_flow = this.start_light_flow;
 
-		// console.log(main.info_ies.info_data.light_flow, main.info_ies.info_data.light_flow_formula)
+
+		dom.text(main.view_info_ies.obj_elem.light_flow, main.info_ies.info_data.light_flow);
 
 		if(this.update_all){
 			main.view_info_ies.updateInfo();
@@ -383,17 +387,12 @@ DataBuilder.prototype = {
 		this.root.scale.set(s,s,s)
 		main.view.toCenter()
 		main.view.needsRedraw = true;
-		// var m = main.info_ies.info_data.line[0][2];
-		// console.log(m)
-
-		// var k = main.info_ies.maxR*m;
-		// var get_new_flow = light_flow;
 
 		if(path != 1){
-			main.info_ies.lines = this.updateArrayData(path)
-			// this.updateFigure(path);
-			get_new_flow = this.getLightFlow(main.info_ies);
-			// console.log('flow',get_new_flow)
+
+			this.checkLFUpdateAngle(light_flow);
+
+			// var get_new_flow = this.getLightFlow(main.info_ies);
 		}
 
 		main.info_ies.info_data.light_flow = light_flow
@@ -408,11 +407,13 @@ DataBuilder.prototype = {
 		var path = sum/(polar-1);
 		var new_arr = [info_polar.min];
 
+		this.checkLFUpdateAngle();
+
 		for(var i = 1; i < polar; i++){
 			var angle = info_polar.min + path*i
 			new_arr.push(parseFloat((angle).toFixed(2)));
 		}
-		// console.log(new_arr)
+
 		this.createNewDataPolar(new_arr);
 
 	},
@@ -425,6 +426,8 @@ DataBuilder.prototype = {
 		var sum = l_i > 1 ? info_azim.sum : this.max_azim_data;
 		var path = sum/(azim-1);
 		var new_arr = [info_azim.min];
+
+		this.checkLFUpdateAngle();
 		
 		for(var i = 1; i < azim; i++){
 			var angle = info_azim.min + path*i
@@ -437,7 +440,20 @@ DataBuilder.prototype = {
 		}
 
 		this.createNewDataAzim(new_arr)
+	},
 
+
+	checkLFUpdateAngle: function(light_flow){
+		var num = 1;
+		var info_data = main.info_ies.info_data
+		light_flow = light_flow ? light_flow : info_data.light_flow
+		
+		var p = info_data.start_light_flow/info_data.light_flow_formula;
+		var s = light_flow/info_data.start_light_flow;
+
+		main.info_ies.maxR = main.info_ies.start_maxR*(p*s)
+
+		return 1//path*s
 	},
 
 	createNewDataPolar: function(new_polar){
@@ -474,9 +490,7 @@ DataBuilder.prototype = {
 
 			arr_info.push(obj)
 		}
-		// console.log('new',new_polar.join(', '))
-		// console.log('prev',arr_polar.join(', '))
-		// console.log(arr_info)
+
 		var linesCount = arr_polar.length
 
 		for(var l = 0; l < new_polar.length; l++){
@@ -500,7 +514,7 @@ DataBuilder.prototype = {
 
 				for(var k = 0; k < arr_azim.length; k++) {
 					var num = this.cubicInterpolate(p, a[k], b[k], c[k], d[k]);
-					row.push(Math.abs(num));
+					row.push((num));
 				}
 
 			}
@@ -511,9 +525,9 @@ DataBuilder.prototype = {
 
 		new_lines = main.initData.arrReverse(new_lines, main.info_ies.azim.sum);
 
-
 		main.info_ies.lines = new_lines;
 		main.info_ies.polar = update_info_polar;
+
 
 
 		if(this.start_light_flow == main.info_ies.info_data.light_flow ){
@@ -799,6 +813,25 @@ DataBuilder.prototype = {
 		}
 		return lines
 	},
+	updateMaxrData: function(path, data){
+		/*var lines = data ? data.lines : main.info_ies.lines ;
+
+		for(var i = 0; i < lines.length; i++) {
+			var row = lines[i];
+			
+			for(var j = 0; j < row.length; j++) {
+				var r = row[j]
+				lines[i][j] = r*path
+			}
+		}*/
+
+
+
+		
+		console.log()
+		return 1//lines
+	},
+
 	updateFigure: function(path){
 		for(var l = 0; l < this.lineRoot.children.length; l++){
 			var line = this.lineRoot.children[l];

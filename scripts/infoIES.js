@@ -324,6 +324,7 @@ function ViewInfoIES(){
 		}
 
 		elem_popup.light_flow.value = data.light_flow ? data.light_flow : '';
+		console.log('light_flow',data.light_flow)
 		if(data.light_flow) {
 			main.info_ies.info_data.light_flow = elem_popup.light_flow.value
 		}
@@ -339,11 +340,6 @@ function ViewInfoIES(){
 		}
 
 
-
-		// elem_popup.light_flow.value = data.light_flow ? data.light_flow : '';
-		// if(data.light_flow) {
-		// 	main.info_ies.info_data.light_flow = elem_popup.light_flow.value
-		// }
 
 
 		// var obj_power = itmElem();
